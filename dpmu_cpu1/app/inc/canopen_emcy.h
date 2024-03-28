@@ -1,0 +1,55 @@
+/*
+ * canopen_emcy.h
+ *
+ *  Created on: 11 aug. 2023
+ *      Author: Henrik Borg henrik.borg@ekpower.se hb
+ */
+
+#ifndef APP_INC_CANOPEN_EMCY_H_
+#define APP_INC_CANOPEN_EMCY_H_
+
+
+#include "co_canopen.h"
+
+#define                 DEVICE_TEMPERATURE_OK   0U
+#define                 DEVICE_TEMPERATURE_HIGH 1U
+#define                 DEVICE_TEMPERATURE_MAX  2U
+
+enum emcy_error_codes {
+    EMCY_ERROR_CODE_GENERIC_ERROR   = 1<<0,
+    EMCY_ERROR_CODE_CURRENT         = 1<<1,
+    EMCY_ERROR_CODE_VOLTAGE         = 1<<2,
+    EMCY_ERROR_CODE_TEMPERATURE     = 1<<3,
+    EMCY_ERROR_CODE_COMMUNICATION   = 1<<4,
+    EMCY_ERROR_CODE_DP_SPECIFIC     = 1<<5,
+//    EMCY_ERROR_CODE_RESERVED        = 1<<6, /* DO NOT USE */
+    EMCY_ERROR_CODE_MF_SPECIFIC     = 1<<7
+};
+
+//RET_T canopen_emcy_send(UNSIGNED16 errCode, UNSIGNED8 *addErrorCode);
+void canopen_emcy_send_no_errors(void);
+
+void canopen_emcy_send_temperature_ok(uint8_t temperature);
+void canopen_emcy_send_temperature_warning(uint8_t temperature);
+void canopen_emcy_send_temperature_error(uint8_t temperature);
+
+void canopen_emcy_send_dcbus_over_voltage(uint8_t status);
+void canopen_emcy_send_dcbus_under_voltage(uint8_t status, uint8_t payload[4]);
+void canopen_emcy_send_dcbus_short_curcuit(uint8_t status, uint8_t payload[4]);
+void canopen_emcy_send_power_sharing_error(uint8_t status);
+void canopen_emcy_send_load_overcurrent(uint8_t status);
+void canopen_emcy_send_operational_error(uint8_t status);
+
+void canopen_emcy_send_power_line_failure(uint8_t status);
+void canopen_emcy_send_power_line_failure_both(uint8_t status);
+
+void canopen_emcy_send_state_of_charge_safety_error(uint8_t status, uint8_t soc);
+void canopen_emcy_send_state_of_charge_min_error(uint8_t status, uint8_t soc);
+
+void canopen_emcy_send_generic(uint16_t emcy_error_code,
+                               uint8_t emcy_error_byte,
+                               uint8_t status,
+                               uint8_t ampere[4]);
+
+
+#endif /* APP_INC_CANOPEN_EMCY_H_ */

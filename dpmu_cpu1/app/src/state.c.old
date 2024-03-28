@@ -1,0 +1,234 @@
+/*
+ * state.c
+ *
+ *  Created on: 25 nov. 2022
+ *      Author: Henrik Borg henrik.borg@ekpower.se hb
+ */
+
+#include "stdbool.h"
+#include "stdint.h"
+
+//#include "charge.h"
+#include "cli_cpu1.h"
+#include "co.h"
+#include "co_canopen.h"
+#include "common.h"
+#include "convert.h"
+#include "dpmu_type.h"
+#include "gen_indices.h"
+#include "log.h"
+#include "main.h"
+#include "state.h"
+#include "timer.h"
+#include "usr_401.h"
+
+#define INITIALIZATION_DONE 1       /* TODO - T.B.D */
+#define DISCHARGE_TIMEOUT   1000UL  /* 1 second at tick rate 1 millisecond */    /* TODO - T.B.D */
+
+static inline void disable_inrush(void)
+{
+   cli_switches(IPC_SWITCHES_QIRS, SW_OFF);
+}
+
+bool allowed_to_use_shared_bus(void)
+{
+    bool ret;
+    UNSIGNED8 dpmu_type;
+
+    coOdGetObj_u8(I_DPMU_POWER_SOURCE_TYPE, 0, &dpmu_type);
+    /* check if DPMU is of a allowed type to connect through the shared bus */
+    switch (dpmu_type)
+    {
+//    case DPMU_DEFAULT_CAP:    /* alone, nothing to connect with */
+    case DPMU_DEFAULT_CAP_W_REDUNTANT:
+    case DPMU_DEFAULT_CAP_W_SUPPLEMENTARY:
+    case DPMU_DEFAULT_CAP_W_REDUNDANT_SUPPLEMENTARY:
+//    case DPMU_DEFAULT_BAT:    /* alone, nothing to connect with */
+    case DPMU_DEFAULT_BAT_W_REDUNTANT:
+    case DPMU_DEFAULT_BAT_W_SUPPLEMENTARY:
+    case DPMU_DEFAULT_BAT_W_REDUNDANT_SUPPLEMENTARY:
+    case DPMU_REDUNDANT_CAP:
+    case DPMU_REDUNDANT_CAP_W_SUPPLEMENTARY:
+    case DPMU_REDUNDANT_BAT:
+    case DPMU_REDUNDANT_BAT_W_SUPPLEMENTARY:
+    case DPMU_SUPPLEMENTARY_CAP:
+    case DPMU_SUPPLEMENTARY_BAT:
+        ret = true;
+        break;
+    default:
+        ret = false;
+        break;
+    }
+
+    return ret;
+}
+
+/* brief: connects with other DPMU through the shared bus, Qsb
+ *
+ * details: sends request to other DPMU to connect its shared bus
+ *          checks the answer from the other DPMU
+ *          if okay, set Qsb to conductive mode
+ *
+ * requirements:
+ *
+ * argument: none
+ *
+ * return: none
+ *
+ * note:
+ *
+ * presumptions: shared bus is disconnected, Qsb is non-conductive
+ */
+bool connect_shared_bus(void)
+{
+    bool connect = true;
+
+    if(!allowed_to_use_shared_bus())
+        return false;
+
+    //TODO update with correct values
+    //TODO update with correct transformation of ADC <=> VOltage
+    //TODO update logic according to above both TODOs
+
+    /* Voltage level on internal DC Bus */
+    float voltage_at_dc_bus = sharedVars_cpu2toCpu1.voltage_at_dc_bus;
+
+    /* check voltage level of DC Bus on redundant DPMU */
+    uint8_t voltage_at_dc_bus_reduntant;
+    //TODO add asking of voltage at DC bus on redundant DPMU, handled over CANB */
+//    voltage_at_dc_bus_reduntant = other_dpmu_read_voltage();
+
+    if(!( (voltage_at_dc_bus_reduntant >= (voltage_at_dc_bus - ACCEPTED_MARGIN_ON_DC_BUS)) &&
+          (voltage_at_dc_bus_reduntant <= (voltage_at_dc_bus + ACCEPTED_MARGIN_ON_DC_BUS)) ))
+        connect = false;   /* TODO - Error state */
+
+    if(connect)
+    {
+        /* connect the other/others DPMU/s, Qsb */
+        //TODO inform other DPMU to connect its share
+        //TODO check answer from other DPMU
+//        if(other_dpmu_connect_share_bus())
+//        {
+            cli_switches(IPC_SWITCHES_QSB, SW_ON);
+
+            /* check if load switch is in conductive mode */
+            if(!(switches_read_states() & (1 << SWITCHES_QLB))) {
+                ;   /* TODO - Error state */
+            }
+//        } else
+//        {
+//            /* do nothing !!
+//             * Other DPMU is having some kind of problem
+//             * if it cannot connect to the shared bus
+//             */
+//
+//            connect = false;
+//        }
+    }
+    /* no 'else' statement here, should have been non-conductive before */
+
+    return connect;
+}
+
+void state_startup_sequence(void)
+{
+    UNSIGNED8 dpmu_type;
+
+    /* save timer start value for discharging load */
+    uint32_t load_discharge_timer_start_value = timer_get_ticks();
+
+    /* set the state machine of the controlling algorithm to IDLE */
+    /* should already be in this state, do it anyway! */
+    //TODO should this be a emergency turn off to guarantee everything is turned off, except CANB
+    sharedVars_cpu1toCpu2.iop_operation_request_state = 0; //TODO change to proper common "enum variable"
+    IPC_setFlagLtoR(IPC_CPU1_L_CPU2_R, IPC_IOP_REQUEST_CHANGE_OF_STATE);
+
+    /*** retrieve initialization data from IOP ***/
+    do {
+        cli_check_for_new_commands_from_UART(); /* commands through UART */
+
+        check_cpu2_dbg();                       /* debug messages from CPU" */
+
+        while (coCommTask() == CO_TRUE);
+    } while(CO_NMT_STATE_OPERATIONAL != coNmtGetState());
+
+    /* wait predefined time for letting the Load to be discharged, ticks [ms] */
+    while((timer_get_ticks() - load_discharge_timer_start_value) < DISCHARGE_TIMEOUT);
+
+    /*** load is supposed to be discharged ***/
+
+    /* connect load bus */
+    coOdGetObj_u8(I_DPMU_POWER_SOURCE_TYPE, 0, &dpmu_type);
+    switch(dpmu_type)
+    {
+    case DPMU_DEFAULT_CAP:                   /* default DPMU with capacitors */
+    case DPMU_DEFAULT_CAP_W_REDUNTANT:       /* redundant DPMU with capacitors, with redundant DPMU */
+    case DPMU_DEFAULT_CAP_W_SUPPLEMENTARY:   /* redundant DPMU with capacitors, with supplementary DPMU */
+    case DPMU_DEFAULT_CAP_W_REDUNDANT_SUPPLEMENTARY:/* redundant DPMU with capacitors, with redundant DPMU and with supplementary DPMU */
+    case DPMU_DEFAULT_BAT:                   /* default DPMU with batteries  */
+    case DPMU_DEFAULT_BAT_W_REDUNTANT:       /* redundant DPMU with batteries , with supplementary DPMU */
+    case DPMU_DEFAULT_BAT_W_SUPPLEMENTARY:   /* redundant DPMU with batteries , with redundant DPMU */
+    case DPMU_DEFAULT_BAT_W_REDUNDANT_SUPPLEMENTARY:/* redundant DPMU with capacitors, with redundant DPMU and with supplementary DPMU */
+//    case DPMU_REDUNDANT_CAP:                 /* redundant DPMU with capacitors */
+//    case DPMU_REDUNDANT_CAP_W_SUPPLEMENTARY: /* redundant DPMU with capacitors, with supplementary DPMU */
+//    case DPMU_REDUNDANT_BAT:                 /* redundant DPMU with batteries  */
+//    case DPMU_REDUNDANT_BAT_W_SUPPLEMENTARY: /* redundant DPMU with batteries , with supplementary DPMU */
+//    case DPMU_SUPPLEMENTARY_CAP: /* supplementary DPMU with capacitors in parallel with default or redundant DPMU */
+//    case DPMU_SUPPLEMENTARY_BAT: /* supplementary DPMU with batteries  in parallel with default or redundant DPMU */
+//         cli_switches(IPC_SWITCHES_QLB, SW_ON);  /* connect to load */
+
+        /* check if load switch is in conductive mode */
+//        if(!(switches_read_states() & (1 << SWITCHES_QLB))) {
+//            ;   /* TODO - Error state */
+//        }
+        break;
+    default:
+        break;
+    }
+
+    /* execute in-rush limiter
+     * wait for the other command to finish in CPU2, ACK in IPC flag
+     * */
+//    cli_switches(IPC_SWITCHES_QIRS, SW_ON);
+
+    /* wait for inrush current limiter to finish */
+//    while(!IPC_isFlagBusyRtoL(IPC_CPU1_L_CPU2_R, IPC_SWITCHES_QIRS_DONE))
+//    {
+//        /* waiting for command from CPU2
+//         * will receive the execution time from CPU2 */
+//        check_cpu2_dbg();
+//    }
+//    IPC_ackFlagRtoL(IPC_CPU1_L_CPU2_R, IPC_SWITCHES_QIRS_DONE);
+
+    /*** DC bus and all capacitances needed is charged to TARGET_VOLTAGE_AT_DC_BUS ***/
+
+    /* connect input bus
+     * wait for the other command to finish in CPU2, ACK in IPC flag
+     * */
+//    while(IPC_isFlagBusyRtoL(IPC_CPU1_L_CPU2_R, IPC_FLAG_MESSAGE_CPU1_TO_CPU2));
+//    {
+//        /* for debug propose, execution time will be sent from CPU2 */
+//        check_cpu2_dbg();
+//    }
+//    while(!cli_switches(IPC_SWITCHES_QINB, SW_ON));
+//    cli_switches(IPC_SWITCHES_QINB, SW_ON);
+    //TODO race condition with CPU2
+
+    /* check if input switch is in conductive mode */
+//    while(IPC_isFlagBusyRtoL(IPC_CPU1_L_CPU2_R, IPC_FLAG_MESSAGE_CPU1_TO_CPU2));
+//    {
+//        /* for debug propose, execution time will be sent from CPU2 */
+//        check_cpu2_dbg();
+//    }
+//    IPC_waitForAck(IPC_CPU1_L_CPU2_R, IPC_FLAG_MESSAGE_CPU1_TO_CPU2);
+//    if(! (switches_read_states() & (1 << SWITCHES_QINB)) ) {
+//        ;   /* TODO - Error state */
+//    }
+
+    /* disconnect in-rush circuitry */
+    /* might have been done in CPU2, do it here anyway! */
+//    disable_inrush();
+
+    /* connect shared bus */
+//    connect_shared_bus();
+}

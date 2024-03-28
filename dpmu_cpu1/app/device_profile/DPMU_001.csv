@@ -1,0 +1,521 @@
+Index,Sub,EDSname,Datatype,Access,Value,varname,LowLimit,UpLimit,hasDefault,hasLimit,refuseRead,refuseWrite,defaultInEDS,implementation,Size,ObjectCode,mapable
+0x1000,0x00,Device Type,UNSIGNED32,ro,197009,NONE,0,4294967295,yes,no,no,no,1,ManagedConst,0,,no
+0x1001,0x00,Error Register,UNSIGNED8,ro,,NONE,0,255,no,no,no,no,0,ManagedVariable,0,,no
+0x1003,0x00,Predefined Error Field Number of Errors,UNSIGNED8,rw,10,NONE,0,255,yes,no,no,no,1,ManagedVariable,0,ARRAY,no
+0x1003,0x01,Predefined Error Field Error Code,UNSIGNED32,ro,0,NONE,0,4294967295,yes,no,no,no,1,ManagedVariable,0,,no
+0x1003,0x02,Predefined Error Field Error Code,UNSIGNED32,ro,0,NONE,0,4294967295,yes,no,no,no,1,ManagedVariable,0,,no
+0x1003,0x03,Predefined Error Field Error Code,UNSIGNED32,ro,0,NONE,0,4294967295,yes,no,no,no,1,ManagedVariable,0,,no
+0x1003,0x04,Predefined Error Field Error Code,UNSIGNED32,ro,0,NONE,0,4294967295,yes,no,no,no,1,ManagedVariable,0,,no
+0x1003,0x05,Predefined Error Field Error Code,UNSIGNED32,ro,0,NONE,0,4294967295,yes,no,no,no,1,ManagedVariable,0,,no
+0x1003,0x06,Predefined Error Field Error Code,UNSIGNED32,ro,0,NONE,0,4294967295,yes,no,no,no,1,ManagedVariable,0,,no
+0x1003,0x07,Predefined Error Field Error Code,UNSIGNED32,ro,0,NONE,0,4294967295,yes,no,no,no,1,ManagedVariable,0,,no
+0x1003,0x08,Predefined Error Field Error Code,UNSIGNED32,ro,0,NONE,0,4294967295,yes,no,no,no,1,ManagedVariable,0,,no
+0x1003,0x09,Predefined Error Field Error Code,UNSIGNED32,ro,0,NONE,0,4294967295,yes,no,no,no,1,ManagedVariable,0,,no
+0x1003,0x0a,Predefined Error Field Error Code,UNSIGNED32,ro,0,NONE,0,4294967295,yes,no,no,no,1,ManagedVariable,0,,no
+0x1008,0x00,Manufacturer device name,VISIBLE_STRING,const,emotas Slave 1 (cpu 1),NONE,0,0,yes,no,no,no,1,ManagedConst,22,,no
+0x1010,0x00,Store parameters Highest sub-index supported,UNSIGNED8,const,127,NONE,0,0xff,yes,no,no,no,1,ManagedConst,0,ARRAY,no
+0x1010,0x01,Store parameters Save all parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x02,Store parameters Save communication parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x03,Store parameters Save application parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x04,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x05,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x06,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x07,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x08,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x09,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x0a,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x0b,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x0c,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x0d,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x0e,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x0f,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x10,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x11,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x12,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x13,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x14,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x15,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x16,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x17,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x18,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x19,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x1a,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x1b,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x1c,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x1d,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x1e,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x1f,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x20,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x21,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x22,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x23,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x24,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x25,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x26,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x27,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x28,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x29,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x2a,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x2b,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x2c,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x2d,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x2e,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x2f,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x30,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x31,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x32,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x33,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x34,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x35,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x36,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x37,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x38,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x39,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x3a,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x3b,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x3c,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x3d,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x3e,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x3f,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x40,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x41,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x42,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x43,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x44,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x45,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x46,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x47,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x48,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x49,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x4a,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x4b,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x4c,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x4d,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x4e,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x4f,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x50,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x51,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x52,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x53,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x54,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x55,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x56,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x57,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x58,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x59,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x5a,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x5b,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x5c,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x5d,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x5e,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x5f,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x60,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x61,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x62,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x63,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x64,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x65,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x66,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x67,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x68,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x69,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x6a,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x6b,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x6c,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x6d,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x6e,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x6f,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x70,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x71,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x72,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x73,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x74,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x75,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x76,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x77,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x78,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x79,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x7a,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x7b,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x7c,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x7d,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x7e,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1010,0x7f,Store parameters Save manufacturer defined parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x00,Restore default parameters Highest sub-index supported,UNSIGNED8,const,127,NONE,0,0xff,yes,no,no,no,1,ManagedConst,0,ARRAY,no
+0x1011,0x01,Restore default parameters Restore all default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x02,Restore default parameters Restore communication default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x03,Restore default parameters Restore application default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x04,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x05,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x06,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x07,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x08,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x09,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x0a,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x0b,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x0c,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x0d,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x0e,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x0f,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x10,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x11,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x12,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x13,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x14,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x15,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x16,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x17,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x18,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x19,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x1a,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x1b,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x1c,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x1d,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x1e,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x1f,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x20,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x21,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x22,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x23,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x24,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x25,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x26,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x27,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x28,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x29,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x2a,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x2b,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x2c,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x2d,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x2e,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x2f,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x30,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x31,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x32,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x33,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x34,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x35,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x36,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x37,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x38,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x39,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x3a,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x3b,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x3c,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x3d,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x3e,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x3f,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x40,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x41,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x42,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x43,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x44,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x45,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x46,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x47,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x48,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x49,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x4a,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x4b,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x4c,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x4d,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x4e,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x4f,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x50,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x51,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x52,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x53,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x54,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x55,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x56,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x57,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x58,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x59,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x5a,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x5b,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x5c,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x5d,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x5e,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x5f,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x60,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x61,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x62,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x63,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x64,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x65,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x66,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x67,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x68,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x69,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x6a,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x6b,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x6c,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x6d,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x6e,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x6f,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x70,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x71,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x72,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x73,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x74,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x75,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x76,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x77,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x78,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x79,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x7a,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x7b,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x7c,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x7d,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x7e,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1011,0x7f,Restore default parameters Restore manufacturer defined default parameters,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,0,ManagedVariable,0,,no
+0x1014,0x00,COB ID EMCY,UNSIGNED32,ro,$NODEID+0x80,NONE,0,4294967295,yes,no,no,no,1,ManagedVariable,0,,no
+0x1015,0x00,Inhibit Time Emergency,UNSIGNED16,rw,0,NONE,0,65535,yes,no,no,no,1,ManagedVariable,0,,no
+0x1016,0x00,Consumer Heartbeat Time Number of entries,UNSIGNED8,ro,1,NONE,0,255,yes,no,no,no,1,ManagedConst,0,ARRAY,no
+0x1016,0x01,Consumer Heartbeat Time Consumer Heartbeat Time,UNSIGNED32,rw,67584,NONE,0,4294967295,yes,no,no,no,1,ManagedVariable,0,,no
+0x1017,0x00,Producer Heartbeat Time,UNSIGNED16,rw,1000,NONE,0,65535,no,no,no,no,0,ManagedVariable,0,,no
+0x1018,0x00,Identity Object Number of entries,UNSIGNED8,ro,4,NONE,0,255,yes,no,no,no,1,ManagedConst,0,RECORD,no
+0x1018,0x01,Identity Object Vendor Id,UNSIGNED32,ro,0,NONE,0,4294967295,no,no,no,no,0,ManagedConst,0,,no
+0x1018,0x02,Identity Object Product Code,UNSIGNED32,ro,1234,NONE,0,4294967295,no,no,no,no,0,ManagedConst,0,,no
+0x1018,0x03,Identity Object Revision number,UNSIGNED32,ro,1,NONE,0,4294967295,no,no,no,no,0,ManagedConst,0,,no
+0x1018,0x04,Identity Object Serial number,UNSIGNED32,ro,,NONE,0,4294967295,no,no,no,no,0,ManagedVariable,0,,no
+0x1029,0x00,Error behaviour Nr of Error Classes,UNSIGNED8,ro,2,NONE,0,255,yes,no,no,no,1,ManagedConst,0,ARRAY,no
+0x1029,0x01,Error behaviour Communication Error,UNSIGNED8,rw,1,NONE,0,255,yes,no,no,no,1,ManagedVariable,0,,no
+0x1029,0x02,Error behaviour Specific Error Class ,UNSIGNED8,rw,,NONE,0,255,no,no,no,no,1,ManagedVariable,0,,no
+0x1200,0x00,Server SDO Parameter Number of entries,UNSIGNED8,ro,2,NONE,2,2,yes,no,no,no,1,ManagedConst,0,RECORD,no
+0x1200,0x01,Server SDO Parameter COB ID Client to Server,UNSIGNED32,ro,$NODEID+0x600,NONE,0,4294967295,yes,no,no,no,1,ManagedVariable,0,,no
+0x1200,0x02,Server SDO Parameter COB ID Server to Client,UNSIGNED32,ro,$NODEID+0x580,NONE,0,4294967295,yes,no,no,no,1,ManagedVariable,0,,no
+0x1400,0x00,Receive PDO Communication Parameter Number of entries,UNSIGNED8,ro,5,NONE,2,5,yes,no,no,no,1,ManagedConst,0,RECORD,no
+0x1400,0x01,Receive PDO Communication Parameter COB ID,UNSIGNED32,rw,$NODEID+0x200,NONE,1,4294967295,yes,no,no,no,1,ManagedVariable,0,,no
+0x1400,0x02,Receive PDO Communication Parameter Transmission Type,UNSIGNED8,rw,255,NONE,0,255,yes,no,no,no,1,ManagedVariable,0,,no
+0x1400,0x03,Receive PDO Communication Parameter Inhibit Time,UNSIGNED16,rw,0,NONE,0,65535,yes,no,no,no,1,ManagedVariable,0,,no
+0x1400,0x04,Receive PDO Communication Parameter Compatibility Entry,UNSIGNED8,rw,,NONE,0,255,no,no,no,no,1,ManagedVariable,0,,no
+0x1400,0x05,Receive PDO Communication Parameter Event Timer,UNSIGNED16,rw,3000,NONE,0,65535,yes,no,no,no,1,ManagedVariable,0,,no
+0x1401,0x00,Receive PDO Communication Parameter Highest sub-index supported,UNSIGNED8,ro,2,NONE,2,5,yes,no,no,no,1,ManagedConst,0,RECORD,no
+0x1401,0x01,Receive PDO Communication Parameter COB ID,UNSIGNED32,rw,$NODEID+0x300,NONE,1,4294967295,yes,no,no,no,1,ManagedVariable,0,,no
+0x1401,0x02,Receive PDO Communication Parameter Transmission Type,UNSIGNED8,rw,255,NONE,0,255,yes,no,no,no,1,ManagedVariable,0,,no
+0x1600,0x00,Receive PDO Mapping Parameter Number of entries,UNSIGNED8,const,3,NONE,0,255,yes,no,no,no,1,ManagedConst,0,RECORD,no
+0x1600,0x01,Receive PDO Mapping Parameter PDO Mapping Entry,UNSIGNED32,const,805306888,NONE,0,0,yes,no,no,no,1,ManagedConst,0,,no
+0x1600,0x02,Receive PDO Mapping Parameter PDO Mapping Entry,UNSIGNED32,const,536936480,NONE,0,805306912,yes,no,no,no,1,ManagedConst,0,,no
+0x1600,0x03,Receive PDO Mapping Parameter PDO Mapping Entry,UNSIGNED32,const,805307144,NONE,0,805306912,yes,no,no,no,1,ManagedConst,0,,no
+0x1601,0x00,Receive PDO Mapping Parameter Highest sub-index supported,UNSIGNED8,rw,4,NONE,0,255,yes,no,no,no,1,ManagedVariable,0,RECORD,no
+0x1601,0x01,Receive PDO Mapping Parameter Mapping Entry 1,UNSIGNED32,rw,1644167432,NONE,0,0,yes,no,no,no,1,ManagedVariable,0,,no
+0x1601,0x02,Receive PDO Mapping Parameter Mapping Entry 2,UNSIGNED32,rw,1644167688,NONE,0,0,yes,no,no,no,1,ManagedVariable,0,,no
+0x1601,0x03,Receive PDO Mapping Parameter Mapping Entry 3,UNSIGNED32,rw,1644167944,NONE,0,0,yes,no,no,no,1,ManagedVariable,0,,no
+0x1601,0x04,Receive PDO Mapping Parameter Mapping Entry 4,UNSIGNED32,rw,1644168200,NONE,0,0,yes,no,no,no,1,ManagedVariable,0,,no
+0x1800,0x00,Transmit PDO IO Number of entries,UNSIGNED8,ro,5,NONE,2,6,yes,no,no,no,1,ManagedConst,0,RECORD,no
+0x1800,0x01,Transmit PDO IO COB ID,UNSIGNED32,rw,$NODEID+0x180,NONE,1,4294967295,yes,no,no,no,1,ManagedVariable,0,,no
+0x1800,0x02,Transmit PDO IO Transmission Type,UNSIGNED8,rw,254,NONE,0,255,yes,no,no,no,1,ManagedVariable,0,,no
+0x1800,0x03,Transmit PDO IO Inhibit Time,UNSIGNED16,rw,5000,NONE,0,65535,yes,no,no,no,1,ManagedVariable,0,,no
+0x1800,0x04,Transmit PDO IO Compatibility Entry,UNSIGNED8,rw,,NONE,0,255,yes,no,no,no,0,ManagedVariable,0,,no
+0x1800,0x05,Transmit PDO IO Event Timer,UNSIGNED16,rw,0,NONE,0,65535,yes,no,no,no,1,ManagedVariable,0,,no
+0x1801,0x00,Transmit PDO Temperatures Number of entries,UNSIGNED8,ro,5,NONE,2,6,yes,no,no,no,1,ManagedConst,0,RECORD,no
+0x1801,0x01,Transmit PDO Temperatures COB ID,UNSIGNED32,rw,$NODEID+0x280,NONE,1,4294967295,yes,no,no,no,1,ManagedVariable,0,,no
+0x1801,0x02,Transmit PDO Temperatures Transmission Type,UNSIGNED8,rw,254,NONE,0,255,yes,no,no,no,1,ManagedVariable,0,,no
+0x1801,0x03,Transmit PDO Temperatures Inhibit Time,UNSIGNED16,rw,0,NONE,0,65535,yes,no,no,no,1,ManagedVariable,0,,no
+0x1801,0x04,Transmit PDO Temperatures Compatibility Entry,UNSIGNED8,rw,,NONE,0,255,yes,no,no,no,0,ManagedVariable,0,,no
+0x1801,0x05,Transmit PDO Temperatures Event Timer,UNSIGNED16,rw,10000,NONE,0,65535,yes,no,no,no,1,ManagedVariable,0,,no
+0x1802,0x00,Transmit PDO DC Bus Number of entries,UNSIGNED8,ro,5,NONE,2,6,yes,no,no,no,1,ManagedConst,0,RECORD,no
+0x1802,0x01,Transmit PDO DC Bus COB ID,UNSIGNED32,rw,$NODEID+0x380,NONE,1,4294967295,yes,no,no,no,1,ManagedVariable,0,,no
+0x1802,0x02,Transmit PDO DC Bus Transmission Type,UNSIGNED8,rw,254,NONE,0,255,yes,no,no,no,1,ManagedVariable,0,,no
+0x1802,0x03,Transmit PDO DC Bus Inhibit Time,UNSIGNED16,rw,0,NONE,0,65535,yes,no,no,no,1,ManagedVariable,0,,no
+0x1802,0x04,Transmit PDO DC Bus Compatibility Entry,UNSIGNED8,rw,,NONE,0,255,yes,no,no,no,0,ManagedVariable,0,,no
+0x1802,0x05,Transmit PDO DC Bus Event Timer,UNSIGNED16,rw,10000,NONE,0,65535,yes,no,no,no,1,ManagedVariable,0,,no
+0x1803,0x00,Transmit PDO Energy Bank Number of entries,UNSIGNED8,ro,5,NONE,2,6,yes,no,no,no,1,ManagedConst,0,RECORD,no
+0x1803,0x01,Transmit PDO Energy Bank COB ID,UNSIGNED32,rw,$NODEID+0x480,NONE,1,4294967295,yes,no,no,no,1,ManagedVariable,0,,no
+0x1803,0x02,Transmit PDO Energy Bank Transmission Type,UNSIGNED8,rw,254,NONE,0,255,yes,no,no,no,1,ManagedVariable,0,,no
+0x1803,0x03,Transmit PDO Energy Bank Inhibit Time,UNSIGNED16,rw,5000,NONE,0,65535,yes,no,no,no,1,ManagedVariable,0,,no
+0x1803,0x04,Transmit PDO Energy Bank Compatibility Entry,UNSIGNED8,rw,,NONE,0,255,yes,no,no,no,0,ManagedVariable,0,,no
+0x1803,0x05,Transmit PDO Energy Bank Event Timer,UNSIGNED16,rw,10000,NONE,0,65535,yes,no,no,no,1,ManagedVariable,0,,no
+0x1a00,0x00,TPDO mapping IO Number of mapped application objects in TPDO,UNSIGNED8,rw,1,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,RECORD,no
+0x1a00,0x01,TPDO mapping IO State_Of_Switches_PDO,UNSIGNED32,rw,1610613000,NONE,0,0xffffffff,yes,no,no,no,1,ManagedVariable,0,,no
+0x1a01,0x00,TPDO mapping Temperatures Number of entries,UNSIGNED8,rw,5,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,RECORD,no
+0x1a01,0x01,TPDO mapping Temperatures Temperature_Measured_At_DPMU_Hottest_Point_PDO,UNSIGNED32,rw,838861320,NONE,0,0xffffffff,yes,no,no,no,1,ManagedVariable,0,,no
+0x1a01,0x02,TPDO mapping Temperatures TEMPERATURE_BASE_PDO,UNSIGNED32,rw,838861832,NONE,0,0xffffffff,yes,no,no,no,1,ManagedVariable,0,,no
+0x1a01,0x03,TPDO mapping Temperatures TEMPERATURE_MAIN_PDO,UNSIGNED32,rw,838862088,NONE,0,0xffffffff,yes,no,no,no,1,ManagedVariable,0,,no
+0x1a01,0x04,TPDO mapping Temperatures TEMPERATURE_MEZZANINE_PDO,UNSIGNED32,rw,838862344,NONE,0,0xffffffff,yes,no,no,no,1,ManagedVariable,0,,no
+0x1a01,0x05,TPDO mapping Temperatures TEMPERATURE_PWR_BANK_PDO,UNSIGNED32,rw,838862600,NONE,0,0xffffffff,yes,no,no,no,1,ManagedVariable,0,,no
+0x1a02,0x00,TPDO mapping DC Bus Number of entries,UNSIGNED8,rw,4,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,RECORD,no
+0x1a02,0x01,TPDO mapping DC Bus Read_Voltage_At_DC_Bus_PDO,UNSIGNED32,rw,855900424,NONE,0,0xffffffff,yes,no,no,no,1,ManagedVariable,0,,no
+0x1a02,0x02,TPDO mapping DC Bus Power_From_DC_Input_PDO,UNSIGNED32,rw,855900688,NONE,0,0xffffffff,yes,no,no,no,1,ManagedVariable,0,,no
+0x1a02,0x03,TPDO mapping DC Bus Read_Load_Current_PDO,UNSIGNED32,rw,855900936,NONE,0,0xffffffff,yes,no,no,no,1,ManagedVariable,0,,no
+0x1a02,0x04,TPDO mapping DC Bus Power_Consumed_By_Load_PDO,UNSIGNED32,rw,855901200,NONE,0,0xffffffff,yes,no,no,no,1,ManagedVariable,0,,no
+0x1a03,0x00,TPDO mapping Energy Bank Number of entries,UNSIGNED8,rw,4,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,RECORD,no
+0x1a03,0x01,TPDO mapping Energy Bank State_of_Charge_of_Energy_Bank_PDO,UNSIGNED32,rw,872416520,NONE,0,0xffffffff,yes,no,no,no,1,ManagedVariable,0,,no
+0x1a03,0x02,TPDO mapping Energy Bank State_of_Health_of_Energy_Bank_PDO,UNSIGNED32,rw,872416776,NONE,0,0xffffffff,yes,no,no,no,1,ManagedVariable,0,,no
+0x1a03,0x03,TPDO mapping Energy Bank Remaining_Energy_To_Min_SoC_At_Energy_Bank_PDO,UNSIGNED32,rw,872417040,NONE,0,0xffffffff,yes,no,no,no,1,ManagedVariable,0,,no
+0x1a03,0x04,TPDO mapping Energy Bank Stack_Temperature_PDO,UNSIGNED32,rw,872417544,NONE,0,0xffffffff,yes,no,no,no,1,ManagedVariable,0,,no
+0x1f51,0x00,Program Control Number of entries,UNSIGNED8,ro,1,NONE,0,0xff,yes,no,no,no,1,ManagedConst,0,ARRAY,no
+0x1f51,0x01,Program Control Program Control 1,UNSIGNED8,rw,,NONE,0,2,yes,yes,no,no,0,ManagedVariable,0,,no
+ 
+0x2000,0x00,Date_And_Time,UNSIGNED32,rw,,NONE,0,0xffffffff,yes,no,no,no,1,ManagedVariable,0,,no
+0x2001,0x00,Manufacturer Object,INTEGER32,rw,4,NONE,0,0,no,no,no,no,0,ManagedVariable,0,,both
+0x2002,0x00,Set NodeID,UNSIGNED8,rw,125,NONE,0,0,yes,no,no,no,1,ManagedVariable,0,,no
+0x3000,0x00,DC_Bus_Voltage Highest sub-index supported,UNSIGNED8,ro,5,NONE,0,0,yes,no,no,no,1,ManagedConst,0,ARRAY,no
+0x3000,0x01,DC_Bus_Voltage Min_Allowed_DC_Bus_Voltage,UNSIGNED8,rw,167,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,rpdo
+0x3000,0x02,DC_Bus_Voltage Max_Allowed_DC_Bus_Voltage,UNSIGNED8,rw,193,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,rpdo
+0x3000,0x03,DC_Bus_Voltage Target_Voltage_At_DC_Bus,UNSIGNED8,rw,180,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,rpdo
+0x3000,0x04,DC_Bus_Voltage VDC_Bus_Short_Circuit_Limit,UNSIGNED8,rw,60,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,rpdo
+0x3000,0x05,DC_Bus_Voltage VDROOP,UNSIGNED8,rw,1,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,rpdo
+0x3001,0x00,ESS_Current,UNSIGNED8,rw,48,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,rpdo
+0x3100,0x00,Energy_Cell_Summary Highest sub-index supported,UNSIGNED8,ro,62,NONE,0,0xff,yes,no,no,no,1,ManagedConst,0,RECORD,no
+0x3100,0x01,Energy_Cell_Summary Min_Voltage_Energy_Cell,UNSIGNED8,rw,16,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,rpdo
+0x3100,0x02,Energy_Cell_Summary Max_Voltage_Energy_Cell,UNSIGNED8,rw,48,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,rpdo
+0x3100,0x03,Energy_Cell_Summary State_of_Charge_of_Energy_Cell_01,UNSIGNED8,ro,0,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,both
+0x3100,0x04,Energy_Cell_Summary State_of_Charge_of_Energy_Cell_02,UNSIGNED8,ro,0,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,both
+0x3100,0x05,Energy_Cell_Summary State_of_Charge_of_Energy_Cell_03,UNSIGNED8,ro,0,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,both
+0x3100,0x06,Energy_Cell_Summary State_of_Charge_of_Energy_Cell_04,UNSIGNED8,ro,0,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,both
+0x3100,0x07,Energy_Cell_Summary State_of_Charge_of_Energy_Cell_05,UNSIGNED8,ro,0,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,both
+0x3100,0x08,Energy_Cell_Summary State_of_Charge_of_Energy_Cell_06,UNSIGNED8,ro,0,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,both
+0x3100,0x09,Energy_Cell_Summary State_of_Charge_of_Energy_Cell_07,UNSIGNED8,ro,0,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,both
+0x3100,0x0a,Energy_Cell_Summary State_of_Charge_of_Energy_Cell_08,UNSIGNED8,ro,0,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,both
+0x3100,0x0b,Energy_Cell_Summary State_of_Charge_of_Energy_Cell_09,UNSIGNED8,ro,0,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,both
+0x3100,0x0c,Energy_Cell_Summary State_of_Charge_of_Energy_Cell_10,UNSIGNED8,ro,0,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,both
+0x3100,0x0d,Energy_Cell_Summary State_of_Charge_of_Energy_Cell_11,UNSIGNED8,ro,0,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,both
+0x3100,0x0e,Energy_Cell_Summary State_of_Charge_of_Energy_Cell_12,UNSIGNED8,ro,0,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,both
+0x3100,0x0f,Energy_Cell_Summary State_of_Charge_of_Energy_Cell_13,UNSIGNED8,ro,0,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,both
+0x3100,0x10,Energy_Cell_Summary State_of_Charge_of_Energy_Cell_14,UNSIGNED8,ro,0,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,both
+0x3100,0x11,Energy_Cell_Summary State_of_Charge_of_Energy_Cell_15,UNSIGNED8,ro,0,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,both
+0x3100,0x12,Energy_Cell_Summary State_of_Charge_of_Energy_Cell_16,UNSIGNED8,ro,0,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,both
+0x3100,0x13,Energy_Cell_Summary State_of_Charge_of_Energy_Cell_17,UNSIGNED8,ro,0,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,both
+0x3100,0x14,Energy_Cell_Summary State_of_Charge_of_Energy_Cell_18,UNSIGNED8,ro,0,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,both
+0x3100,0x15,Energy_Cell_Summary State_of_Charge_of_Energy_Cell_19,UNSIGNED8,ro,0,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,both
+0x3100,0x16,Energy_Cell_Summary State_of_Charge_of_Energy_Cell_20,UNSIGNED8,ro,0,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,both
+0x3100,0x17,Energy_Cell_Summary State_of_Charge_of_Energy_Cell_21,UNSIGNED8,ro,0,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,both
+0x3100,0x18,Energy_Cell_Summary State_of_Charge_of_Energy_Cell_22,UNSIGNED8,ro,0,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,both
+0x3100,0x19,Energy_Cell_Summary State_of_Charge_of_Energy_Cell_23,UNSIGNED8,ro,0,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,both
+0x3100,0x1a,Energy_Cell_Summary State_of_Charge_of_Energy_Cell_24,UNSIGNED8,ro,0,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,both
+0x3100,0x1b,Energy_Cell_Summary State_of_Charge_of_Energy_Cell_25,UNSIGNED8,ro,0,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,both
+0x3100,0x1c,Energy_Cell_Summary State_of_Charge_of_Energy_Cell_26,UNSIGNED8,ro,0,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,both
+0x3100,0x1d,Energy_Cell_Summary State_of_Charge_of_Energy_Cell_27,UNSIGNED8,ro,0,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,both
+0x3100,0x1e,Energy_Cell_Summary State_of_Charge_of_Energy_Cell_28,UNSIGNED8,ro,0,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,both
+0x3100,0x1f,Energy_Cell_Summary State_of_Charge_of_Energy_Cell_29,UNSIGNED8,ro,0,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,both
+0x3100,0x20,Energy_Cell_Summary State_of_Charge_of_Energy_Cell_30,UNSIGNED8,ro,0,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,both
+0x3100,0x21,Energy_Cell_Summary State_of_Health_of_Energy_Cell_01,UNSIGNED8,ro,0,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,both
+0x3100,0x22,Energy_Cell_Summary State_of_Health_of_Energy_Cell_02,UNSIGNED8,ro,0,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,both
+0x3100,0x23,Energy_Cell_Summary State_of_Health_of_Energy_Cell_03,UNSIGNED8,ro,0,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,both
+0x3100,0x24,Energy_Cell_Summary State_of_Health_of_Energy_Cell_04,UNSIGNED8,ro,0,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,both
+0x3100,0x25,Energy_Cell_Summary State_of_Health_of_Energy_Cell_05,UNSIGNED8,ro,0,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,both
+0x3100,0x26,Energy_Cell_Summary State_of_Health_of_Energy_Cell_06,UNSIGNED8,ro,0,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,both
+0x3100,0x27,Energy_Cell_Summary State_of_Health_of_Energy_Cell_07,UNSIGNED8,ro,0,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,both
+0x3100,0x28,Energy_Cell_Summary State_of_Health_of_Energy_Cell_08,UNSIGNED8,ro,0,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,both
+0x3100,0x29,Energy_Cell_Summary State_of_Health_of_Energy_Cell_09,UNSIGNED8,ro,0,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,both
+0x3100,0x2a,Energy_Cell_Summary State_of_Health_of_Energy_Cell_10,UNSIGNED8,ro,0,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,both
+0x3100,0x2b,Energy_Cell_Summary State_of_Health_of_Energy_Cell_11,UNSIGNED8,ro,0,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,both
+0x3100,0x2c,Energy_Cell_Summary State_of_Health_of_Energy_Cell_12,UNSIGNED8,ro,0,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,both
+0x3100,0x2d,Energy_Cell_Summary State_of_Health_of_Energy_Cell_13,UNSIGNED8,ro,0,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,both
+0x3100,0x2e,Energy_Cell_Summary State_of_Health_of_Energy_Cell_14,UNSIGNED8,ro,0,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,both
+0x3100,0x2f,Energy_Cell_Summary State_of_Health_of_Energy_Cell_15,UNSIGNED8,ro,0,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,both
+0x3100,0x30,Energy_Cell_Summary State_of_Health_of_Energy_Cell_16,UNSIGNED8,ro,0,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,both
+0x3100,0x31,Energy_Cell_Summary State_of_Health_of_Energy_Cell_17,UNSIGNED8,ro,0,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,both
+0x3100,0x32,Energy_Cell_Summary State_of_Health_of_Energy_Cell_18,UNSIGNED8,ro,0,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,both
+0x3100,0x33,Energy_Cell_Summary State_of_Health_of_Energy_Cell_19,UNSIGNED8,ro,0,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,both
+0x3100,0x34,Energy_Cell_Summary State_of_Health_of_Energy_Cell_20,UNSIGNED8,ro,0,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,both
+0x3100,0x35,Energy_Cell_Summary State_of_Health_of_Energy_Cell_21,UNSIGNED8,ro,0,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,both
+0x3100,0x36,Energy_Cell_Summary State_of_Health_of_Energy_Cell_22,UNSIGNED8,ro,0,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,both
+0x3100,0x37,Energy_Cell_Summary State_of_Health_of_Energy_Cell_23,UNSIGNED8,ro,0,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,both
+0x3100,0x38,Energy_Cell_Summary State_of_Health_of_Energy_Cell_24,UNSIGNED8,ro,0,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,both
+0x3100,0x39,Energy_Cell_Summary State_of_Health_of_Energy_Cell_25,UNSIGNED8,ro,0,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,both
+0x3100,0x3a,Energy_Cell_Summary State_of_Health_of_Energy_Cell_26,UNSIGNED8,ro,0,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,both
+0x3100,0x3b,Energy_Cell_Summary State_of_Health_of_Energy_Cell_27,UNSIGNED8,ro,0,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,both
+0x3100,0x3c,Energy_Cell_Summary State_of_Health_of_Energy_Cell_28,UNSIGNED8,ro,0,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,both
+0x3100,0x3d,Energy_Cell_Summary State_of_Health_of_Energy_Cell_29,UNSIGNED8,ro,0,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,both
+0x3100,0x3e,Energy_Cell_Summary State_of_Health_of_Energy_Cell_30,UNSIGNED8,ro,0,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,both
+0x3200,0x00,Temperature Highest sub-index supported,UNSIGNED8,ro,7,NONE,0,0xff,yes,no,no,no,1,ManagedConst,0,RECORD,no
+0x3200,0x01,Temperature DPMU_Temperature_Max_Limit,INTEGER8,rw,0,NONE,-128,127,yes,no,no,no,1,ManagedVariable,0,,both
+0x3200,0x02,Temperature Temperature_Measured_At_DPMU_Hottest_Point,INTEGER8,ro,0,NONE,-128,127,yes,no,no,no,1,ManagedVariable,0,,both
+0x3200,0x03,Temperature DPMU_Temperature_High_Limit,INTEGER8,rw,0,NONE,-128,127,yes,no,no,no,1,ManagedVariable,0,,both
+0x3200,0x04,Temperature TEMPERATURE_BASE,INTEGER8,ro,0,NONE,-128,127,yes,no,no,no,1,ManagedVariable,0,,both
+0x3200,0x05,Temperature TEMPERATURE_MAIN,INTEGER8,ro,0,NONE,-128,127,yes,no,no,no,1,ManagedVariable,0,,both
+0x3200,0x06,Temperature TEMPERATURE_MEZZANINE,INTEGER8,ro,0,NONE,-128,127,yes,no,no,no,1,ManagedVariable,0,,both
+0x3200,0x07,Temperature TEMPERATURE_PWR_BANK,INTEGER8,ro,0,NONE,-128,127,yes,no,no,no,1,ManagedVariable,0,,both
+0x3301,0x00,Maximum_Allowed_Load_Power,UNSIGNED16,rw,0,NONE,0,0xffff,yes,no,no,no,1,ManagedVariable,0,,both
+0x3302,0x00,Power_Budget_DC_Input Highest sub-index supported,UNSIGNED8,ro,1,NONE,0,255,yes,no,no,no,1,ManagedConst,0,ARRAY,no
+0x3302,0x01,Power_Budget_DC_Input Available_Power_Budget_DC_Input,UNSIGNED16,rw,,NONE,0,0xffff,yes,no,no,no,1,ManagedVariable,0,,no
+0x3303,0x00,Charge_Factor,UNSIGNED8,rw,0,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,both
+0x3304,0x00,Read_Power Highest sub-index supported,UNSIGNED8,ro,4,NONE,0,255,yes,no,no,no,1,ManagedConst,0,RECORD,no
+0x3304,0x01,Read_Power Read_Voltage_At_DC_Bus,UNSIGNED8,ro,,NONE,0,255,no,no,no,no,1,ManagedVariable,0,,tpdo
+0x3304,0x02,Read_Power Power_From_DC_Input,UNSIGNED16,ro,,NONE,0,0xffff,no,no,no,no,1,ManagedVariable,0,,tpdo
+0x3304,0x03,Read_Power Read_Load_Current,INTEGER8,ro,,NONE,-128,127,no,no,no,no,1,ManagedVariable,0,,tpdo
+0x3304,0x04,Read_Power Power_Consumed_By_Load,UNSIGNED16,ro,,NONE,0,0xffff,no,no,no,no,1,ManagedVariable,0,,tpdo
+0x3305,0x00,DPMU_State Highest sub-index supported,UNSIGNED8,ro,2,NONE,0,255,yes,no,no,no,1,ManagedConst,0,ARRAY,no
+0x3305,0x01,DPMU_State DPMU Operation Request State,UNSIGNED8,rw,,NONE,0,255,yes,no,no,no,1,ManagedVariable,0,,no
+0x3305,0x02,DPMU_State DPMU Operation Current State,UNSIGNED8,ro,,NONE,0,255,yes,no,no,no,1,ManagedVariable,0,,no
+0x3400,0x00,Energy_Bank_Summary Highest sub-index supported,UNSIGNED8,ro,11,NONE,0,0xff,yes,no,no,no,1,ManagedConst,0,RECORD,no
+0x3400,0x01,Energy_Bank_Summary Max_Voltage_Applied_To_Energy_Bank,UNSIGNED8,rw,90,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,rpdo
+0x3400,0x02,Energy_Bank_Summary Min_Voltage_Applied_To_Energy_Bank,UNSIGNED8,rw,30,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,rpdo
+0x3400,0x04,Energy_Bank_Summary Safety_Threshold_State_of_Charge,UNSIGNED16,rw,45,NONE,0,0xffff,yes,no,no,no,1,ManagedVariable,0,,rpdo
+0x3400,0x05,Energy_Bank_Summary State_of_Charge_of_Energy_Bank,UNSIGNED8,ro,0,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,tpdo
+0x3400,0x06,Energy_Bank_Summary State_of_Health_of_Energy_Bank,UNSIGNED8,ro,0,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,tpdo
+0x3400,0x07,Energy_Bank_Summary Remaining_Energy_To_Min_SoC_At_Energy_Bank,UNSIGNED16,ro,0,NONE,0,0xffff,yes,no,no,no,1,ManagedVariable,0,,tpdo
+0x3400,0x09,Energy_Bank_Summary Stack_Temperature,INTEGER8,ro,0,NONE,-128,127,no,no,no,no,1,ManagedVariable,0,,tpdo
+0x3400,0x0a,Energy_Bank_Summary Constant Voltage Threshold,UNSIGNED8,rw,0,NONE,0,0xff,no,no,no,no,1,ManagedVariable,0,,tpdo
+0x3400,0x0b,Energy_Bank_Summary Preconditional Threshold,UNSIGNED8,rw,0,NONE,0,0xff,no,no,no,no,1,ManagedVariable,0,,tpdo
+0x4000,0x00,Switch_State Highest sub-index supported,UNSIGNED8,ro,4,NONE,0,0xff,yes,no,no,no,1,ManagedConst,0,ARRAY,no
+0x4000,0x01,Switch_State SW_Qinrush_State,UNSIGNED8,rw,0,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,tpdo
+0x4000,0x02,Switch_State SW_Qlb_State,UNSIGNED8,rw,0,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,tpdo
+0x4000,0x03,Switch_State SW_Qsb_State,UNSIGNED8,rw,0,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,tpdo
+0x4000,0x04,Switch_State SW_Qinb_State,UNSIGNED8,rw,0,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,tpdo
+0x4001,0x00,DPMU_Power_Source_Type,UNSIGNED8,rw,0,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,both
+0x4002,0x00,Send_reboot_request,UNSIGNED8,rw,0,NONE,0,0,yes,no,no,no,1,ManagedVariable,0,,both
+0x4003,0x00,Operational_Error,UNSIGNED8,ro,,NONE,0,0,yes,no,no,no,1,ManagedVariable,0,,both
+0x4010,0x00,Debug_Log Highest sub-index supported,UNSIGNED8,ro,3,NONE,0,255,yes,no,no,no,1,ManagedConst,0,RECORD,no
+0x4010,0x01,Debug_Log DEBUG_LOG_STATE,UNSIGNED8,rw,1,NONE,0,1,yes,no,no,no,1,ManagedVariable,0,,no
+0x4010,0x02,Debug_Log DEBUG_LOG_READ,DOMAIN,ro,,,v_164002,0,0xff,no,no,no,no,0,Variable,0,,no
+0x4010,0x03,Debug_Log DEBUG_LOG_RESET,UNSIGNED8,wo,,NONE,0,255,no,no,no,no,0,ManagedVariable,0,,no
+0x4011,0x00,CAN_LOG Highest sub-index supported,UNSIGNED8,ro,2,NONE,0,255,yes,no,no,no,1,ManagedConst,0,RECORD,no
+0x4011,0x01,CAN_LOG CAN_LOG_READ,DOMAIN,ro,,,v_164011,0,255,no,no,no,no,0,Variable,0,,no
+0x4011,0x02,CAN_LOG CAN_LOG_RESET,UNSIGNED8,wo,,NONE,0,255,no,no,no,no,0,ManagedVariable,0,,no
+ 
+0x6000,0x00,IO Highest sub-index supported,UNSIGNED8,ro,1,NONE,0,0xff,yes,no,no,no,1,ManagedConst,0,ARRAY,no
+0x6000,0x01,IO State_Of_Switches,UNSIGNED8,rw,1,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,tpdo
+0x6002,0x00,Polarity Input 8 Bit Number of Elements,UNSIGNED8,ro,3,NONE,0,0xff,yes,no,no,no,1,ManagedConst,0,ARRAY,no
+0x6002,0x01,Polarity Input 8 Bit Polarity8,UNSIGNED8,rw,0,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,no
+0x6002,0x02,Polarity Input 8 Bit Polarity8,UNSIGNED8,rw,0,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,no
+0x6002,0x03,Polarity Input 8 Bit Polarity8,UNSIGNED8,rw,0,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,no
+0x6005,0x00,Global Interrupt Enable Digital 8Bit,UNSIGNED8,rw,1,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,no
+0x6006,0x00,Interrupt Mask Any Change 8 Bit Number of Elements,UNSIGNED8,ro,3,NONE,0,0xff,yes,no,no,no,1,ManagedConst,0,ARRAY,no
+0x6006,0x01,Interrupt Mask Any Change 8 Bit InterruptAnyChange8,UNSIGNED8,rw,255,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,no
+0x6006,0x02,Interrupt Mask Any Change 8 Bit InterruptAnyChange8,UNSIGNED8,rw,255,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,no
+0x6006,0x03,Interrupt Mask Any Change 8 Bit InterruptAnyChange8,UNSIGNED8,rw,255,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,no
+0x6007,0x00,Interrupt Mask Low to High 8 Bit Number of Elements,UNSIGNED8,ro,3,NONE,0,0xff,yes,no,no,no,1,ManagedConst,0,ARRAY,no
+0x6007,0x01,Interrupt Mask Low to High 8 Bit InterruptLowToHigh8,UNSIGNED8,rw,0,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,no
+0x6007,0x02,Interrupt Mask Low to High 8 Bit InterruptLowToHigh8,UNSIGNED8,rw,0,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,no
+0x6007,0x03,Interrupt Mask Low to High 8 Bit InterruptLowToHigh8,UNSIGNED8,rw,0,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,no
+0x6008,0x00,Interrupt Mask High to Low 8 Bit Number of Elements,UNSIGNED8,ro,3,NONE,0,0xff,yes,no,no,no,1,ManagedConst,0,ARRAY,no
+0x6008,0x01,Interrupt Mask High to Low 8 Bit InterruptHighToLow8,UNSIGNED8,rw,0,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,no
+0x6008,0x02,Interrupt Mask High to Low 8 Bit InterruptHighToLow8,UNSIGNED8,rw,0,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,no
+0x6008,0x03,Interrupt Mask High to Low 8 Bit InterruptHighToLow8,UNSIGNED8,rw,0,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,no
+0x6200,0x00,Write Output 8 Bit Number of Elements,UNSIGNED8,ro,6,NONE,0,0xff,yes,no,no,no,1,ManagedConst,0,ARRAY,no
+0x6200,0x01,Write Output 8 Bit DigOutput8,UNSIGNED8,rww,0,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,rpdo
+0x6200,0x02,Write Output 8 Bit DigOutput8,UNSIGNED8,rww,0,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,rpdo
+0x6200,0x03,Write Output 8 Bit DigOutput8,UNSIGNED8,rww,0,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,rpdo
+0x6200,0x04,Write Output 8 Bit DigOutput8,UNSIGNED8,rww,0,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,rpdo
+0x6200,0x05,Write Output 8 Bit DigOutput8,UNSIGNED8,rww,0,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,rpdo
+0x6200,0x06,Write Output 8 Bit DigOutput8,UNSIGNED8,rww,0,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,rpdo
+0x6202,0x00,Polarity Output 8 Bit Number of Elements,UNSIGNED8,ro,1,NONE,0,0xff,yes,no,no,no,1,ManagedConst,0,ARRAY,no
+0x6202,0x01,Polarity Output 8 Bit Polarity8,UNSIGNED8,rw,0,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,no
+0x6401,0x00,ADC_Port_Value Number of Elements,UNSIGNED8,ro,4,NONE,0,0xff,yes,no,no,no,1,ManagedConst,0,ARRAY,no
+0x6401,0x01,ADC_Port_Value Read_Load_Current,INTEGER16,ro,,NONE,-32768,32767,yes,no,no,no,0,ManagedVariable,0,,tpdo
+0x6401,0x03,ADC_Port_Value Read_Voltage_At_DC_Bus,INTEGER16,ro,,NONE,-32768,32767,yes,no,no,no,0,ManagedVariable,0,,tpdo
+0x6401,0x04,ADC_Port_Value DPMU_Temperature,INTEGER16,ro,,NONE,-32768,32767,yes,no,no,no,0,ManagedVariable,0,,tpdo
+0x6411,0x00,Write Analogue Output 16 Bit Number of Elements,UNSIGNED8,ro,8,NONE,0,0xff,yes,no,no,no,1,ManagedConst,0,ARRAY,no
+0x6411,0x01,Write Analogue Output 16 Bit AnalogueOutput16,INTEGER16,rww,0,NONE,-32768,32767,yes,no,no,no,1,ManagedVariable,0,,rpdo
+0x6411,0x02,Write Analogue Output 16 Bit AnalogueOutput16,INTEGER16,rww,0,NONE,-32768,32767,yes,no,no,no,1,ManagedVariable,0,,rpdo
+0x6411,0x03,Write Analogue Output 16 Bit AnalogueOutput16,INTEGER16,rww,0,NONE,-32768,32767,yes,no,no,no,1,ManagedVariable,0,,rpdo
+0x6411,0x04,Write Analogue Output 16 Bit AnalogueOutput16,INTEGER16,rww,0,NONE,-32768,32767,yes,no,no,no,1,ManagedVariable,0,,rpdo
+0x6411,0x05,Write Analogue Output 16 Bit AnalogueOutput16,INTEGER16,rww,0,NONE,-32768,32767,yes,no,no,no,1,ManagedVariable,0,,rpdo
+0x6411,0x06,Write Analogue Output 16 Bit AnalogueOutput16,INTEGER16,rww,0,NONE,-32768,32767,yes,no,no,no,1,ManagedVariable,0,,rpdo
+0x6411,0x07,Write Analogue Output 16 Bit AnalogueOutput16,INTEGER16,rww,0,NONE,-32768,32767,yes,no,no,no,1,ManagedVariable,0,,rpdo
+0x6411,0x08,Write Analogue Output 16 Bit AnalogueOutput16,INTEGER16,rww,0,NONE,-32768,32767,yes,no,no,no,1,ManagedVariable,0,,rpdo
+0x6421,0x00,Interrupt Trigger Selection Number of Elements,UNSIGNED8,ro,1,NONE,0,0xff,yes,no,no,no,1,ManagedConst,0,ARRAY,no
+0x6421,0x01,Interrupt Trigger Selection InterruptTriggerSelection,UNSIGNED8,rw,3,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,no
+0x6423,0x00,Analog Input global interrupt enable,UNSIGNED8,rw,1,NONE,0,0xff,yes,no,no,no,1,ManagedVariable,0,,no
+0x6424,0x00,Analogue Input Interrupt Upper Limit Integer Number of Elements,UNSIGNED8,ro,4,NONE,0,0xff,yes,no,no,no,1,ManagedConst,0,ARRAY,no
+0x6424,0x01,Analogue Input Interrupt Upper Limit Integer Load_Over_Current_Max_Limit,INTEGER32,rw,20000,NONE,-2147483648,2147483647,yes,no,no,no,1,ManagedVariable,0,,no
+0x6424,0x03,Analogue Input Interrupt Upper Limit Integer DC_Bus_Voltage_Max_Limit,INTEGER32,rw,20000,NONE,-2147483648,2147483647,yes,no,no,no,1,ManagedVariable,0,,no
+0x6424,0x04,Analogue Input Interrupt Upper Limit Integer DPMU_Temperature_Max_Limit,INTEGER32,rw,20000,NONE,-2147483648,2147483647,yes,no,no,no,1,ManagedVariable,0,,no
+0x6425,0x00,Analogue Input Interrupt Lower Limit Integer Number of Elements,UNSIGNED8,ro,4,NONE,0,0xff,yes,no,no,no,1,ManagedConst,0,ARRAY,no
+0x6425,0x01,Analogue Input Interrupt Lower Limit Integer Load_Over_Current_Min_Limit,INTEGER32,rw,500,NONE,-2147483648,2147483647,yes,no,no,no,1,ManagedVariable,0,,no
+0x6425,0x03,Analogue Input Interrupt Lower Limit Integer DC_Bus_Voltage_Min_Limit,INTEGER32,rw,500,NONE,-2147483648,2147483647,yes,no,no,no,1,ManagedVariable,0,,no
+0x6425,0x04,Analogue Input Interrupt Lower Limit Integer DPMU_Temperature_Min_Limit,INTEGER32,rw,500,NONE,-2147483648,2147483647,yes,no,no,no,1,ManagedVariable,0,,no

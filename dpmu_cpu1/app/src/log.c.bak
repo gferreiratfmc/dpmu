@@ -1,0 +1,908 @@
+/*
+ * log.c
+ *
+ *  Created on: 30 nov. 2022
+ *      Author: vb
+ */
+
+#include "board.h"
+#include "co_canopen.h"
+#include "co_common.h"
+#include "co_p401.h"
+#include "emifc.h"
+#include "error_handling.h"
+#include "ext_flash.h"
+#include "gen_define.h"
+#include "gen_indices.h"
+#include "GlobalV.h"
+#include "log.h"
+#include "main.h"
+#include "serial.h"
+#include "shared_variables.h"
+#include "timer.h"
+
+#define CAN_LOG_ADDRESS_START   (0x8000 /*ext_flash_info[FIRST_LOG_SECTOR].addr*/ +  EXT_FLASH_START_ADDRESS_CS3)
+#define CAN_LOG_ADDRESS_END     (EXT_FLASH_START_ADDRESS_CS3 + EXT_FLASH_SIZE_CS3)
+
+#define SIZE_OF_TIMESTAMP 4 /* in Bytes */
+
+#define TRANSFER_SIZE (32*7)                         /* number of segments * 7 bytes per segments - (1 segment = 1 message)  */
+#define MESSAGE_LENGTH (TRANSFER_SIZE * 5 - 2 - 1)  /* size of one transfer (several messages) * number of transfers */
+#pragma DATA_ALIGN(message, 4)
+#pragma DATA_SECTION(message, "ramgs0");  // map the TX data to memory
+unsigned char message[TRANSFER_SIZE];
+
+/* common struct to read logs from external memories */
+EMIF1_Config emif1_log_read;
+
+/* for debug log in external RAM */
+static uint32_t debug_log_start_address              = EXT_RAM_START_ADDRESS_CS2;
+static uint32_t debug_log_next_free_address          = EXT_RAM_START_ADDRESS_CS2;
+static bool     debug_log_address_has_wrapped_around = false;
+static uint32_t debug_log_size                       = 0;
+static bool     debug_log_active                     = true;
+
+/* for can log in external FLASH */
+//static uint32_t can_log_start_address                = EXT_RAM_START_ADDRESS_CS2;
+//static uint32_t can_log_next_free_address            = EXT_RAM_START_ADDRESS_CS2;
+static uint32_t can_log_start_address               = CAN_LOG_ADDRESS_START;
+static uint32_t can_log_next_free_address           = CAN_LOG_ADDRESS_START;
+static bool     can_log_address_has_wrapped_around  = false;
+static uint32_t can_log_size                        = 0;
+
+RET_T log_debug_log_set_state(uint8_t value)
+{
+
+    /* change active state of debug log */
+    if(0 == value)
+        debug_log_active = false;
+    if(1 == value)
+        debug_log_active = true;
+
+    return RET_OK;
+}
+
+/** \brief function pointer to SDO server read domain event
+* \param index - object index
+* \param subindex - object subindex
+* \param domainBufSize - actual size at domain buffer
+* \param transferSize - actual transfered size
+*
+* \return RET_T
+*/
+void log_read_domain(UNSIGNED16 index, UNSIGNED8 subindex, UNSIGNED32 domainBufSize, UNSIGNED32 domainTransferedSize)
+{
+    uint32_t start_address = 0;
+
+    // Doublecheck that domainbufsize are not bigger than allocated buf size.
+    if (TRANSFER_SIZE < domainBufSize) {
+        domainBufSize = TRANSFER_SIZE;
+    }
+
+    /* CAN/CANopen standard uses Bytes, we store 16 bit Words */
+    domainBufSize = (domainBufSize + 1) / 2;
+    domainTransferedSize = (domainTransferedSize + 1) / 2;
+
+    if(I_DEBUG_LOG == index)
+    {
+        start_address = EXT_RAM_START_ADDRESS_CS2 + domainTransferedSize;
+        if(start_address >= (EXT_RAM_START_ADDRESS_CS2 + EXT_RAM_SIZE_CS2))
+            start_address = EXT_RAM_START_ADDRESS_CS2;
+    }
+    if(I_CAN_LOG == index)
+    {
+        start_address = can_log_start_address + domainTransferedSize;
+        if(start_address >= CAN_LOG_ADDRESS_END) {
+            start_address = CAN_LOG_ADDRESS_START;
+        }
+    }
+    emif1_log_read.address = start_address;
+    emif1_log_read.size = domainBufSize;
+
+    /* set CPU1 as master for memory */
+    MemCfg_setGSRAMMasterSel(MEMCFG_SECT_GS0, MEMCFG_GSRAMMASTER_CPU1);
+
+    if (I_DEBUG_LOG == index) {
+        DMA_configBurst(CPU1_EXT_MEM_BASE, TRANSFER_SIZE, 1, 1);
+        emifc_cpu_read_memory(&emif1_log_read);
+    }
+
+    if (I_CAN_LOG == index) {
+        ext_flash_read_buf(emif1_log_read.address, (uint16_t*)emif1_log_read.data, emif1_log_read.size);
+    }
+
+//    Serial_debug(DEBUG_INFO, &cli_serial, "%08x  ", start_address);
+//    Serial_debug(DEBUG_INFO, &cli_serial, "%04x  ", domainBufSize);
+    for(int i = 0; i < domainBufSize; i++)
+    {
+        Serial_debug(DEBUG_INFO, &cli_serial, "%04x ", message[i]);
+    }
+    Serial_debug(DEBUG_INFO, &cli_serial, "\r\n");
+}
+
+uint8_t log_debug_log_read(
+        BOOL_T      execute,
+        UNSIGNED8   sdoNr,
+        UNSIGNED16  index,
+        UNSIGNED8   subIndex
+    )
+{
+    //TODO probably EXT_RAM_START_ADDRESS_CS2 -> debug_log_start_address
+    /* set the correct starting address of the external memory */
+    emif1_log_read = (EMIF1_Config)
+                     {
+                      EXT_RAM_START_ADDRESS_CS2,
+                      CPU_TYPE_ONE,
+                      TRANSFER_SIZE,
+                      (uint16_t*)message
+                     };
+
+    /* set the CANopen OD object to point to the right domain, the variable message
+     * set the CANopen OD object size to MESSAGE_LENGTH
+     */
+    coOdDomainAddrSet(
+                        index,              /**< index of object */
+                        subIndex,           /**< subindex of object */
+                        message,            /**< pointer to domain */
+                        2 * debug_log_size  /**< domain length */ /* '2x' we use 16 bit Words */
+                     );
+
+    return RET_OK;
+}
+
+void log_debug_log_reset(void)
+{
+    // reset number of entries
+    // reset position in memory to beginning of RAM portion ???
+
+    debug_log_start_address              = EXT_RAM_START_ADDRESS_CS2;
+    debug_log_next_free_address          = EXT_RAM_START_ADDRESS_CS2;
+    debug_log_address_has_wrapped_around = false;
+    debug_log_size                       = 0;
+
+    /* activate debug log */
+    debug_log_active                     = true;
+
+    /* in CANopen OD mark log state as ON */
+    coOdPutObj_u8(I_DEBUG_LOG, S_DEBUG_LOG_STATE, 1);
+}
+
+/* brief: returns the size of the log entry
+ *
+ * details:
+ *
+ * requirements:
+ *
+ * argument: log_type - the log type, all logs start with a log type
+ *
+ * return: the size (Bytes) of type of log entry
+ *
+ * note: all CAN logs starts with a four Bytes timestamp
+ *
+ */
+static uint16_t log_size_of_CAN_log_entry(uint8_t log_type)
+{
+    uint16_t size_in_Bytes;
+    uint16_t size_in_words;
+
+    /* returns number of Bytes */
+    switch (log_type) {
+    case '4':   // stored by log_store_pdo_ds401()
+    case 'E': /* EMCY */
+    case 'R': /* SDO upload */
+    case 'W': /* SDO download */
+        size_in_Bytes = 8 + SIZE_OF_TIMESTAMP;
+        break;
+
+    case 'P': /* PDO upload */                  // NOTE: Currently not used!
+        size_in_Bytes = 8 + SIZE_OF_TIMESTAMP;  // TODO: not decided
+        break;
+
+    case 'S': /* state of DPMU state machine */ // NOTE: Currently not used!
+        size_in_Bytes = 6 + SIZE_OF_TIMESTAMP;
+        break;
+
+    default:    // TODO: decide what to do here!
+        break;
+    }
+
+    /* DMA requires 16 bit words
+     * convert size to smallest size that fits the size of the data to write
+     */
+    if (size_in_Bytes & 0b01)
+        /* add a empty byte to match whole 16 bit words */
+        size_in_words = size_in_Bytes / 2 + 1;
+    else
+        size_in_words = size_in_Bytes / 2;
+
+    return size_in_words;
+}
+
+uint8_t log_can_log_read(
+        BOOL_T      execute,
+        UNSIGNED8   sdoNr,
+        UNSIGNED16  index,
+        UNSIGNED8   subIndex
+    )
+{
+
+    //TODO probably EXT_FLASH_START_ADDRESS_CS3 -> can_log_start_address
+    /* set the correct starting address of the external memory */
+    emif1_log_read = (EMIF1_Config)
+                     {
+                      EXT_RAM_START_ADDRESS_CS2,
+                      CPU_TYPE_ONE,
+                      TRANSFER_SIZE,
+                      (uint16_t*)message
+                     };
+//    emif1_log_read = (EMIF1_Config)
+//                     {EXT_FLASH_START_ADDRESS_CS3,
+//                      CPU_TYPE_ONE,
+//                      TRANSFER_SIZE,
+//                      (uint16_t*)message
+//                     };
+
+    /* set the CANopen OD object to point to the right domain, the variable message
+     * set the CANopen OD object size to MESSAGE_LENGTH
+     */
+    coOdDomainAddrSet(
+                        index,              /**< index of object */
+                        subIndex,           /**< subindex of object */
+                        message,            /**< pointer to domain */
+                        2 * can_log_size    /**< domain length */ /* '2x' we use 16 bit Words */
+                     );
+
+    return RET_OK;
+}
+
+void log_can_log_reset(void)
+{
+    // reset number of entries
+    // reset position in memory to beginning of RAM portion ???
+
+//    if timestamp 0xffff in first two words of sector
+//        next sector
+//        else if timestamp and type is 0xff
+//            test next word
+//    if timestamp not 0xffff or logtype is not 0xff
+//        logtype is type
+//        logcanstartaddress is address of sector
+//        continue searching for last log entry and cannextfreeaddress is the first address after this logtype
+
+    can_log_start_address              = CAN_LOG_ADDRESS_START;
+    can_log_next_free_address          = CAN_LOG_ADDRESS_START;
+    can_log_address_has_wrapped_around = false;
+    can_log_size                       = 0;
+
+    log_can_init();
+}
+
+/* store debug log in external RAM
+ *
+ * assumptions: all log entries are equal in size
+ */
+bool log_store_debug_log(unsigned char *pnt)
+{
+    bool retVal;
+    uint16_t size_in_words = sizeof(debug_log_t);
+    uint32_t debug_log_write_address = debug_log_next_free_address;
+
+    /* copy the data, do it early
+     *
+     * the data _must_ be stored in RAMGSx
+     * message[] is located in RAMGS0
+     */
+    for(int i = 0; i < size_in_words; i++)
+    {
+        message[i] = pnt[i];
+    }
+    message[size_in_words] = '\0';
+
+    /* check if log is active */
+    if(debug_log_active)
+    {
+
+        /* calculate next free address */
+        debug_log_next_free_address += size_in_words;
+
+        /* check if next free address wraps around in memory */
+        if(debug_log_next_free_address > (EXT_RAM_START_ADDRESS_CS2 + EXT_RAM_SIZE_CS2))
+        {
+            /* address wraps around */
+            debug_log_next_free_address = EXT_RAM_START_ADDRESS_CS2;
+
+            /* mark that at least one wrap around has occurred in memory */
+            debug_log_address_has_wrapped_around = true;
+        }
+
+        if(debug_log_address_has_wrapped_around)
+        {
+            debug_log_start_address = debug_log_next_free_address + size_in_words;  /* stores at most all possible log entries - 1 */
+            /* check if log start address wraps around in memory */
+            if(debug_log_start_address > (EXT_RAM_START_ADDRESS_CS2 + EXT_RAM_SIZE_CS2))
+            {
+                /* address wraps around */
+                debug_log_start_address = EXT_RAM_START_ADDRESS_CS2;
+            }
+        }
+        else
+        {
+            debug_log_size += size_in_words;  /* size will not increase after log has wrapped around */
+        }
+
+        EMIF1_Config emif1_ram_log = {debug_log_write_address,
+                                      CPU_TYPE_ONE,
+                                      size_in_words,
+                                      (uint16_t *)message};
+
+        /* write to external RAM */
+        emifc_cpu_write_memory(&emif1_ram_log);
+
+//        Serial_debug(DEBUG_INFO, &cli_serial, "debug_log_next_free_address %lx  size %08lx\r\n", debug_log_next_free_address, size_in_words);
+
+        retVal = true;
+    } else
+    {
+//        Serial_debug(DEBUG_INFO, &cli_serial, "debug_log not active\r\n");
+        retVal = false;
+    }
+
+    return retVal;
+}
+
+static uint16_t find_first_log_entry_in_next_sector(uint32_t can_log_start_address)
+{
+    ext_flash_desc_t sector_info;
+    look_up_start_address_of_sector(&sector_info);
+    int present_sector = sector_info.sector;
+
+    uint16_t address = can_log_start_address;
+    uint16_t log_entry_size;
+    uint8_t log_type;
+    uint16_t log_type_address;
+
+    // TODO: start by searching for magic number
+    /* first log entry */
+    log_type_address = address + 3;   /* two words, four Bytes, for timestamp and magic number */
+    memcpy(&log_type, (const void*)log_type_address, 1);
+    log_entry_size = log_size_of_CAN_log_entry(log_type);
+
+    while(1) {
+        /* next log entry */
+        address += log_entry_size;
+        log_type_address = address + 3;   /* two words, four Bytes */
+        memcpy(&log_type, (const void*)log_type_address, 1);
+        if(0xffff != log_type)
+        {
+            /* OK - we have a log entry here
+             * probably an error states
+             * */
+        }
+
+        log_entry_size = log_size_of_CAN_log_entry(log_type);
+
+        look_up_start_address_of_sector(&sector_info);
+        int next_sector = sector_info.sector;
+
+        if(present_sector != next_sector)
+        {
+            /* we have entered next sector
+             * we have found the address of the first log entry in the next sector
+             * */
+
+            //TODO handle wrap around
+            break;
+        }
+    }
+
+    return address;
+}
+
+bool can_log_search_log(void)
+{
+    bool noError = true; //TODO implement the checks for errors !
+    uint16_t tmp;
+    uint32_t addr = can_log_start_address;
+    bool log_start_address_set = false;
+    bool possible_wrap_around_detected = false;
+
+    /* search for first consecutive block of log entries
+     * could at maximum be two blocks of consecutive log entries,
+     * one in the end of the log that stretches over the log area and continues
+     * at the beginning of log area -> one block in the end and one block in the
+     * beginning
+     * */
+    do
+    {
+        /* read address - for magic number */
+        ext_flash_read_buf(addr, &tmp, 1);
+
+        /* is it Magic Number */
+        if(tmp == CAN_LOG_MAGIC)
+        {
+            /* save presumed start address of log
+             * at this stage, presume no wrap around, we handle that later
+             * */
+            if(!log_start_address_set)
+            {
+                can_log_start_address = addr;
+                log_start_address_set = true;
+            }
+
+            /* read size of log entry */
+            ext_flash_read_buf(addr + 2, &tmp, 1);  /* skip timestamp */
+            addr += tmp;
+            can_log_next_free_address = addr;
+
+            /* error if the last log entry stretches
+             * over the end of the log area
+             * */
+            if(can_log_next_free_address > CAN_LOG_ADDRESS_END)
+            {
+                noError = false;
+                return noError;
+            }
+        }
+        else
+        {
+            /* try at next possible address */
+            addr++;
+        }
+
+        /* have we found the end of the first consecutive block of log entries
+         * tmp != CAN_LOG_MAGIC - can_log_next_free_address does not contain
+         *                        Magic Number, possibly found end of log
+         *                        log could stretch over end of log area (wrap
+         *                        around)
+         * start_address_set - we have found at least one log entry
+         * */
+        if(tmp != CAN_LOG_MAGIC && log_start_address_set)
+        {
+            break;
+        }
+    } while(addr < CAN_LOG_ADDRESS_END); /* search up to the full log area */
+
+    /* we have found one consecutive block of log entries
+     * does there exist one more?
+     *
+     * the log can start in the middle of the log area, wrap around the end
+     * and continue from the beginning
+     * */
+    if(addr < CAN_LOG_ADDRESS_END)
+    {
+        if(tmp != CAN_LOG_MAGIC && log_start_address_set)
+        {
+            do
+            {
+                /* read address - for magic number */
+                ext_flash_read_buf(addr, &tmp, 1);
+
+                /* is it Magic Number */
+                if(tmp == CAN_LOG_MAGIC)
+                {
+                    /* save presumed start address of log */
+                    if(!possible_wrap_around_detected)
+                    {
+                        /* the log starts here
+                         * the log has wrapped around
+                         * the log ends somewhere before this address
+                         * */
+                        can_log_start_address = addr;
+                        possible_wrap_around_detected = true;
+                    }
+
+                    /* read size of log entry */
+                    ext_flash_read_buf(addr + 2, &tmp, 1);  /* skip timestamp */
+                    addr += tmp;
+
+                    /* keep code commented out as reference of difference
+                     *
+                     * the real end of log appears before this block of
+                     * consecutive log entries and updated earlier
+                     * */
+//                    can_log_next_free_address = addr;
+
+                    /* error if the last log entry stretches
+                     * over the end of the log area
+                     * */
+                    if(addr > CAN_LOG_ADDRESS_END)
+                    {
+                        noError = false;
+                        return noError;
+                    }
+                }
+                else
+                {
+                    /* try at next possible address */
+                    addr++;
+                }
+
+                /* have we found the end of the second consecutive blocks of log
+                 * entries
+                 * tmp != CAN_LOG_MAGIC - next possible log entry does not
+                 *                        contain Magic Number, found end of
+                 *                        second block of consecutive log
+                 *                        entries, log stretches over end of log
+                 *                        area (wrap around)
+                 * */
+                if(tmp != CAN_LOG_MAGIC)
+                {
+                    break;
+                }
+            } while(addr < CAN_LOG_ADDRESS_END);
+        }
+    }
+
+    /* we have found two consecutive block of log entries
+     * does there exist one more? if so we have an error
+     *
+     * the log can start in the middle of the log area, wrap around the end
+     * and continue from the beginning
+     * */
+    if(addr < CAN_LOG_ADDRESS_END)
+    {
+        if(possible_wrap_around_detected)
+        {
+            do
+            {
+                /* read address - for magic number */
+                ext_flash_read_buf(addr, &tmp, 1);
+
+                /* is it Magic Number */
+                if(tmp == CAN_LOG_MAGIC)
+                {
+                    /* we have found three consecutive blocks of log entries
+                     * maximum is consecutive blocks of log entries
+                     * the log can start in the middle of the log area,
+                     * wrap around the end and continue from the beginning,
+                     * meaning two consecutive blocks of log entries
+                     * */
+                    noError = false;
+                    return noError;
+                }
+                else
+                {
+                    /* try at next possible address */
+                    addr++;
+                }
+            } while(addr < CAN_LOG_ADDRESS_END);
+        }
+    }
+
+    return noError;
+}
+
+void log_can_init(void)
+{
+    bool good_log;
+
+    // reset number of entries
+    // reset position in memory to beginning of RAM portion ???
+
+    // If no entry found, set to initial values.
+    can_log_start_address              = CAN_LOG_ADDRESS_START;
+    can_log_next_free_address          = CAN_LOG_ADDRESS_START;
+    can_log_address_has_wrapped_around = false;
+    can_log_size                       = 0;
+
+    good_log = can_log_search_log();
+    if ((!good_log) || (can_log_start_address == can_log_next_free_address)) {
+        /* reset pointers and size
+         * needed for log error
+         */
+        can_log_start_address              = CAN_LOG_ADDRESS_START;
+        can_log_next_free_address          = CAN_LOG_ADDRESS_START;
+        can_log_address_has_wrapped_around = false;
+        can_log_size                       = 0;
+
+        /* for some reason, if we erase the sectors in opposite order we get a
+         * problem,  first word in first write attempt in first can log sector
+         * will no happen, it will continue to keep the value 0xff
+         */
+        // Erase log part of external flash.
+        for (ext_flash_sector_t sector = LAST_LOG_SECTOR; sector >= FIRST_LOG_SECTOR; --sector) {
+            ext_flash_erase_sector(ext_flash_info[sector].addr);
+        }
+    }
+}
+
+
+/**
+ * @brief   Stores log message in external flash.
+ *
+ * @param   size    size of log message in bytes
+ * @param   pnt     pointer to log message to be stored in flash
+ */
+//TODO update code to take Bytes, not words
+void log_store_can_log(uint16_t size, unsigned char *pnt)
+{
+    // Beware of NULL pointer argument.
+    if (NULL == pnt) {
+        return;
+    }
+
+//    log_can_init();
+
+    const ext_flash_desc_t *current_sector_desc;
+    const ext_flash_desc_t *next_sector_desc;
+
+    // Convert size to number of 16 bit words.
+    uint16_t size_in_words = (size + 1) / 2;
+
+    uint32_t can_log_write_address = can_log_next_free_address;
+
+    // Make room for timestamp and magic number.
+    size_in_words += 3;
+
+    // Get pointer to info on current sector.
+    current_sector_desc = ext_flash_sector_from_address(can_log_write_address);
+
+    // Calculate next free address by adding size of log message.
+    can_log_next_free_address += size_in_words;
+
+    // Get pointer to info on next sector.
+    next_sector_desc = ext_flash_sector_from_address(can_log_next_free_address);
+
+    if (current_sector_desc->sector != next_sector_desc->sector) {
+        // Check if next free address wraps around in memory.
+        if (can_log_next_free_address > CAN_LOG_ADDRESS_END) {
+            // Address wraps around.
+            can_log_next_free_address = CAN_LOG_ADDRESS_START;
+
+            // Mark that at least one wrap around has occurred in external flash.
+            can_log_address_has_wrapped_around = true;
+        }
+
+        // Erase next sector.
+        ext_flash_erase_sector(can_log_next_free_address);
+
+        // Update 'can_log_size'according to erased sector.
+        can_log_size -= next_sector_desc->size;
+
+        // Update start address of log.
+        if (can_log_address_has_wrapped_around) {
+            //TODO this only works for same sizes of all the logs
+            //TODO update so it can handle different sizes of logs
+            //TODO   by reading type of first log and add size of that type
+#if 0
+            can_log_start_address = find_first_log_entry_in_next_sector(can_log_start_address);  /* sector 4 erased, use next sector sector 5 */
+#else
+            can_log_start_address = CAN_LOG_ADDRESS_START;  /* sector 4 erased, use next sector sector 5 */
+#endif
+        }
+
+        /* update size of log */
+        if(!can_log_address_has_wrapped_around)
+        {
+            can_log_size += size_in_words;  /* size will not increase after log has wrapped around */
+        }
+    }
+
+    /* copy time to log message */
+    timer_time_t pTime;
+    timer_get_time(&pTime);
+    message[0] = CAN_LOG_MAGIC;
+    message[1] = (pTime.can_time >>  0) & 0xffff;
+    message[2] = (pTime.can_time >> 16) & 0xffff;
+
+    /* the data _must_ be stored in RAMGSx
+     * message[] is located in RAMGS0
+     */
+    for (int i = 0; i < (size_in_words - 3); i++) /* 2 words for time stamp and magic number */
+    {
+        /* we copy 8 bit array into an 16 bit array and it should look the same bytewise */
+        uint16_t value = (pnt[2 * i + 1] << 8) | pnt[2 * i];
+        message[i + 3] = value; /* 2 words for time stamp */
+    }
+    message[size_in_words] = '\0';
+
+    ext_flash_write_buf(can_log_write_address, (uint16_t *)message, size_in_words);
+
+    Serial_debug(DEBUG_INFO, &cli_serial, "can_log_next_free_address %lx  can_log_size %08lx  size %x\r\n", can_log_next_free_address, can_log_size, size);
+}
+
+/* base on coOdGetObjSize() */
+void getObjData(
+        CO_CONST CO_OBJECT_DESC_T *pDesc,
+        void     *pObj,  /**< pointer for description index */
+        UNSIGNED16  index,
+        UNSIGNED8   subIndex
+    )
+{
+    switch (pDesc->dType)
+    {
+        case CO_DTYPE_U8_CONST:
+        case CO_DTYPE_BOOL_CONST:
+            coOdGetObj_u8(index, subIndex, pObj);
+            break;
+        case CO_DTYPE_U16_CONST:
+            coOdGetObj_u16(index, subIndex, pObj);
+            break;
+        case CO_DTYPE_U32_CONST:
+            coOdGetObj_u32(index, subIndex, pObj);
+            break;
+        case CO_DTYPE_R32_CONST:
+            coOdGetObj_r32(index, subIndex, pObj);
+            break;
+        case CO_DTYPE_U8_VAR:
+        case CO_DTYPE_BOOL_VAR:
+            coOdGetObj_u8(index, subIndex, pObj);
+            break;
+        case CO_DTYPE_U16_VAR:
+            coOdGetObj_u16(index, subIndex, pObj);
+            break;
+        case CO_DTYPE_U32_VAR:
+            coOdGetObj_u32(index, subIndex, pObj);
+            break;
+        case CO_DTYPE_R32_VAR:
+            coOdGetObj_r32(index, subIndex, pObj);
+            break;
+        case CO_DTYPE_U8_PTR:
+        case CO_DTYPE_BOOL_PTR:
+            /* table initialized ? */
+            coOdGetObj_u8(index, subIndex, pObj);
+            break;
+        case CO_DTYPE_U16_PTR:
+//            /* table initialized ? */
+//            if (pOdPtr_u16 != NULL)  {
+//                size = 2u;
+//            }
+            break;
+        case CO_DTYPE_U32_PTR:
+//            /* table initialized ? */
+//            if (pOdPtr_u32 != NULL)  {
+//                size = 4u;
+//            }
+            break;
+        case CO_DTYPE_I8_CONST:
+            coOdGetObj_i8(index, subIndex, pObj);
+            break;
+        case CO_DTYPE_I16_CONST:
+            coOdGetObj_i16(index, subIndex, pObj);
+            break;
+        case CO_DTYPE_I32_CONST:
+            coOdGetObj_i32(index, subIndex, pObj);
+            break;
+        case CO_DTYPE_I8_VAR:
+            coOdGetObj_i8(index, subIndex, pObj);
+            break;
+        case CO_DTYPE_I16_VAR:
+            coOdGetObj_i16(index, subIndex, pObj);
+            break;
+        case CO_DTYPE_I32_VAR:
+            coOdGetObj_i32(index, subIndex, pObj);
+            break;
+        case CO_DTYPE_I8_PTR:
+//            /* table initialized ? */
+//            if (pOdPtr_i8 != NULL)  {
+//                SIZE = 1U;
+//            }
+            break;
+        case CO_DTYPE_I16_PTR:
+//            /* table initialized ? */
+//            if (pOdPtr_i16 != NULL)  {
+//                size = 2u;
+//            }
+            break;
+        case CO_DTYPE_I32_PTR:
+//            /* table initialized ? */
+//            if (pOdPtr_i32 != NULL)  {
+//                size = 4u;
+//            }
+            break;
+        case CO_DTYPE_R32_PTR:
+//            /* table initialized ? */
+//            if (pOdPtr_r32 != NULL)  {
+//                size = 4u;
+//            }
+            break;
+        case CO_DTYPE_VS_PTR:
+//            if (pOdPtr_VS_ActLen != NULL)  {
+//                size = pOdPtr_VS_ActLen[pDesc->tableIdx];
+//            }
+            break;
+        case CO_DTYPE_VS_CONST:
+//            if (pOdConst_VS_MaxLen != NULL)  {
+//                size = pOdConst_VS_MaxLen[pDesc->tableIdx];
+//            }
+            break;
+        case CO_DTYPE_OS_PTR:
+//            if (pOdPtr_OS_ActLen != NULL)  {
+//                size = pOdPtr_OS_ActLen[pDesc->tableIdx];
+//            }
+            break;
+        case CO_DTYPE_DOMAIN:
+//            if (pOdPtr_Domain_ActLen != NULL)  {
+//                size = pOdPtr_Domain_ActLen[pDesc->tableIdx];
+//            }
+            break;
+        case CO_DTYPE_U8_SDO_SERVER:
+        case CO_DTYPE_U8_SDO_CLIENT:
+        case CO_DTYPE_U8_TPDO:
+        case CO_DTYPE_U8_RPDO:
+        case CO_DTYPE_U8_TMAP:
+        case CO_DTYPE_U8_RMAP:
+        case CO_DTYPE_U8_SYNC:
+        case CO_DTYPE_U8_EMCY:
+        case CO_DTYPE_U8_ERRCTRL:
+        case CO_DTYPE_U8_NETWORK:
+        case CO_DTYPE_U8_NMT:
+        case CO_DTYPE_U8_SRDO:
+        case CO_DTYPE_U8_GFC:
+            coOdGetObj_u8(index, subIndex, pObj);
+            break;
+        case CO_DTYPE_U16_TPDO:
+        case CO_DTYPE_U16_RPDO:
+        case CO_DTYPE_U16_ERRCTRL:
+        case CO_DTYPE_U16_EMCY:
+        case CO_DTYPE_U16_NMT:
+        case CO_DTYPE_U16_NETWORK:
+        case CO_DTYPE_U16_SRDO:
+        case CO_DTYPE_U16_FLYMA:
+            coOdGetObj_u16(index, subIndex, pObj);
+            break;
+        case CO_DTYPE_U32_SDO_SERVER:
+        case CO_DTYPE_U32_SDO_CLIENT:
+        case CO_DTYPE_U32_TPDO:
+        case CO_DTYPE_U32_TMAP:
+        case CO_DTYPE_U32_RPDO:
+        case CO_DTYPE_U32_RMAP:
+        case CO_DTYPE_U32_ERRCTRL:
+        case CO_DTYPE_U32_SYNC:
+        case CO_DTYPE_U32_EMCY:
+        case CO_DTYPE_U32_TIME:
+        case CO_DTYPE_U32_STORE:
+        case CO_DTYPE_U32_SRD:
+        case CO_DTYPE_U32_NETWORK:
+        case CO_DTYPE_U32_NMT:
+        case CO_DTYPE_U32_SRDO:
+            coOdGetObj_u32(index, subIndex, pObj);
+            break;
+        default:
+            ;
+    }
+}
+
+void log_store_pdo_ds401(uint8_t port)
+{
+    CO_CONST CO_OBJECT_DESC_T *pObjDesc;
+    unsigned char log_sent_data[8] ={0};
+
+    log_sent_data[0] = '4';
+    coOdGetObjDescPtr(0x6000u + CO_401_PROFILE_OFFSET, port, &pObjDesc);
+    getObjData(pObjDesc, &log_sent_data[4], 0x6000u + CO_401_PROFILE_OFFSET, port);
+    log_store_can_log(8, log_sent_data);
+}
+
+void log_store_new_state(uint16_t state)
+{
+    unsigned char log_state_data[8] ={0};
+
+    log_state_data[0] = 'S';
+    log_state_data[1] = (state >> 0) & 0xff;
+    log_state_data[2] = (state >> 8) & 0xff;
+    log_store_can_log(3, log_state_data);
+}
+
+/* check if there are new debug data to store */
+void log_store_debug_log_to_ram(void)
+{
+    static uint32_t last_debug_log_number = 0;
+
+    /* check if there are new debug data to store */
+    if (last_debug_log_number != sharedVars_cpu2toCpu1.debug_log.counter)
+    {
+        /* make local copy of data */
+        debug_log_t debug_log_copy;
+        memcpy(&debug_log_copy, &sharedVars_cpu2toCpu1.debug_log,
+               sizeof(debug_log_t));
+        /* update last read counter value */
+        last_debug_log_number = debug_log_copy.counter;
+        /* store data in log */
+        log_store_debug_log((unsigned char*) &debug_log_copy);
+//        if(log_store_debug_log((unsigned char*) &debug_log_copy))
+//            Serial_debug(DEBUG_INFO, &cli_serial,
+//                         "wrote debug_log to debug log with counter: %lx\r\n",
+//                         last_debug_log_number);
+    }
+}

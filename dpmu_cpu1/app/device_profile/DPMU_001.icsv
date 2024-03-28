@@ -1,0 +1,640 @@
+#
+# This is an importable ICSV file for the DPMU_001 project.
+#
+index,sub,objectcode,datatype,edsname,varname,access,mapable,hasdefault,defaultineds,value,description,size,implementation,haslimit,lowlimit,uplimit,nvstorage
+0x1000,0x00,VARIABLE,UNSIGNED32,Device Type,,ro,no,1,1,197009,,0,ManagedConst,no,0,4294967295,no
+ 
+0x1001,0x00,VARIABLE,UNSIGNED8,Error Register,,ro,no,0,0,,,0,ManagedVariable,no,0,255,no
+ 
+0x1003,,ARRAY,UNSIGNED32,Predefined Error Field,,,,,,,,,,,,,,
+0x1003,0x00,,UNSIGNED32,Number of Errors,,rw,no,1,1,10,,0,ManagedVariable,no,0,255,no
+0x1003,0x01,,UNSIGNED32,Error Code,,ro,no,1,1,0,,0,ManagedVariable,no,0,4294967295,no
+0x1003,0x02,,UNSIGNED32,Error Code,,ro,no,1,1,0,,0,ManagedVariable,no,0,4294967295,no
+0x1003,0x03,,UNSIGNED32,Error Code,,ro,no,1,1,0,,0,ManagedVariable,no,0,4294967295,no
+0x1003,0x04,,UNSIGNED32,Error Code,,ro,no,1,1,0,,0,ManagedVariable,no,0,4294967295,no
+0x1003,0x05,,UNSIGNED32,Error Code,,ro,no,1,1,0,,0,ManagedVariable,no,0,4294967295,no
+0x1003,0x06,,UNSIGNED32,Error Code,,ro,no,1,1,0,,0,ManagedVariable,no,0,4294967295,no
+0x1003,0x07,,UNSIGNED32,Error Code,,ro,no,1,1,0,,0,ManagedVariable,no,0,4294967295,no
+0x1003,0x08,,UNSIGNED32,Error Code,,ro,no,1,1,0,,0,ManagedVariable,no,0,4294967295,no
+0x1003,0x09,,UNSIGNED32,Error Code,,ro,no,1,1,0,,0,ManagedVariable,no,0,4294967295,no
+0x1003,0x0a,,UNSIGNED32,Error Code,,ro,no,1,1,0,,0,ManagedVariable,no,0,4294967295,no
+ 
+0x1008,0x00,VARIABLE,VISIBLE_STRING,Manufacturer device name,,const,no,1,1,emotas Slave 1 (cpu 1),,22,ManagedConst,no,0,0,no
+ 
+0x1010,,ARRAY,UNSIGNED32,Store parameters,,,,,,,,,,,,,,
+0x1010,0x00,,UNSIGNED32,Highest sub-index supported,,const,no,1,1,127,,0,ManagedConst,no,0,0xff,no
+0x1010,0x01,,UNSIGNED32,Save all parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x02,,UNSIGNED32,Save communication parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x03,,UNSIGNED32,Save application parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x04,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x05,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x06,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x07,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x08,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x09,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x0a,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x0b,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x0c,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x0d,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x0e,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x0f,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x10,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x11,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x12,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x13,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x14,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x15,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x16,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x17,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x18,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x19,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x1a,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x1b,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x1c,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x1d,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x1e,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x1f,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x20,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x21,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x22,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x23,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x24,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x25,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x26,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x27,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x28,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x29,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x2a,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x2b,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x2c,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x2d,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x2e,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x2f,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x30,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x31,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x32,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x33,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x34,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x35,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x36,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x37,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x38,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x39,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x3a,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x3b,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x3c,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x3d,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x3e,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x3f,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x40,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x41,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x42,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x43,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x44,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x45,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x46,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x47,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x48,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x49,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x4a,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x4b,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x4c,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x4d,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x4e,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x4f,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x50,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x51,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x52,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x53,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x54,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x55,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x56,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x57,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x58,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x59,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x5a,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x5b,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x5c,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x5d,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x5e,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x5f,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x60,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x61,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x62,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x63,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x64,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x65,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x66,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x67,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x68,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x69,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x6a,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x6b,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x6c,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x6d,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x6e,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x6f,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x70,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x71,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x72,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x73,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x74,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x75,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x76,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x77,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x78,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x79,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x7a,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x7b,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x7c,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x7d,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x7e,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1010,0x7f,,UNSIGNED32,Save manufacturer defined parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+ 
+0x1011,,ARRAY,UNSIGNED32,Restore default parameters,,,,,,,,,,,,,,
+0x1011,0x00,,UNSIGNED32,Highest sub-index supported,,const,no,1,1,127,,0,ManagedConst,no,0,0xff,no
+0x1011,0x01,,UNSIGNED32,Restore all default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x02,,UNSIGNED32,Restore communication default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x03,,UNSIGNED32,Restore application default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x04,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x05,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x06,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x07,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x08,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x09,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x0a,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x0b,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x0c,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x0d,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x0e,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x0f,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x10,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x11,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x12,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x13,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x14,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x15,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x16,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x17,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x18,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x19,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x1a,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x1b,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x1c,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x1d,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x1e,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x1f,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x20,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x21,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x22,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x23,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x24,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x25,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x26,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x27,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x28,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x29,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x2a,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x2b,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x2c,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x2d,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x2e,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x2f,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x30,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x31,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x32,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x33,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x34,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x35,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x36,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x37,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x38,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x39,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x3a,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x3b,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x3c,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x3d,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x3e,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x3f,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x40,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x41,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x42,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x43,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x44,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x45,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x46,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x47,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x48,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x49,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x4a,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x4b,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x4c,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x4d,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x4e,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x4f,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x50,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x51,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x52,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x53,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x54,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x55,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x56,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x57,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x58,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x59,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x5a,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x5b,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x5c,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x5d,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x5e,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x5f,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x60,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x61,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x62,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x63,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x64,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x65,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x66,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x67,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x68,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x69,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x6a,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x6b,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x6c,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x6d,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x6e,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x6f,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x70,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x71,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x72,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x73,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x74,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x75,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x76,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x77,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x78,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x79,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x7a,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x7b,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x7c,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x7d,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x7e,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+0x1011,0x7f,,UNSIGNED32,Restore manufacturer defined default parameters,,rw,no,1,0,,,0,ManagedVariable,no,0,0xffffffff,no
+ 
+0x1014,0x00,VARIABLE,UNSIGNED32,COB ID EMCY,,ro,no,1,1,$NODEID+0x80,,0,ManagedVariable,no,0,4294967295,no
+ 
+0x1015,0x00,VARIABLE,UNSIGNED16,Inhibit Time Emergency,,rw,no,1,1,0,,0,ManagedVariable,no,0,65535,no
+ 
+0x1016,,ARRAY,UNSIGNED32,Consumer Heartbeat Time,,,,,,,,,,,,,,
+0x1016,0x00,,UNSIGNED32,Number of entries,,ro,no,1,1,1,,0,ManagedConst,no,0,255,no
+0x1016,0x01,,UNSIGNED32,Consumer Heartbeat Time,,rw,no,1,1,67584,,0,ManagedVariable,no,0,4294967295,no
+ 
+0x1017,0x00,VARIABLE,UNSIGNED16,Producer Heartbeat Time,,rw,no,0,0,1000,,0,ManagedVariable,no,0,65535,no
+ 
+0x1018,,RECORD,UNSIGNED8,Identity Object,,,,,,,,,,,,,,
+0x1018,0x00,,UNSIGNED8,Number of entries,,ro,no,1,1,4,,0,ManagedConst,no,0,255,no
+0x1018,0x01,,UNSIGNED32,Vendor Id,,ro,no,0,0,0,,0,ManagedConst,no,0,4294967295,no
+0x1018,0x02,,UNSIGNED32,Product Code,,ro,no,0,0,1234,,0,ManagedConst,no,0,4294967295,no
+0x1018,0x03,,UNSIGNED32,Revision number,,ro,no,0,0,1,,0,ManagedConst,no,0,4294967295,no
+0x1018,0x04,,UNSIGNED32,Serial number,,ro,no,0,0,,,0,ManagedVariable,no,0,4294967295,no
+ 
+0x1029,,ARRAY,UNSIGNED8,Error behaviour,,,,,,,,,,,,,,
+0x1029,0x00,,UNSIGNED8,Nr of Error Classes,,ro,no,1,1,2,,0,ManagedConst,no,0,255,no
+0x1029,0x01,,UNSIGNED8,Communication Error,,rw,no,1,1,1,,0,ManagedVariable,no,0,255,no
+0x1029,0x02,,UNSIGNED8,Specific Error Class ,,rw,no,0,1,,,0,ManagedVariable,no,0,255,no
+ 
+0x1200,,RECORD,UNSIGNED8,Server SDO Parameter,,,,,,,,,,,,,,
+0x1200,0x00,,UNSIGNED8,Number of entries,,ro,no,1,1,2,,0,ManagedConst,no,2,2,no
+0x1200,0x01,,UNSIGNED32,COB ID Client to Server,,ro,no,1,1,$NODEID+0x600,,0,ManagedVariable,no,0,4294967295,no
+0x1200,0x02,,UNSIGNED32,COB ID Server to Client,,ro,no,1,1,$NODEID+0x580,,0,ManagedVariable,no,0,4294967295,no
+ 
+0x1400,,RECORD,UNSIGNED8,Receive PDO Communication Parameter,,,,,,,,,,,,,,
+0x1400,0x00,,UNSIGNED8,Number of entries,,ro,no,1,1,5,,0,ManagedConst,no,2,5,no
+0x1400,0x01,,UNSIGNED32,COB ID,,rw,no,1,1,$NODEID+0x200,,0,ManagedVariable,no,1,4294967295,no
+0x1400,0x02,,UNSIGNED8,Transmission Type,,rw,no,1,1,255,,0,ManagedVariable,no,0,255,no
+0x1400,0x03,,UNSIGNED16,Inhibit Time,,rw,no,1,1,0,,0,ManagedVariable,no,0,65535,no
+0x1400,0x04,,UNSIGNED8,Compatibility Entry,,rw,no,0,1,,,0,ManagedVariable,no,0,255,no
+0x1400,0x05,,UNSIGNED16,Event Timer,,rw,no,1,1,3000,,0,ManagedVariable,no,0,65535,no
+ 
+0x1401,,RECORD,UNSIGNED8,Receive PDO Communication Parameter,,,,,,,This object contains the communication parameters for the PDO the CANopen device is able to receive.,,,,,,,
+0x1401,0x00,,UNSIGNED8,Highest sub-index supported,,ro,no,1,1,2,,0,ManagedConst,no,2,5,no
+0x1401,0x01,,UNSIGNED32,COB ID,,rw,no,1,1,$NODEID+0x300,,0,ManagedVariable,no,1,4294967295,no
+0x1401,0x02,,UNSIGNED8,Transmission Type,,rw,no,1,1,255,,0,ManagedVariable,no,0,255,no
+ 
+0x1600,,RECORD,UNSIGNED8,Receive PDO Mapping Parameter,,,,,,,,,,,,,,
+0x1600,0x00,,UNSIGNED8,Number of entries,,const,no,1,1,3,,0,ManagedConst,no,0,255,no
+0x1600,0x01,,UNSIGNED32,PDO Mapping Entry,,const,no,1,1,805306888,,0,ManagedConst,no,0,0,no
+0x1600,0x02,,UNSIGNED32,PDO Mapping Entry,,const,no,1,1,536936480,,0,ManagedConst,no,0,805306912,no
+0x1600,0x03,,UNSIGNED32,PDO Mapping Entry,,const,no,1,1,805307144,,0,ManagedConst,no,0,805306912,no
+ 
+0x1601,,RECORD,UNSIGNED8,Receive PDO Mapping Parameter,,,,,,,This object contains the mapping parameters for the PDO the CANopen device is able to receive.,,,,,,,
+0x1601,0x00,,UNSIGNED8,Highest sub-index supported,,rw,no,1,1,4,,0,ManagedVariable,no,0,255,no
+0x1601,0x01,,UNSIGNED32,Mapping Entry 1,,rw,no,1,1,1644167432,,0,ManagedVariable,no,0,0,no
+0x1601,0x02,,UNSIGNED32,Mapping Entry 2,,rw,no,1,1,1644167688,,0,ManagedVariable,no,0,0,no
+0x1601,0x03,,UNSIGNED32,Mapping Entry 3,,rw,no,1,1,1644167944,,0,ManagedVariable,no,0,0,no
+0x1601,0x04,,UNSIGNED32,Mapping Entry 4,,rw,no,1,1,1644168200,,0,ManagedVariable,no,0,0,no
+ 
+0x1800,,RECORD,UNSIGNED8,Transmit PDO IO,,,,,,,,,,,,,,
+0x1800,0x00,,UNSIGNED8,Number of entries,,ro,no,1,1,5,,0,ManagedConst,no,2,6,no
+0x1800,0x01,,UNSIGNED32,COB ID,,rw,no,1,1,$NODEID+0x180,,0,ManagedVariable,no,1,4294967295,no
+0x1800,0x02,,UNSIGNED8,Transmission Type,,rw,no,1,1,254,,0,ManagedVariable,no,0,255,no
+0x1800,0x03,,UNSIGNED16,Inhibit Time,,rw,no,1,1,5000,,0,ManagedVariable,no,0,65535,no
+0x1800,0x04,,UNSIGNED8,Compatibility Entry,,rw,no,1,0,,,0,ManagedVariable,no,0,255,no
+0x1800,0x05,,UNSIGNED16,Event Timer,,rw,no,1,1,0,,0,ManagedVariable,no,0,65535,no
+ 
+0x1801,,RECORD,UNSIGNED8,Transmit PDO Temperatures,,,,,,,,,,,,,,
+0x1801,0x00,,UNSIGNED8,Number of entries,,ro,no,1,1,5,,0,ManagedConst,no,2,6,no
+0x1801,0x01,,UNSIGNED32,COB ID,,rw,no,1,1,$NODEID+0x280,,0,ManagedVariable,no,1,4294967295,no
+0x1801,0x02,,UNSIGNED8,Transmission Type,,rw,no,1,1,254,,0,ManagedVariable,no,0,255,no
+0x1801,0x03,,UNSIGNED16,Inhibit Time,,rw,no,1,1,0,,0,ManagedVariable,no,0,65535,no
+0x1801,0x04,,UNSIGNED8,Compatibility Entry,,rw,no,1,0,,,0,ManagedVariable,no,0,255,no
+0x1801,0x05,,UNSIGNED16,Event Timer,,rw,no,1,1,10000,,0,ManagedVariable,no,0,65535,no
+ 
+0x1802,,RECORD,UNSIGNED8,Transmit PDO DC Bus,,,,,,,,,,,,,,
+0x1802,0x00,,UNSIGNED8,Number of entries,,ro,no,1,1,5,,0,ManagedConst,no,2,6,no
+0x1802,0x01,,UNSIGNED32,COB ID,,rw,no,1,1,$NODEID+0x380,,0,ManagedVariable,no,1,4294967295,no
+0x1802,0x02,,UNSIGNED8,Transmission Type,,rw,no,1,1,254,,0,ManagedVariable,no,0,255,no
+0x1802,0x03,,UNSIGNED16,Inhibit Time,,rw,no,1,1,0,,0,ManagedVariable,no,0,65535,no
+0x1802,0x04,,UNSIGNED8,Compatibility Entry,,rw,no,1,0,,,0,ManagedVariable,no,0,255,no
+0x1802,0x05,,UNSIGNED16,Event Timer,,rw,no,1,1,10000,,0,ManagedVariable,no,0,65535,no
+ 
+0x1803,,RECORD,UNSIGNED8,Transmit PDO Energy Bank,,,,,,,,,,,,,,
+0x1803,0x00,,UNSIGNED8,Number of entries,,ro,no,1,1,5,,0,ManagedConst,no,2,6,no
+0x1803,0x01,,UNSIGNED32,COB ID,,rw,no,1,1,$NODEID+0x480,,0,ManagedVariable,no,1,4294967295,no
+0x1803,0x02,,UNSIGNED8,Transmission Type,,rw,no,1,1,254,,0,ManagedVariable,no,0,255,no
+0x1803,0x03,,UNSIGNED16,Inhibit Time,,rw,no,1,1,5000,,0,ManagedVariable,no,0,65535,no
+0x1803,0x04,,UNSIGNED8,Compatibility Entry,,rw,no,1,0,,,0,ManagedVariable,no,0,255,no
+0x1803,0x05,,UNSIGNED16,Event Timer,,rw,no,1,1,10000,,0,ManagedVariable,no,0,65535,no
+ 
+0x1a00,,RECORD,UNKNOWN,TPDO mapping IO,,,,,,,,,,,,,,
+0x1a00,0x00,,UNSIGNED8,Number of mapped application objects in TPDO,,rw,no,1,1,1,,0,ManagedVariable,no,0,0xff,no
+0x1a00,0x01,,UNSIGNED32,State_Of_Switches_PDO,,rw,no,1,1,1610613000,,0,ManagedVariable,no,0,0xffffffff,no
+ 
+0x1a01,,RECORD,UNKNOWN,TPDO mapping Temperatures,,,,,,,,,,,,,,
+0x1a01,0x00,,UNSIGNED8,Number of entries,,rw,no,1,1,5,,0,ManagedVariable,no,0,0xff,no
+0x1a01,0x01,,UNSIGNED32,Temperature_Measured_At_DPMU_Hottest_Point_PDO,,rw,no,1,1,838861320,,0,ManagedVariable,no,0,0xffffffff,no
+0x1a01,0x02,,UNSIGNED32,TEMPERATURE_BASE_PDO,,rw,no,1,1,838861832,,0,ManagedVariable,no,0,0xffffffff,no
+0x1a01,0x03,,UNSIGNED32,TEMPERATURE_MAIN_PDO,,rw,no,1,1,838862088,,0,ManagedVariable,no,0,0xffffffff,no
+0x1a01,0x04,,UNSIGNED32,TEMPERATURE_MEZZANINE_PDO,,rw,no,1,1,838862344,,0,ManagedVariable,no,0,0xffffffff,no
+0x1a01,0x05,,UNSIGNED32,TEMPERATURE_PWR_BANK_PDO,,rw,no,1,1,838862600,,0,ManagedVariable,no,0,0xffffffff,no
+ 
+0x1a02,,RECORD,UNKNOWN,TPDO mapping DC Bus,,,,,,,,,,,,,,
+0x1a02,0x00,,UNSIGNED8,Number of entries,,rw,no,1,1,4,,0,ManagedVariable,no,0,0xff,no
+0x1a02,0x01,,UNSIGNED32,Read_Voltage_At_DC_Bus_PDO,,rw,no,1,1,855900424,,0,ManagedVariable,no,0,0xffffffff,no
+0x1a02,0x02,,UNSIGNED32,Power_From_DC_Input_PDO,,rw,no,1,1,855900688,,0,ManagedVariable,no,0,0xffffffff,no
+0x1a02,0x03,,UNSIGNED32,Read_Load_Current_PDO,,rw,no,1,1,855900936,,0,ManagedVariable,no,0,0xffffffff,no
+0x1a02,0x04,,UNSIGNED32,Power_Consumed_By_Load_PDO,,rw,no,1,1,855901200,,0,ManagedVariable,no,0,0xffffffff,no
+ 
+0x1a03,,RECORD,UNKNOWN,TPDO mapping Energy Bank,,,,,,,,,,,,,,
+0x1a03,0x00,,UNSIGNED8,Number of entries,,rw,no,1,1,4,,0,ManagedVariable,no,0,0xff,no
+0x1a03,0x01,,UNSIGNED32,State_of_Charge_of_Energy_Bank_PDO,,rw,no,1,1,872416520,,0,ManagedVariable,no,0,0xffffffff,no
+0x1a03,0x02,,UNSIGNED32,State_of_Health_of_Energy_Bank_PDO,,rw,no,1,1,872416776,,0,ManagedVariable,no,0,0xffffffff,no
+0x1a03,0x03,,UNSIGNED32,Remaining_Energy_To_Min_SoC_At_Energy_Bank_PDO,,rw,no,1,1,872417040,,0,ManagedVariable,no,0,0xffffffff,no
+0x1a03,0x04,,UNSIGNED32,Stack_Temperature_PDO,,rw,no,1,1,872417544,,0,ManagedVariable,no,0,0xffffffff,no
+ 
+0x1f51,,ARRAY,UNSIGNED8,Program Control,,,,,,,,,,,,,,
+0x1f51,0x00,,UNSIGNED8,Number of entries,,ro,no,1,1,1,,0,ManagedConst,no,0,0xff,no
+0x1f51,0x01,,UNSIGNED8,Program Control 1,,rw,no,1,0,,0 .. Stop program
+1 .. Start program
+3 .. Erase program
+,0,ManagedVariable,yes,0,2,no
+ 
+ 
+0x2000,0x00,VARIABLE,UNSIGNED32,Date_And_Time,,rw,no,1,1,,,0,ManagedVariable,no,0,0xffffffff,no
+ 
+0x2001,0x00,VARIABLE,INTEGER32,Manufacturer Object,,rw,both,0,0,4,,0,ManagedVariable,no,0,0,no
+ 
+0x2002,0x00,VARIABLE,UNSIGNED8,Set NodeID,,rw,no,1,1,125,,0,ManagedVariable,no,0,0,no
+ 
+0x3000,,ARRAY,UNSIGNED8,DC_Bus_Voltage,,,,,,,,,,,,,,
+0x3000,0x00,,UNSIGNED8,Highest sub-index supported,,ro,no,1,1,5,,0,ManagedConst,no,0,0,no
+0x3000,0x01,,UNSIGNED8,Min_Allowed_DC_Bus_Voltage,,rw,rpdo,1,1,167,,0,ManagedVariable,no,0,0xff,no
+0x3000,0x02,,UNSIGNED8,Max_Allowed_DC_Bus_Voltage,,rw,rpdo,1,1,193,,0,ManagedVariable,no,0,0xff,no
+0x3000,0x03,,UNSIGNED8,Target_Voltage_At_DC_Bus,,rw,rpdo,1,1,180,,0,ManagedVariable,no,0,0xff,no
+0x3000,0x04,,UNSIGNED8,VDC_Bus_Short_Circuit_Limit,,rw,rpdo,1,1,60,,0,ManagedVariable,no,0,0xff,no
+0x3000,0x05,,UNSIGNED8,VDROOP,,rw,rpdo,1,1,1,The VDROOP is used in the Redundant and the Suplementary DPMUs to increase the Voltage of the DC Bus then giving power to the Default DPMU.,0,ManagedVariable,no,0,0xff,no
+ 
+0x3001,0x00,VARIABLE,UNSIGNED8,ESS_Current,,rw,rpdo,1,1,48,,0,ManagedVariable,no,0,0xff,no
+ 
+0x3100,,RECORD,UNKNOWN,Energy_Cell_Summary,,,,,,,,,,,,,,
+0x3100,0x00,,UNSIGNED8,Highest sub-index supported,,ro,no,1,1,62,,0,ManagedConst,no,0,0xff,no
+0x3100,0x01,,UNSIGNED8,Min_Voltage_Energy_Cell,,rw,rpdo,1,1,16,Fixed point 1111.1111
+1V -> 0x10,0,ManagedVariable,no,0,0xff,no
+0x3100,0x02,,UNSIGNED8,Max_Voltage_Energy_Cell,,rw,rpdo,1,1,48,Fixed point 1111.1111
+3V -> 0x30,0,ManagedVariable,no,0,0xff,no
+0x3100,0x03,,UNSIGNED8,State_of_Charge_of_Energy_Cell_01,,ro,both,1,1,0,,0,ManagedVariable,no,0,0xff,no
+0x3100,0x04,,UNSIGNED8,State_of_Charge_of_Energy_Cell_02,,ro,both,1,1,0,,0,ManagedVariable,no,0,0xff,no
+0x3100,0x05,,UNSIGNED8,State_of_Charge_of_Energy_Cell_03,,ro,both,1,1,0,,0,ManagedVariable,no,0,0xff,no
+0x3100,0x06,,UNSIGNED8,State_of_Charge_of_Energy_Cell_04,,ro,both,1,1,0,,0,ManagedVariable,no,0,0xff,no
+0x3100,0x07,,UNSIGNED8,State_of_Charge_of_Energy_Cell_05,,ro,both,1,1,0,,0,ManagedVariable,no,0,0xff,no
+0x3100,0x08,,UNSIGNED8,State_of_Charge_of_Energy_Cell_06,,ro,both,1,1,0,,0,ManagedVariable,no,0,0xff,no
+0x3100,0x09,,UNSIGNED8,State_of_Charge_of_Energy_Cell_07,,ro,both,1,1,0,,0,ManagedVariable,no,0,0xff,no
+0x3100,0x0a,,UNSIGNED8,State_of_Charge_of_Energy_Cell_08,,ro,both,1,1,0,,0,ManagedVariable,no,0,0xff,no
+0x3100,0x0b,,UNSIGNED8,State_of_Charge_of_Energy_Cell_09,,ro,both,1,1,0,,0,ManagedVariable,no,0,0xff,no
+0x3100,0x0c,,UNSIGNED8,State_of_Charge_of_Energy_Cell_10,,ro,both,1,1,0,,0,ManagedVariable,no,0,0xff,no
+0x3100,0x0d,,UNSIGNED8,State_of_Charge_of_Energy_Cell_11,,ro,both,1,1,0,,0,ManagedVariable,no,0,0xff,no
+0x3100,0x0e,,UNSIGNED8,State_of_Charge_of_Energy_Cell_12,,ro,both,1,1,0,,0,ManagedVariable,no,0,0xff,no
+0x3100,0x0f,,UNSIGNED8,State_of_Charge_of_Energy_Cell_13,,ro,both,1,1,0,,0,ManagedVariable,no,0,0xff,no
+0x3100,0x10,,UNSIGNED8,State_of_Charge_of_Energy_Cell_14,,ro,both,1,1,0,,0,ManagedVariable,no,0,0xff,no
+0x3100,0x11,,UNSIGNED8,State_of_Charge_of_Energy_Cell_15,,ro,both,1,1,0,,0,ManagedVariable,no,0,0xff,no
+0x3100,0x12,,UNSIGNED8,State_of_Charge_of_Energy_Cell_16,,ro,both,1,1,0,,0,ManagedVariable,no,0,0xff,no
+0x3100,0x13,,UNSIGNED8,State_of_Charge_of_Energy_Cell_17,,ro,both,1,1,0,,0,ManagedVariable,no,0,0xff,no
+0x3100,0x14,,UNSIGNED8,State_of_Charge_of_Energy_Cell_18,,ro,both,1,1,0,,0,ManagedVariable,no,0,0xff,no
+0x3100,0x15,,UNSIGNED8,State_of_Charge_of_Energy_Cell_19,,ro,both,1,1,0,,0,ManagedVariable,no,0,0xff,no
+0x3100,0x16,,UNSIGNED8,State_of_Charge_of_Energy_Cell_20,,ro,both,1,1,0,,0,ManagedVariable,no,0,0xff,no
+0x3100,0x17,,UNSIGNED8,State_of_Charge_of_Energy_Cell_21,,ro,both,1,1,0,,0,ManagedVariable,no,0,0xff,no
+0x3100,0x18,,UNSIGNED8,State_of_Charge_of_Energy_Cell_22,,ro,both,1,1,0,,0,ManagedVariable,no,0,0xff,no
+0x3100,0x19,,UNSIGNED8,State_of_Charge_of_Energy_Cell_23,,ro,both,1,1,0,,0,ManagedVariable,no,0,0xff,no
+0x3100,0x1a,,UNSIGNED8,State_of_Charge_of_Energy_Cell_24,,ro,both,1,1,0,,0,ManagedVariable,no,0,0xff,no
+0x3100,0x1b,,UNSIGNED8,State_of_Charge_of_Energy_Cell_25,,ro,both,1,1,0,,0,ManagedVariable,no,0,0xff,no
+0x3100,0x1c,,UNSIGNED8,State_of_Charge_of_Energy_Cell_26,,ro,both,1,1,0,,0,ManagedVariable,no,0,0xff,no
+0x3100,0x1d,,UNSIGNED8,State_of_Charge_of_Energy_Cell_27,,ro,both,1,1,0,,0,ManagedVariable,no,0,0xff,no
+0x3100,0x1e,,UNSIGNED8,State_of_Charge_of_Energy_Cell_28,,ro,both,1,1,0,,0,ManagedVariable,no,0,0xff,no
+0x3100,0x1f,,UNSIGNED8,State_of_Charge_of_Energy_Cell_29,,ro,both,1,1,0,,0,ManagedVariable,no,0,0xff,no
+0x3100,0x20,,UNSIGNED8,State_of_Charge_of_Energy_Cell_30,,ro,both,1,1,0,,0,ManagedVariable,no,0,0xff,no
+0x3100,0x21,,UNSIGNED8,State_of_Health_of_Energy_Cell_01,,ro,both,1,1,0,,0,ManagedVariable,no,0,0xff,no
+0x3100,0x22,,UNSIGNED8,State_of_Health_of_Energy_Cell_02,,ro,both,1,1,0,,0,ManagedVariable,no,0,0xff,no
+0x3100,0x23,,UNSIGNED8,State_of_Health_of_Energy_Cell_03,,ro,both,1,1,0,,0,ManagedVariable,no,0,0xff,no
+0x3100,0x24,,UNSIGNED8,State_of_Health_of_Energy_Cell_04,,ro,both,1,1,0,,0,ManagedVariable,no,0,0xff,no
+0x3100,0x25,,UNSIGNED8,State_of_Health_of_Energy_Cell_05,,ro,both,1,1,0,,0,ManagedVariable,no,0,0xff,no
+0x3100,0x26,,UNSIGNED8,State_of_Health_of_Energy_Cell_06,,ro,both,1,1,0,,0,ManagedVariable,no,0,0xff,no
+0x3100,0x27,,UNSIGNED8,State_of_Health_of_Energy_Cell_07,,ro,both,1,1,0,,0,ManagedVariable,no,0,0xff,no
+0x3100,0x28,,UNSIGNED8,State_of_Health_of_Energy_Cell_08,,ro,both,1,1,0,,0,ManagedVariable,no,0,0xff,no
+0x3100,0x29,,UNSIGNED8,State_of_Health_of_Energy_Cell_09,,ro,both,1,1,0,,0,ManagedVariable,no,0,0xff,no
+0x3100,0x2a,,UNSIGNED8,State_of_Health_of_Energy_Cell_10,,ro,both,1,1,0,,0,ManagedVariable,no,0,0xff,no
+0x3100,0x2b,,UNSIGNED8,State_of_Health_of_Energy_Cell_11,,ro,both,1,1,0,,0,ManagedVariable,no,0,0xff,no
+0x3100,0x2c,,UNSIGNED8,State_of_Health_of_Energy_Cell_12,,ro,both,1,1,0,,0,ManagedVariable,no,0,0xff,no
+0x3100,0x2d,,UNSIGNED8,State_of_Health_of_Energy_Cell_13,,ro,both,1,1,0,,0,ManagedVariable,no,0,0xff,no
+0x3100,0x2e,,UNSIGNED8,State_of_Health_of_Energy_Cell_14,,ro,both,1,1,0,,0,ManagedVariable,no,0,0xff,no
+0x3100,0x2f,,UNSIGNED8,State_of_Health_of_Energy_Cell_15,,ro,both,1,1,0,,0,ManagedVariable,no,0,0xff,no
+0x3100,0x30,,UNSIGNED8,State_of_Health_of_Energy_Cell_16,,ro,both,1,1,0,,0,ManagedVariable,no,0,0xff,no
+0x3100,0x31,,UNSIGNED8,State_of_Health_of_Energy_Cell_17,,ro,both,1,1,0,,0,ManagedVariable,no,0,0xff,no
+0x3100,0x32,,UNSIGNED8,State_of_Health_of_Energy_Cell_18,,ro,both,1,1,0,,0,ManagedVariable,no,0,0xff,no
+0x3100,0x33,,UNSIGNED8,State_of_Health_of_Energy_Cell_19,,ro,both,1,1,0,,0,ManagedVariable,no,0,0xff,no
+0x3100,0x34,,UNSIGNED8,State_of_Health_of_Energy_Cell_20,,ro,both,1,1,0,,0,ManagedVariable,no,0,0xff,no
+0x3100,0x35,,UNSIGNED8,State_of_Health_of_Energy_Cell_21,,ro,both,1,1,0,,0,ManagedVariable,no,0,0xff,no
+0x3100,0x36,,UNSIGNED8,State_of_Health_of_Energy_Cell_22,,ro,both,1,1,0,,0,ManagedVariable,no,0,0xff,no
+0x3100,0x37,,UNSIGNED8,State_of_Health_of_Energy_Cell_23,,ro,both,1,1,0,,0,ManagedVariable,no,0,0xff,no
+0x3100,0x38,,UNSIGNED8,State_of_Health_of_Energy_Cell_24,,ro,both,1,1,0,,0,ManagedVariable,no,0,0xff,no
+0x3100,0x39,,UNSIGNED8,State_of_Health_of_Energy_Cell_25,,ro,both,1,1,0,,0,ManagedVariable,no,0,0xff,no
+0x3100,0x3a,,UNSIGNED8,State_of_Health_of_Energy_Cell_26,,ro,both,1,1,0,,0,ManagedVariable,no,0,0xff,no
+0x3100,0x3b,,UNSIGNED8,State_of_Health_of_Energy_Cell_27,,ro,both,1,1,0,,0,ManagedVariable,no,0,0xff,no
+0x3100,0x3c,,UNSIGNED8,State_of_Health_of_Energy_Cell_28,,ro,both,1,1,0,,0,ManagedVariable,no,0,0xff,no
+0x3100,0x3d,,UNSIGNED8,State_of_Health_of_Energy_Cell_29,,ro,both,1,1,0,,0,ManagedVariable,no,0,0xff,no
+0x3100,0x3e,,UNSIGNED8,State_of_Health_of_Energy_Cell_30,,ro,both,1,1,0,,0,ManagedVariable,no,0,0xff,no
+ 
+0x3200,,RECORD,UNKNOWN,Temperature,,,,,,,,,,,,,,
+0x3200,0x00,,UNSIGNED8,Highest sub-index supported,,ro,no,1,1,7,,0,ManagedConst,no,0,0xff,no
+0x3200,0x01,,INTEGER8,DPMU_Temperature_Max_Limit,,rw,both,1,1,0,,0,ManagedVariable,no,-128,127,no
+0x3200,0x02,,INTEGER8,Temperature_Measured_At_DPMU_Hottest_Point,,ro,both,1,1,0,1/4 C is good enough.,0,ManagedVariable,no,-128,127,no
+0x3200,0x03,,INTEGER8,DPMU_Temperature_High_Limit,,rw,both,1,1,0,,0,ManagedVariable,no,-128,127,no
+0x3200,0x04,,INTEGER8,TEMPERATURE_BASE,,ro,both,1,1,0,,0,ManagedVariable,no,-128,127,no
+0x3200,0x05,,INTEGER8,TEMPERATURE_MAIN,,ro,both,1,1,0,,0,ManagedVariable,no,-128,127,no
+0x3200,0x06,,INTEGER8,TEMPERATURE_MEZZANINE,,ro,both,1,1,0,,0,ManagedVariable,no,-128,127,no
+0x3200,0x07,,INTEGER8,TEMPERATURE_PWR_BANK,,ro,both,1,1,0,,0,ManagedVariable,no,-128,127,no
+ 
+0x3301,0x00,VARIABLE,UNSIGNED16,Maximum_Allowed_Load_Power,,rw,both,1,1,0,,0,ManagedVariable,no,0,0xffff,no
+ 
+0x3302,,ARRAY,UNSIGNED16,Power_Budget_DC_Input,,,,,,,,,,,,,,
+0x3302,0x00,,UNSIGNED16,Highest sub-index supported,,ro,no,1,1,1,,0,ManagedConst,no,0,255,no
+0x3302,0x01,,UNSIGNED16,Available_Power_Budget_DC_Input,,rw,no,1,1,,Watt (DC Bus voltage x input current), Resolution 1W.,0,ManagedVariable,no,0,0xffff,no
+ 
+0x3303,0x00,VARIABLE,UNSIGNED8,Charge_Factor,,rw,both,1,1,0,,0,ManagedVariable,no,0,0xff,no
+ 
+0x3304,,RECORD,UNSIGNED8,Read_Power,,,,,,,,,,,,,,
+0x3304,0x00,,UNSIGNED8,Highest sub-index supported,,ro,no,1,1,4,,0,ManagedConst,no,0,255,no
+0x3304,0x01,,UNSIGNED8,Read_Voltage_At_DC_Bus,,ro,tpdo,0,1,,1V resolution (0.55% of 180V).,0,ManagedVariable,no,0,255,no
+0x3304,0x02,,UNSIGNED16,Power_From_DC_Input,,ro,tpdo,0,1,,Watt (DC Bus voltage x input current), Resolution 1W.,0,ManagedVariable,no,0,0xffff,no
+0x3304,0x03,,INTEGER8,Read_Load_Current,,ro,tpdo,0,1,,Resolution of 157.5 mA for maximum current of 20A (20/127).,0,ManagedVariable,no,-128,127,no
+0x3304,0x04,,UNSIGNED16,Power_Consumed_By_Load,,ro,tpdo,0,1,,Watt (DC Bus voltage x output current), Resolution 1W.,0,ManagedVariable,no,0,0xffff,no
+ 
+0x3305,,ARRAY,UNSIGNED8,DPMU_State,,,,,,,,,,,,,,
+0x3305,0x00,,UNSIGNED8,Highest sub-index supported,,ro,no,1,1,2,,0,ManagedConst,no,0,255,no
+0x3305,0x01,,UNSIGNED8,DPMU Operation Request State,,rw,no,1,1,,State Machine command to request change of state (IOP write this state).
+Updated by CPU2 after CANopen request if allowed.,0,ManagedVariable,no,0,255,no
+0x3305,0x02,,UNSIGNED8,DPMU Operation Current State,,ro,no,1,1,,State Machine current state (IOP read this state).,0,ManagedVariable,no,0,255,no
+ 
+0x3400,,RECORD,UNKNOWN,Energy_Bank_Summary,,,,,,,,,,,,,,
+0x3400,0x00,,UNSIGNED8,Highest sub-index supported,,ro,no,1,1,11,,0,ManagedConst,no,0,0xff,no
+0x3400,0x01,,UNSIGNED8,Max_Voltage_Applied_To_Energy_Bank,,rw,rpdo,1,1,90,,0,ManagedVariable,no,0,0xff,no
+0x3400,0x02,,UNSIGNED8,Min_Voltage_Applied_To_Energy_Bank,,rw,rpdo,1,1,30,,0,ManagedVariable,no,0,0xff,no
+0x3400,0x04,,UNSIGNED16,Safety_Threshold_State_of_Charge,,rw,rpdo,1,1,45,,0,ManagedVariable,no,0,0xffff,no
+0x3400,0x05,,UNSIGNED8,State_of_Charge_of_Energy_Bank,,ro,tpdo,1,1,0,[0;90] V
+Voltage at Vstor_iso - DPMU Main, max 90V, resolution around 0.353V (90/255). This value is calculated based on the sum of the individual supercapacitor SoC.,0,ManagedVariable,no,0,0xff,no
+0x3400,0x06,,UNSIGNED8,State_of_Health_of_Energy_Bank,,ro,tpdo,1,1,0,I percent of initial value calculated at first charge.
+Fixed point 1111111.1.
+
+Average of SoH of each energy cell, resolution of 0.5%. This value is calculated based on the capacitance calculated on each SoH, proper manipulation and compared to the initial SoH of the bank. This value shall represent a % of the initial SoH value.,0,ManagedVariable,no,0,0xff,no
+0x3400,0x07,,UNSIGNED16,Remaining_Energy_To_Min_SoC_At_Energy_Bank,,ro,tpdo,1,1,0,0-65 536 J
+
+Joule (P x t) - Remaining useful Energy at the Supercapacitor Bank. This includes the Budget to operate the system and the budget to safe parking the RVC.,0,ManagedVariable,no,0,0xffff,no
+0x3400,0x09,,INTEGER8,Stack_Temperature,,ro,tpdo,0,1,0,Temperature at the Supercapacitor Bank, measured using an I2C temperature sensor.,0,ManagedVariable,no,-128,127,no
+0x3400,0x0a,,UNSIGNED8,Constant Voltage Threshold,,rw,tpdo,0,1,0,Above the Constant Voltage Threshold Lithium batteries need to go through the Constant Voltage Charge, called CV Charge.
+Below this Lithium batteries goes through Constant Current Charge, called CC Charge.,0,ManagedVariable,no,0,0xff,no
+0x3400,0x0b,,UNSIGNED8,Preconditional Threshold,,rw,tpdo,0,1,0,Below the Preconditional Threshold batteries and Capacitors need to go through Pre-Charge, also called Trickle Charge,0,ManagedVariable,no,0,0xff,no
+ 
+0x4000,,ARRAY,UNSIGNED8,Switch_State,,,,,,,,,,,,,,
+0x4000,0x00,,UNSIGNED8,Highest sub-index supported,,ro,no,1,1,4,,0,ManagedConst,no,0,0xff,no
+0x4000,0x01,,UNSIGNED8,SW_Qinrush_State,,rw,tpdo,1,1,0,,0,ManagedVariable,no,0,0xff,no
+0x4000,0x02,,UNSIGNED8,SW_Qlb_State,,rw,tpdo,1,1,0,,0,ManagedVariable,no,0,0xff,no
+0x4000,0x03,,UNSIGNED8,SW_Qsb_State,,rw,tpdo,1,1,0,,0,ManagedVariable,no,0,0xff,no
+0x4000,0x04,,UNSIGNED8,SW_Qinb_State,,rw,tpdo,1,1,0,,0,ManagedVariable,no,0,0xff,no
+ 
+0x4001,0x00,VARIABLE,UNSIGNED8,DPMU_Power_Source_Type,,rw,both,1,1,0,,0,ManagedVariable,no,0,0xff,no
+ 
+0x4002,0x00,VARIABLE,UNSIGNED8,Send_reboot_request,,rw,both,1,1,0,,0,ManagedVariable,no,0,0,no
+ 
+0x4003,0x00,VARIABLE,UNSIGNED8,Operational_Error,,ro,both,1,1,,,0,ManagedVariable,no,0,0,no
+ 
+0x4010,,RECORD,UNSIGNED8,Debug_Log,,,,,,,Handles the debug log.,,,,,,,
+0x4010,0x00,,UNSIGNED8,Highest sub-index supported,,ro,no,1,1,3,,0,ManagedConst,no,0,255,no
+0x4010,0x01,,UNSIGNED8,DEBUG_LOG_STATE,,rw,no,1,1,1,Start and stops the debug logging.,0,ManagedVariable,no,0,1,no
+0x4010,0x02,,DOMAIN,DEBUG_LOG_READ,v_164002,ro,no,0,0,,,Stops debug logging and reads the debug log.,0,Variable,no,0,0xff,no
+0x4010,0x03,,UNSIGNED8,DEBUG_LOG_RESET,,wo,no,0,0,,Resets the debug log, i.e. removes all debug entries.,0,ManagedVariable,no,0,255,no
+ 
+0x4011,,RECORD,UNSIGNED8,CAN_LOG,,,,,,,Handles the CAN log.,,,,,,,
+0x4011,0x00,,UNSIGNED8,Highest sub-index supported,,ro,no,1,1,2,,0,ManagedConst,no,0,255,no
+0x4011,0x01,,DOMAIN,CAN_LOG_READ,v_164011,ro,no,0,0,,,Read CAN log.,0,Variable,no,0,255,no
+0x4011,0x02,,UNSIGNED8,CAN_LOG_RESET,,wo,no,0,0,,Reset CAN log.,0,ManagedVariable,no,0,255,no
+ 
+ 
+0x6000,,ARRAY,UNSIGNED8,IO,,,,,,,,,,,,,,
+0x6000,0x00,,UNSIGNED8,Highest sub-index supported,,ro,no,1,1,1,,0,ManagedConst,no,0,0xff,no
+0x6000,0x01,,UNSIGNED8,State_Of_Switches,,rw,tpdo,1,1,1,,0,ManagedVariable,no,0,0xff,no
+ 
+0x6002,,ARRAY,UNSIGNED8,Polarity Input 8 Bit,,,,,,,,,,,,,,
+0x6002,0x00,,UNSIGNED8,Number of Elements,,ro,no,1,1,3,,0,ManagedConst,no,0,0xff,no
+0x6002,0x01,,UNSIGNED8,Polarity8,,rw,no,1,1,0,,0,ManagedVariable,no,0,0xff,no
+0x6002,0x02,,UNSIGNED8,Polarity8,,rw,no,1,1,0,,0,ManagedVariable,no,0,0xff,no
+0x6002,0x03,,UNSIGNED8,Polarity8,,rw,no,1,1,0,,0,ManagedVariable,no,0,0xff,no
+ 
+0x6005,0x00,VARIABLE,UNSIGNED8,Global Interrupt Enable Digital 8Bit,,rw,no,1,1,1,Enable changes in the digital 8bit input ports to result in a PDO sent. Interrupts (PDOs) are generated according to the filter mask settings in objects 0x6006, 0x6007, 0x6008.
+,0,ManagedVariable,no,0,0xff,no
+ 
+0x6006,,ARRAY,UNSIGNED8,Interrupt Mask Any Change 8 Bit,,,,,,,,,,,,,,
+0x6006,0x00,,UNSIGNED8,Number of Elements,,ro,no,1,1,3,,0,ManagedConst,no,0,0xff,no
+0x6006,0x01,,UNSIGNED8,InterruptAnyChange8,,rw,no,1,1,255,,0,ManagedVariable,no,0,0xff,no
+0x6006,0x02,,UNSIGNED8,InterruptAnyChange8,,rw,no,1,1,255,,0,ManagedVariable,no,0,0xff,no
+0x6006,0x03,,UNSIGNED8,InterruptAnyChange8,,rw,no,1,1,255,,0,ManagedVariable,no,0,0xff,no
+ 
+0x6007,,ARRAY,UNSIGNED8,Interrupt Mask Low to High 8 Bit,,,,,,,,,,,,,,
+0x6007,0x00,,UNSIGNED8,Number of Elements,,ro,no,1,1,3,,0,ManagedConst,no,0,0xff,no
+0x6007,0x01,,UNSIGNED8,InterruptLowToHigh8,,rw,no,1,1,0,,0,ManagedVariable,no,0,0xff,no
+0x6007,0x02,,UNSIGNED8,InterruptLowToHigh8,,rw,no,1,1,0,,0,ManagedVariable,no,0,0xff,no
+0x6007,0x03,,UNSIGNED8,InterruptLowToHigh8,,rw,no,1,1,0,,0,ManagedVariable,no,0,0xff,no
+ 
+0x6008,,ARRAY,UNSIGNED8,Interrupt Mask High to Low 8 Bit,,,,,,,,,,,,,,
+0x6008,0x00,,UNSIGNED8,Number of Elements,,ro,no,1,1,3,,0,ManagedConst,no,0,0xff,no
+0x6008,0x01,,UNSIGNED8,InterruptHighToLow8,,rw,no,1,1,0,,0,ManagedVariable,no,0,0xff,no
+0x6008,0x02,,UNSIGNED8,InterruptHighToLow8,,rw,no,1,1,0,,0,ManagedVariable,no,0,0xff,no
+0x6008,0x03,,UNSIGNED8,InterruptHighToLow8,,rw,no,1,1,0,,0,ManagedVariable,no,0,0xff,no
+ 
+0x6200,,ARRAY,UNSIGNED8,Write Output 8 Bit,,,,,,,,,,,,,,
+0x6200,0x00,,UNSIGNED8,Number of Elements,,ro,no,1,1,6,,0,ManagedConst,no,0,0xff,no
+0x6200,0x01,,UNSIGNED8,DigOutput8,,rww,rpdo,1,1,0,,0,ManagedVariable,no,0,0xff,no
+0x6200,0x02,,UNSIGNED8,DigOutput8,,rww,rpdo,1,1,0,,0,ManagedVariable,no,0,0xff,no
+0x6200,0x03,,UNSIGNED8,DigOutput8,,rww,rpdo,1,1,0,,0,ManagedVariable,no,0,0xff,no
+0x6200,0x04,,UNSIGNED8,DigOutput8,,rww,rpdo,1,1,0,,0,ManagedVariable,no,0,0xff,no
+0x6200,0x05,,UNSIGNED8,DigOutput8,,rww,rpdo,1,1,0,,0,ManagedVariable,no,0,0xff,no
+0x6200,0x06,,UNSIGNED8,DigOutput8,,rww,rpdo,1,1,0,,0,ManagedVariable,no,0,0xff,no
+ 
+0x6202,,ARRAY,UNSIGNED8,Polarity Output 8 Bit,,,,,,,,,,,,,,
+0x6202,0x00,,UNSIGNED8,Number of Elements,,ro,no,1,1,1,,0,ManagedConst,no,0,0xff,no
+0x6202,0x01,,UNSIGNED8,Polarity8,,rw,no,1,1,0,,0,ManagedVariable,no,0,0xff,no
+ 
+0x6401,,ARRAY,INTEGER16,ADC_Port_Value,,,,,,,,,,,,,,
+0x6401,0x00,,INTEGER16,Number of Elements,,ro,no,1,1,4,,0,ManagedConst,no,0,0xff,no
+0x6401,0x01,,INTEGER16,Read_Load_Current,,ro,tpdo,1,0,,,0,ManagedVariable,no,-32768,32767,no
+0x6401,0x03,,INTEGER16,Read_Voltage_At_DC_Bus,,ro,tpdo,1,0,,,0,ManagedVariable,no,-32768,32767,no
+0x6401,0x04,,INTEGER16,DPMU_Temperature,,ro,tpdo,1,0,,,0,ManagedVariable,no,-32768,32767,no
+ 
+0x6411,,ARRAY,INTEGER16,Write Analogue Output 16 Bit,,,,,,,,,,,,,,
+0x6411,0x00,,INTEGER16,Number of Elements,,ro,no,1,1,8,,0,ManagedConst,no,0,0xff,no
+0x6411,0x01,,INTEGER16,AnalogueOutput16,,rww,rpdo,1,1,0,,0,ManagedVariable,no,-32768,32767,no
+0x6411,0x02,,INTEGER16,AnalogueOutput16,,rww,rpdo,1,1,0,,0,ManagedVariable,no,-32768,32767,no
+0x6411,0x03,,INTEGER16,AnalogueOutput16,,rww,rpdo,1,1,0,,0,ManagedVariable,no,-32768,32767,no
+0x6411,0x04,,INTEGER16,AnalogueOutput16,,rww,rpdo,1,1,0,,0,ManagedVariable,no,-32768,32767,no
+0x6411,0x05,,INTEGER16,AnalogueOutput16,,rww,rpdo,1,1,0,,0,ManagedVariable,no,-32768,32767,no
+0x6411,0x06,,INTEGER16,AnalogueOutput16,,rww,rpdo,1,1,0,,0,ManagedVariable,no,-32768,32767,no
+0x6411,0x07,,INTEGER16,AnalogueOutput16,,rww,rpdo,1,1,0,,0,ManagedVariable,no,-32768,32767,no
+0x6411,0x08,,INTEGER16,AnalogueOutput16,,rww,rpdo,1,1,0,,0,ManagedVariable,no,-32768,32767,no
+ 
+0x6421,,ARRAY,UNSIGNED8,Interrupt Trigger Selection,,,,,,,Bit no. Interrupt trigger 0 Upper limit exceeded 1 Input below lower limit 2 Input changed by more than delta 3 Input reduced by more than negative delta 4 Input increased by more than positive delta 5 to 7 reserved for future use.,,,,,,,
+0x6421,0x00,,UNSIGNED8,Number of Elements,,ro,no,1,1,1,,0,ManagedConst,no,0,0xff,no
+0x6421,0x01,,UNSIGNED8,InterruptTriggerSelection,,rw,no,1,1,3,,0,ManagedVariable,no,0,0xff,no
+ 
+0x6423,0x00,VARIABLE,UNSIGNED8,Analog Input global interrupt enable,,rw,no,1,1,1,enables globally all analog interrupts. Interrupts are generated according the trigger selection.
+,0,ManagedVariable,no,0,0xff,no
+ 
+0x6424,,ARRAY,INTEGER32,Analogue Input Interrupt Upper Limit Integer,,,,,,,,,,,,,,
+0x6424,0x00,,INTEGER32,Number of Elements,,ro,no,1,1,4,,0,ManagedConst,no,0,0xff,no
+0x6424,0x01,,INTEGER32,Load_Over_Current_Max_Limit,,rw,no,1,1,20000,,0,ManagedVariable,no,-2147483648,2147483647,no
+0x6424,0x03,,INTEGER32,DC_Bus_Voltage_Max_Limit,,rw,no,1,1,20000,,0,ManagedVariable,no,-2147483648,2147483647,no
+0x6424,0x04,,INTEGER32,DPMU_Temperature_Max_Limit,,rw,no,1,1,20000,,0,ManagedVariable,no,-2147483648,2147483647,no
+ 
+0x6425,,ARRAY,INTEGER32,Analogue Input Interrupt Lower Limit Integer,,,,,,,,,,,,,,
+0x6425,0x00,,INTEGER32,Number of Elements,,ro,no,1,1,4,,0,ManagedConst,no,0,0xff,no
+0x6425,0x01,,INTEGER32,Load_Over_Current_Min_Limit,,rw,no,1,1,500,,0,ManagedVariable,no,-2147483648,2147483647,no
+0x6425,0x03,,INTEGER32,DC_Bus_Voltage_Min_Limit,,rw,no,1,1,500,,0,ManagedVariable,no,-2147483648,2147483647,no
+0x6425,0x04,,INTEGER32,DPMU_Temperature_Min_Limit,,rw,no,1,1,500,,0,ManagedVariable,no,-2147483648,2147483647,no
+ 

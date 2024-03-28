@@ -1,0 +1,2612 @@
+CANopen Object Dictionary Documenation for DPMU_001
+
+
+Index:       0x1000 - Device Type
+DataType:    UNSIGNED32
+ObjectCode:  Variable
+  Sub:          0x00 - Device Type
+  DataType:     UNSIGNED32
+  DefaultValue: 0x30191
+  AccessType:   ro
+  PDOMapping:   0
+
+Index:       0x1001 - Error Register
+DataType:    UNSIGNED8
+ObjectCode:  Variable
+  Sub:          0x00 - Error Register
+  DataType:     UNSIGNED8
+  AccessType:   ro
+  PDOMapping:   0
+
+Index:       0x1003 - Predefined Error Field
+DataType:    UNSIGNED32
+ObjectCode:  Array
+  Sub:          0x00 - Number of Errors
+  DataType:     UNSIGNED8
+  DefaultValue: 10
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x01 - Error Code
+  DataType:     UNSIGNED32
+  DefaultValue: 0
+  AccessType:   ro
+  PDOMapping:   0
+  Sub:          0x02 - Error Code
+  DataType:     UNSIGNED32
+  DefaultValue: 0
+  AccessType:   ro
+  PDOMapping:   0
+  Sub:          0x03 - Error Code
+  DataType:     UNSIGNED32
+  DefaultValue: 0
+  AccessType:   ro
+  PDOMapping:   0
+  Sub:          0x04 - Error Code
+  DataType:     UNSIGNED32
+  DefaultValue: 0
+  AccessType:   ro
+  PDOMapping:   0
+  Sub:          0x05 - Error Code
+  DataType:     UNSIGNED32
+  DefaultValue: 0
+  AccessType:   ro
+  PDOMapping:   0
+  Sub:          0x06 - Error Code
+  DataType:     UNSIGNED32
+  DefaultValue: 0
+  AccessType:   ro
+  PDOMapping:   0
+  Sub:          0x07 - Error Code
+  DataType:     UNSIGNED32
+  DefaultValue: 0
+  AccessType:   ro
+  PDOMapping:   0
+  Sub:          0x08 - Error Code
+  DataType:     UNSIGNED32
+  DefaultValue: 0
+  AccessType:   ro
+  PDOMapping:   0
+  Sub:          0x09 - Error Code
+  DataType:     UNSIGNED32
+  DefaultValue: 0
+  AccessType:   ro
+  PDOMapping:   0
+  Sub:          0x0a - Error Code
+  DataType:     UNSIGNED32
+  DefaultValue: 0
+  AccessType:   ro
+  PDOMapping:   0
+
+Index:       0x1008 - Manufacturer device name
+DataType:    VISIBLE_STRING
+ObjectCode:  Variable
+  Sub:          0x00 - Manufacturer device name
+  DataType:     VISIBLE_STRING
+  DefaultValue: emotas Slave 1 (cpu 1)
+  AccessType:   const
+  PDOMapping:   0
+
+Index:       0x1010 - Store parameters
+DataType:    UNSIGNED32
+ObjectCode:  Array
+  Sub:          0x00 - Highest sub-index supported
+  DataType:     UNSIGNED8
+  DefaultValue: 127
+  AccessType:   const
+  PDOMapping:   0
+  Sub:          0x01 - Save all parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x02 - Save communication parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x03 - Save application parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x04 - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x05 - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x06 - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x07 - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x08 - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x09 - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x0a - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x0b - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x0c - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x0d - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x0e - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x0f - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x10 - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x11 - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x12 - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x13 - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x14 - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x15 - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x16 - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x17 - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x18 - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x19 - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x1a - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x1b - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x1c - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x1d - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x1e - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x1f - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x20 - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x21 - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x22 - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x23 - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x24 - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x25 - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x26 - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x27 - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x28 - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x29 - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x2a - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x2b - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x2c - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x2d - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x2e - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x2f - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x30 - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x31 - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x32 - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x33 - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x34 - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x35 - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x36 - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x37 - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x38 - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x39 - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x3a - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x3b - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x3c - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x3d - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x3e - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x3f - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x40 - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x41 - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x42 - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x43 - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x44 - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x45 - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x46 - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x47 - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x48 - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x49 - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x4a - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x4b - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x4c - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x4d - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x4e - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x4f - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x50 - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x51 - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x52 - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x53 - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x54 - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x55 - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x56 - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x57 - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x58 - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x59 - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x5a - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x5b - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x5c - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x5d - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x5e - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x5f - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x60 - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x61 - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x62 - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x63 - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x64 - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x65 - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x66 - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x67 - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x68 - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x69 - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x6a - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x6b - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x6c - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x6d - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x6e - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x6f - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x70 - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x71 - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x72 - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x73 - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x74 - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x75 - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x76 - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x77 - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x78 - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x79 - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x7a - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x7b - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x7c - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x7d - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x7e - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x7f - Save manufacturer defined parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+
+Index:       0x1011 - Restore default parameters
+DataType:    UNSIGNED32
+ObjectCode:  Array
+  Sub:          0x00 - Highest sub-index supported
+  DataType:     UNSIGNED8
+  DefaultValue: 127
+  AccessType:   const
+  PDOMapping:   0
+  Sub:          0x01 - Restore all default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x02 - Restore communication default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x03 - Restore application default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x04 - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x05 - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x06 - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x07 - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x08 - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x09 - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x0a - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x0b - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x0c - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x0d - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x0e - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x0f - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x10 - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x11 - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x12 - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x13 - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x14 - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x15 - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x16 - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x17 - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x18 - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x19 - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x1a - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x1b - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x1c - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x1d - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x1e - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x1f - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x20 - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x21 - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x22 - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x23 - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x24 - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x25 - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x26 - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x27 - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x28 - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x29 - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x2a - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x2b - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x2c - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x2d - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x2e - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x2f - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x30 - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x31 - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x32 - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x33 - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x34 - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x35 - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x36 - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x37 - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x38 - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x39 - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x3a - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x3b - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x3c - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x3d - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x3e - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x3f - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x40 - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x41 - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x42 - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x43 - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x44 - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x45 - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x46 - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x47 - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x48 - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x49 - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x4a - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x4b - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x4c - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x4d - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x4e - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x4f - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x50 - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x51 - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x52 - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x53 - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x54 - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x55 - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x56 - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x57 - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x58 - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x59 - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x5a - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x5b - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x5c - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x5d - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x5e - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x5f - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x60 - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x61 - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x62 - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x63 - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x64 - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x65 - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x66 - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x67 - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x68 - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x69 - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x6a - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x6b - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x6c - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x6d - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x6e - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x6f - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x70 - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x71 - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x72 - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x73 - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x74 - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x75 - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x76 - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x77 - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x78 - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x79 - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x7a - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x7b - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x7c - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x7d - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x7e - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x7f - Restore manufacturer defined default parameters
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+
+Index:       0x1014 - COB ID EMCY
+DataType:    UNSIGNED32
+ObjectCode:  Variable
+  Sub:          0x00 - COB ID EMCY
+  DataType:     UNSIGNED32
+  DefaultValue: $NODEID+0x80
+  AccessType:   ro
+  PDOMapping:   0
+
+Index:       0x1015 - Inhibit Time Emergency
+DataType:    UNSIGNED16
+ObjectCode:  Variable
+  Sub:          0x00 - Inhibit Time Emergency
+  DataType:     UNSIGNED16
+  DefaultValue: 0x0
+  AccessType:   rw
+  PDOMapping:   0
+
+Index:       0x1016 - Consumer Heartbeat Time
+DataType:    UNSIGNED32
+ObjectCode:  Array
+  Sub:          0x00 - Number of entries
+  DataType:     UNSIGNED8
+  DefaultValue: 1
+  AccessType:   ro
+  PDOMapping:   0
+  Sub:          0x01 - Consumer Heartbeat Time
+  DataType:     UNSIGNED32
+  DefaultValue: 0x10800
+  AccessType:   rw
+  PDOMapping:   0
+
+Index:       0x1017 - Producer Heartbeat Time
+DataType:    UNSIGNED16
+ObjectCode:  Variable
+  Sub:          0x00 - Producer Heartbeat Time
+  DataType:     UNSIGNED16
+  DefaultValue: 1000
+  AccessType:   rw
+  PDOMapping:   0
+
+Index:       0x1018 - Identity Object
+DataType:    UNSIGNED8
+ObjectCode:  Record
+  Sub:          0x00 - Number of entries
+  DataType:     UNSIGNED8
+  DefaultValue: 4
+  AccessType:   ro
+  PDOMapping:   0
+  Sub:          0x01 - Vendor Id
+  DataType:     UNSIGNED32
+  DefaultValue: 0x0000
+  AccessType:   ro
+  PDOMapping:   0
+  Sub:          0x02 - Product Code
+  DataType:     UNSIGNED32
+  DefaultValue: 1234
+  AccessType:   ro
+  PDOMapping:   0
+  Sub:          0x03 - Revision number
+  DataType:     UNSIGNED32
+  DefaultValue: 0x1
+  AccessType:   ro
+  PDOMapping:   0
+  Sub:          0x04 - Serial number
+  DataType:     UNSIGNED32
+  AccessType:   ro
+  PDOMapping:   0
+
+Index:       0x1029 - Error behaviour
+DataType:    UNSIGNED8
+ObjectCode:  Array
+  Sub:          0x00 - Nr of Error Classes
+  DataType:     UNSIGNED8
+  DefaultValue: 2
+  AccessType:   ro
+  PDOMapping:   0
+  Sub:          0x01 - Communication Error
+  DataType:     UNSIGNED8
+  DefaultValue: 1
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x02 - Specific Error Class 
+  DataType:     UNSIGNED8
+  AccessType:   rw
+  PDOMapping:   0
+
+Index:       0x1200 - Server SDO Parameter
+DataType:    UNSIGNED8
+ObjectCode:  Record
+  Sub:          0x00 - Number of entries
+  DataType:     UNSIGNED8
+  DefaultValue: 2
+  AccessType:   ro
+  PDOMapping:   0
+  Sub:          0x01 - COB ID Client to Server
+  DataType:     UNSIGNED32
+  DefaultValue: $NODEID+0x600
+  AccessType:   ro
+  PDOMapping:   0
+  Sub:          0x02 - COB ID Server to Client
+  DataType:     UNSIGNED32
+  DefaultValue: $NODEID+0x580
+  AccessType:   ro
+  PDOMapping:   0
+
+Index:       0x1400 - Receive PDO Communication Parameter
+DataType:    UNSIGNED8
+ObjectCode:  Record
+  Sub:          0x00 - Number of entries
+  DataType:     UNSIGNED8
+  DefaultValue: 5
+  AccessType:   ro
+  PDOMapping:   0
+  Sub:          0x01 - COB ID
+  DataType:     UNSIGNED32
+  DefaultValue: $NODEID+0x200
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x02 - Transmission Type
+  DataType:     UNSIGNED8
+  DefaultValue: 255
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x03 - Inhibit Time
+  DataType:     UNSIGNED16
+  DefaultValue: 0x0000
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x04 - Compatibility Entry
+  DataType:     UNSIGNED8
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x05 - Event Timer
+  DataType:     UNSIGNED16
+  DefaultValue: 3000
+  AccessType:   rw
+  PDOMapping:   0
+
+Index:       0x1401 - Receive PDO Communication Parameter
+DataType:    UNSIGNED8
+ObjectCode:  Record
+Description: This object contains the communication parameters for the PDO the CANopen device is able to receive.
+
+  Sub:          0x00 - Highest sub-index supported
+  DataType:     UNSIGNED8
+  DefaultValue: 2
+  AccessType:   ro
+  PDOMapping:   0
+  Sub:          0x01 - COB ID
+  DataType:     UNSIGNED32
+  DefaultValue: $NODEID+0x300
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x02 - Transmission Type
+  DataType:     UNSIGNED8
+  DefaultValue: 255
+  AccessType:   rw
+  PDOMapping:   0
+
+Index:       0x1600 - Receive PDO Mapping Parameter
+DataType:    UNSIGNED8
+ObjectCode:  Record
+  Sub:          0x00 - Number of entries
+  DataType:     UNSIGNED8
+  DefaultValue: 3
+  AccessType:   const
+  PDOMapping:   0
+  Sub:          0x01 - PDO Mapping Entry
+  DataType:     UNSIGNED32
+  DefaultValue: 0x30000208
+  AccessType:   const
+  PDOMapping:   0
+  Sub:          0x02 - PDO Mapping Entry
+  DataType:     UNSIGNED32
+  DefaultValue: 0x20010020
+  AccessType:   const
+  PDOMapping:   0
+  Sub:          0x03 - PDO Mapping Entry
+  DataType:     UNSIGNED32
+  DefaultValue: 0x30000308
+  AccessType:   const
+  PDOMapping:   0
+
+Index:       0x1601 - Receive PDO Mapping Parameter
+DataType:    UNSIGNED8
+ObjectCode:  Record
+Description: This object contains the mapping parameters for the PDO the CANopen device is able to receive.
+
+  Sub:          0x00 - Highest sub-index supported
+  DataType:     UNSIGNED8
+  DefaultValue: 4
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x01 - Mapping Entry 1
+  DataType:     UNSIGNED32
+  DefaultValue: 0x62000108
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x02 - Mapping Entry 2
+  DataType:     UNSIGNED32
+  DefaultValue: 0x62000208
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x03 - Mapping Entry 3
+  DataType:     UNSIGNED32
+  DefaultValue: 0x62000308
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x04 - Mapping Entry 4
+  DataType:     UNSIGNED32
+  DefaultValue: 0x62000408
+  AccessType:   rw
+  PDOMapping:   0
+
+Index:       0x1800 - Transmit PDO IO
+DataType:    UNSIGNED8
+ObjectCode:  Record
+  Sub:          0x00 - Number of entries
+  DataType:     UNSIGNED8
+  DefaultValue: 5
+  AccessType:   ro
+  PDOMapping:   0
+  Sub:          0x01 - COB ID
+  DataType:     UNSIGNED32
+  DefaultValue: $NODEID+0x180
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x02 - Transmission Type
+  DataType:     UNSIGNED8
+  DefaultValue: 254
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x03 - Inhibit Time
+  DataType:     UNSIGNED16
+  DefaultValue: 5000
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x04 - Compatibility Entry
+  DataType:     UNSIGNED8
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x05 - Event Timer
+  DataType:     UNSIGNED16
+  DefaultValue: 0
+  AccessType:   rw
+  PDOMapping:   0
+
+Index:       0x1801 - Transmit PDO Temperatures
+DataType:    UNSIGNED8
+ObjectCode:  Record
+  Sub:          0x00 - Number of entries
+  DataType:     UNSIGNED8
+  DefaultValue: 5
+  AccessType:   ro
+  PDOMapping:   0
+  Sub:          0x01 - COB ID
+  DataType:     UNSIGNED32
+  DefaultValue: $NODEID+0x280
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x02 - Transmission Type
+  DataType:     UNSIGNED8
+  DefaultValue: 254
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x03 - Inhibit Time
+  DataType:     UNSIGNED16
+  DefaultValue: 0x0000
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x04 - Compatibility Entry
+  DataType:     UNSIGNED8
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x05 - Event Timer
+  DataType:     UNSIGNED16
+  DefaultValue: 10000
+  AccessType:   rw
+  PDOMapping:   0
+
+Index:       0x1802 - Transmit PDO DC Bus
+DataType:    UNSIGNED8
+ObjectCode:  Record
+  Sub:          0x00 - Number of entries
+  DataType:     UNSIGNED8
+  DefaultValue: 5
+  AccessType:   ro
+  PDOMapping:   0
+  Sub:          0x01 - COB ID
+  DataType:     UNSIGNED32
+  DefaultValue: $NODEID+0x380
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x02 - Transmission Type
+  DataType:     UNSIGNED8
+  DefaultValue: 254
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x03 - Inhibit Time
+  DataType:     UNSIGNED16
+  DefaultValue: 0x0000
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x04 - Compatibility Entry
+  DataType:     UNSIGNED8
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x05 - Event Timer
+  DataType:     UNSIGNED16
+  DefaultValue: 10000
+  AccessType:   rw
+  PDOMapping:   0
+
+Index:       0x1803 - Transmit PDO Energy Bank
+DataType:    UNSIGNED8
+ObjectCode:  Record
+  Sub:          0x00 - Number of entries
+  DataType:     UNSIGNED8
+  DefaultValue: 5
+  AccessType:   ro
+  PDOMapping:   0
+  Sub:          0x01 - COB ID
+  DataType:     UNSIGNED32
+  DefaultValue: $NODEID+0x480
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x02 - Transmission Type
+  DataType:     UNSIGNED8
+  DefaultValue: 254
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x03 - Inhibit Time
+  DataType:     UNSIGNED16
+  DefaultValue: 5000
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x04 - Compatibility Entry
+  DataType:     UNSIGNED8
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x05 - Event Timer
+  DataType:     UNSIGNED16
+  DefaultValue: 10000
+  AccessType:   rw
+  PDOMapping:   0
+
+Index:       0x1a00 - TPDO mapping IO
+DataType:    UNKNOWN
+ObjectCode:  Record
+  Sub:          0x00 - Number of mapped application objects in TPDO
+  DataType:     UNSIGNED8
+  DefaultValue: 1
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x01 - State_Of_Switches_PDO
+  DataType:     UNSIGNED32
+  DefaultValue: 0x60000108
+  AccessType:   rw
+  PDOMapping:   0
+
+Index:       0x1a01 - TPDO mapping Temperatures
+DataType:    UNKNOWN
+ObjectCode:  Record
+  Sub:          0x00 - Number of entries
+  DataType:     UNSIGNED8
+  DefaultValue: 5
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x01 - Temperature_Measured_At_DPMU_Hottest_Point_PDO
+  DataType:     UNSIGNED32
+  DefaultValue: 0x32000208
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x02 - TEMPERATURE_BASE_PDO
+  DataType:     UNSIGNED32
+  DefaultValue: 0x32000408
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x03 - TEMPERATURE_MAIN_PDO
+  DataType:     UNSIGNED32
+  DefaultValue: 0x32000508
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x04 - TEMPERATURE_MEZZANINE_PDO
+  DataType:     UNSIGNED32
+  DefaultValue: 0x32000608
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x05 - TEMPERATURE_PWR_BANK_PDO
+  DataType:     UNSIGNED32
+  DefaultValue: 0x32000708
+  AccessType:   rw
+  PDOMapping:   0
+
+Index:       0x1a02 - TPDO mapping DC Bus
+DataType:    UNKNOWN
+ObjectCode:  Record
+  Sub:          0x00 - Number of entries
+  DataType:     UNSIGNED8
+  DefaultValue: 4
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x01 - Read_Voltage_At_DC_Bus_PDO
+  DataType:     UNSIGNED32
+  DefaultValue: 0x33040108
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x02 - Power_From_DC_Input_PDO
+  DataType:     UNSIGNED32
+  DefaultValue: 0x33040210
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x03 - Read_Load_Current_PDO
+  DataType:     UNSIGNED32
+  DefaultValue: 0x33040308
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x04 - Power_Consumed_By_Load_PDO
+  DataType:     UNSIGNED32
+  DefaultValue: 0x33040410
+  AccessType:   rw
+  PDOMapping:   0
+
+Index:       0x1a03 - TPDO mapping Energy Bank
+DataType:    UNKNOWN
+ObjectCode:  Record
+  Sub:          0x00 - Number of entries
+  DataType:     UNSIGNED8
+  DefaultValue: 4
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x01 - State_of_Charge_of_Energy_Bank_PDO
+  DataType:     UNSIGNED32
+  DefaultValue: 0x34000508
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x02 - State_of_Health_of_Energy_Bank_PDO
+  DataType:     UNSIGNED32
+  DefaultValue: 0x34000608
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x03 - Remaining_Energy_To_Min_SoC_At_Energy_Bank_PDO
+  DataType:     UNSIGNED32
+  DefaultValue: 0x34000710
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x04 - Stack_Temperature_PDO
+  DataType:     UNSIGNED32
+  DefaultValue: 0x34000908
+  AccessType:   rw
+  PDOMapping:   0
+
+Index:       0x1f51 - Program Control
+DataType:    UNSIGNED8
+ObjectCode:  Array
+  Sub:          0x00 - Number of entries
+  DataType:     UNSIGNED8
+  DefaultValue: 1
+  AccessType:   ro
+  PDOMapping:   0
+  Sub:          0x01 - Program Control 1
+  DataType:     UNSIGNED8
+  AccessType:   rw
+  PDOMapping:   0
+  Description: 0 .. Stop program
+1 .. Start program
+3 .. Erase program
+
+
+Index:       0x2000 - Date_And_Time
+DataType:    UNSIGNED32
+ObjectCode:  Variable
+  Sub:          0x00 - Date_And_Time
+  DataType:     UNSIGNED32
+  AccessType:   rw
+  PDOMapping:   0
+
+Index:       0x2001 - Manufacturer Object
+DataType:    INTEGER32
+ObjectCode:  Variable
+  Sub:          0x00 - Manufacturer Object
+  DataType:     INTEGER32
+  DefaultValue: 4
+  AccessType:   rw
+  PDOMapping:   1
+
+Index:       0x2002 - Set NodeID
+DataType:    UNSIGNED8
+ObjectCode:  Variable
+Description: Used to update the nodeID of the node.
+Must issue a NMT RESET COMMUNICATION or a NMT RESET APPLICATION for the change to take effect.
+  Sub:          0x00 - Set NodeID
+  DataType:     UNSIGNED8
+  DefaultValue: 125
+  AccessType:   rw
+  PDOMapping:   0
+
+Index:       0x3000 - DC_Bus_Voltage
+DataType:    UNSIGNED8
+ObjectCode:  Array
+  Sub:          0x00 - Highest sub-index supported
+  DataType:     UNSIGNED8
+  DefaultValue: 5
+  AccessType:   ro
+  PDOMapping:   0
+  Sub:          0x01 - Min_Allowed_DC_Bus_Voltage
+  DataType:     UNSIGNED8
+  DefaultValue: 167
+  AccessType:   rw
+  PDOMapping:   3
+  Sub:          0x02 - Max_Allowed_DC_Bus_Voltage
+  DataType:     UNSIGNED8
+  DefaultValue: 193
+  AccessType:   rw
+  PDOMapping:   3
+  Sub:          0x03 - Target_Voltage_At_DC_Bus
+  DataType:     UNSIGNED8
+  DefaultValue: 180
+  AccessType:   rw
+  PDOMapping:   3
+  Sub:          0x04 - VDC_Bus_Short_Circuit_Limit
+  DataType:     UNSIGNED8
+  DefaultValue: 60
+  AccessType:   rw
+  PDOMapping:   3
+  Sub:          0x05 - VDROOP
+  DataType:     UNSIGNED8
+  DefaultValue: 1
+  AccessType:   rw
+  PDOMapping:   3
+  Description: The VDROOP is used in the Redundant and the Suplementary DPMUs to increase the Voltage of the DC Bus then giving power to the Default DPMU.
+
+Index:       0x3001 - ESS_Current
+DataType:    UNSIGNED8
+ObjectCode:  Variable
+Description: Fixed point 1111.1111
+3A -> 0x30
+  Sub:          0x00 - ESS_Current
+  DataType:     UNSIGNED8
+  DefaultValue: 0x30
+  AccessType:   rw
+  PDOMapping:   3
+
+Index:       0x3100 - Energy_Cell_Summary
+DataType:    UNKNOWN
+ObjectCode:  Record
+  Sub:          0x00 - Highest sub-index supported
+  DataType:     UNSIGNED8
+  DefaultValue: 62
+  AccessType:   ro
+  PDOMapping:   0
+  Sub:          0x01 - Min_Voltage_Energy_Cell
+  DataType:     UNSIGNED8
+  DefaultValue: 0x10
+  AccessType:   rw
+  PDOMapping:   3
+  Description: Fixed point 1111.1111
+1V -> 0x10
+  Sub:          0x02 - Max_Voltage_Energy_Cell
+  DataType:     UNSIGNED8
+  DefaultValue: 0x30
+  AccessType:   rw
+  PDOMapping:   3
+  Description: Fixed point 1111.1111
+3V -> 0x30
+  Sub:          0x03 - State_of_Charge_of_Energy_Cell_01
+  DataType:     UNSIGNED8
+  DefaultValue: 0
+  AccessType:   ro
+  PDOMapping:   1
+  Sub:          0x04 - State_of_Charge_of_Energy_Cell_02
+  DataType:     UNSIGNED8
+  DefaultValue: 0
+  AccessType:   ro
+  PDOMapping:   1
+  Sub:          0x05 - State_of_Charge_of_Energy_Cell_03
+  DataType:     UNSIGNED8
+  DefaultValue: 0
+  AccessType:   ro
+  PDOMapping:   1
+  Sub:          0x06 - State_of_Charge_of_Energy_Cell_04
+  DataType:     UNSIGNED8
+  DefaultValue: 0
+  AccessType:   ro
+  PDOMapping:   1
+  Sub:          0x07 - State_of_Charge_of_Energy_Cell_05
+  DataType:     UNSIGNED8
+  DefaultValue: 0
+  AccessType:   ro
+  PDOMapping:   1
+  Sub:          0x08 - State_of_Charge_of_Energy_Cell_06
+  DataType:     UNSIGNED8
+  DefaultValue: 0
+  AccessType:   ro
+  PDOMapping:   1
+  Sub:          0x09 - State_of_Charge_of_Energy_Cell_07
+  DataType:     UNSIGNED8
+  DefaultValue: 0
+  AccessType:   ro
+  PDOMapping:   1
+  Sub:          0x0a - State_of_Charge_of_Energy_Cell_08
+  DataType:     UNSIGNED8
+  DefaultValue: 0
+  AccessType:   ro
+  PDOMapping:   1
+  Sub:          0x0b - State_of_Charge_of_Energy_Cell_09
+  DataType:     UNSIGNED8
+  DefaultValue: 0
+  AccessType:   ro
+  PDOMapping:   1
+  Sub:          0x0c - State_of_Charge_of_Energy_Cell_10
+  DataType:     UNSIGNED8
+  DefaultValue: 0
+  AccessType:   ro
+  PDOMapping:   1
+  Sub:          0x0d - State_of_Charge_of_Energy_Cell_11
+  DataType:     UNSIGNED8
+  DefaultValue: 0
+  AccessType:   ro
+  PDOMapping:   1
+  Sub:          0x0e - State_of_Charge_of_Energy_Cell_12
+  DataType:     UNSIGNED8
+  DefaultValue: 0
+  AccessType:   ro
+  PDOMapping:   1
+  Sub:          0x0f - State_of_Charge_of_Energy_Cell_13
+  DataType:     UNSIGNED8
+  DefaultValue: 0
+  AccessType:   ro
+  PDOMapping:   1
+  Sub:          0x10 - State_of_Charge_of_Energy_Cell_14
+  DataType:     UNSIGNED8
+  DefaultValue: 0
+  AccessType:   ro
+  PDOMapping:   1
+  Sub:          0x11 - State_of_Charge_of_Energy_Cell_15
+  DataType:     UNSIGNED8
+  DefaultValue: 0
+  AccessType:   ro
+  PDOMapping:   1
+  Sub:          0x12 - State_of_Charge_of_Energy_Cell_16
+  DataType:     UNSIGNED8
+  DefaultValue: 0
+  AccessType:   ro
+  PDOMapping:   1
+  Sub:          0x13 - State_of_Charge_of_Energy_Cell_17
+  DataType:     UNSIGNED8
+  DefaultValue: 0
+  AccessType:   ro
+  PDOMapping:   1
+  Sub:          0x14 - State_of_Charge_of_Energy_Cell_18
+  DataType:     UNSIGNED8
+  DefaultValue: 0
+  AccessType:   ro
+  PDOMapping:   1
+  Sub:          0x15 - State_of_Charge_of_Energy_Cell_19
+  DataType:     UNSIGNED8
+  DefaultValue: 0
+  AccessType:   ro
+  PDOMapping:   1
+  Sub:          0x16 - State_of_Charge_of_Energy_Cell_20
+  DataType:     UNSIGNED8
+  DefaultValue: 0
+  AccessType:   ro
+  PDOMapping:   1
+  Sub:          0x17 - State_of_Charge_of_Energy_Cell_21
+  DataType:     UNSIGNED8
+  DefaultValue: 0
+  AccessType:   ro
+  PDOMapping:   1
+  Sub:          0x18 - State_of_Charge_of_Energy_Cell_22
+  DataType:     UNSIGNED8
+  DefaultValue: 0
+  AccessType:   ro
+  PDOMapping:   1
+  Sub:          0x19 - State_of_Charge_of_Energy_Cell_23
+  DataType:     UNSIGNED8
+  DefaultValue: 0
+  AccessType:   ro
+  PDOMapping:   1
+  Sub:          0x1a - State_of_Charge_of_Energy_Cell_24
+  DataType:     UNSIGNED8
+  DefaultValue: 0
+  AccessType:   ro
+  PDOMapping:   1
+  Sub:          0x1b - State_of_Charge_of_Energy_Cell_25
+  DataType:     UNSIGNED8
+  DefaultValue: 0
+  AccessType:   ro
+  PDOMapping:   1
+  Sub:          0x1c - State_of_Charge_of_Energy_Cell_26
+  DataType:     UNSIGNED8
+  DefaultValue: 0
+  AccessType:   ro
+  PDOMapping:   1
+  Sub:          0x1d - State_of_Charge_of_Energy_Cell_27
+  DataType:     UNSIGNED8
+  DefaultValue: 0
+  AccessType:   ro
+  PDOMapping:   1
+  Sub:          0x1e - State_of_Charge_of_Energy_Cell_28
+  DataType:     UNSIGNED8
+  DefaultValue: 0
+  AccessType:   ro
+  PDOMapping:   1
+  Sub:          0x1f - State_of_Charge_of_Energy_Cell_29
+  DataType:     UNSIGNED8
+  DefaultValue: 0
+  AccessType:   ro
+  PDOMapping:   1
+  Sub:          0x20 - State_of_Charge_of_Energy_Cell_30
+  DataType:     UNSIGNED8
+  DefaultValue: 0
+  AccessType:   ro
+  PDOMapping:   1
+  Sub:          0x21 - State_of_Health_of_Energy_Cell_01
+  DataType:     UNSIGNED8
+  DefaultValue: 0
+  AccessType:   ro
+  PDOMapping:   1
+  Sub:          0x22 - State_of_Health_of_Energy_Cell_02
+  DataType:     UNSIGNED8
+  DefaultValue: 0
+  AccessType:   ro
+  PDOMapping:   1
+  Sub:          0x23 - State_of_Health_of_Energy_Cell_03
+  DataType:     UNSIGNED8
+  DefaultValue: 0
+  AccessType:   ro
+  PDOMapping:   1
+  Sub:          0x24 - State_of_Health_of_Energy_Cell_04
+  DataType:     UNSIGNED8
+  DefaultValue: 0
+  AccessType:   ro
+  PDOMapping:   1
+  Sub:          0x25 - State_of_Health_of_Energy_Cell_05
+  DataType:     UNSIGNED8
+  DefaultValue: 0
+  AccessType:   ro
+  PDOMapping:   1
+  Sub:          0x26 - State_of_Health_of_Energy_Cell_06
+  DataType:     UNSIGNED8
+  DefaultValue: 0
+  AccessType:   ro
+  PDOMapping:   1
+  Sub:          0x27 - State_of_Health_of_Energy_Cell_07
+  DataType:     UNSIGNED8
+  DefaultValue: 0
+  AccessType:   ro
+  PDOMapping:   1
+  Sub:          0x28 - State_of_Health_of_Energy_Cell_08
+  DataType:     UNSIGNED8
+  DefaultValue: 0
+  AccessType:   ro
+  PDOMapping:   1
+  Sub:          0x29 - State_of_Health_of_Energy_Cell_09
+  DataType:     UNSIGNED8
+  DefaultValue: 0
+  AccessType:   ro
+  PDOMapping:   1
+  Sub:          0x2a - State_of_Health_of_Energy_Cell_10
+  DataType:     UNSIGNED8
+  DefaultValue: 0
+  AccessType:   ro
+  PDOMapping:   1
+  Sub:          0x2b - State_of_Health_of_Energy_Cell_11
+  DataType:     UNSIGNED8
+  DefaultValue: 0
+  AccessType:   ro
+  PDOMapping:   1
+  Sub:          0x2c - State_of_Health_of_Energy_Cell_12
+  DataType:     UNSIGNED8
+  DefaultValue: 0
+  AccessType:   ro
+  PDOMapping:   1
+  Sub:          0x2d - State_of_Health_of_Energy_Cell_13
+  DataType:     UNSIGNED8
+  DefaultValue: 0
+  AccessType:   ro
+  PDOMapping:   1
+  Sub:          0x2e - State_of_Health_of_Energy_Cell_14
+  DataType:     UNSIGNED8
+  DefaultValue: 0
+  AccessType:   ro
+  PDOMapping:   1
+  Sub:          0x2f - State_of_Health_of_Energy_Cell_15
+  DataType:     UNSIGNED8
+  DefaultValue: 0
+  AccessType:   ro
+  PDOMapping:   1
+  Sub:          0x30 - State_of_Health_of_Energy_Cell_16
+  DataType:     UNSIGNED8
+  DefaultValue: 0
+  AccessType:   ro
+  PDOMapping:   1
+  Sub:          0x31 - State_of_Health_of_Energy_Cell_17
+  DataType:     UNSIGNED8
+  DefaultValue: 0
+  AccessType:   ro
+  PDOMapping:   1
+  Sub:          0x32 - State_of_Health_of_Energy_Cell_18
+  DataType:     UNSIGNED8
+  DefaultValue: 0
+  AccessType:   ro
+  PDOMapping:   1
+  Sub:          0x33 - State_of_Health_of_Energy_Cell_19
+  DataType:     UNSIGNED8
+  DefaultValue: 0
+  AccessType:   ro
+  PDOMapping:   1
+  Sub:          0x34 - State_of_Health_of_Energy_Cell_20
+  DataType:     UNSIGNED8
+  DefaultValue: 0
+  AccessType:   ro
+  PDOMapping:   1
+  Sub:          0x35 - State_of_Health_of_Energy_Cell_21
+  DataType:     UNSIGNED8
+  DefaultValue: 0
+  AccessType:   ro
+  PDOMapping:   1
+  Sub:          0x36 - State_of_Health_of_Energy_Cell_22
+  DataType:     UNSIGNED8
+  DefaultValue: 0
+  AccessType:   ro
+  PDOMapping:   1
+  Sub:          0x37 - State_of_Health_of_Energy_Cell_23
+  DataType:     UNSIGNED8
+  DefaultValue: 0
+  AccessType:   ro
+  PDOMapping:   1
+  Sub:          0x38 - State_of_Health_of_Energy_Cell_24
+  DataType:     UNSIGNED8
+  DefaultValue: 0
+  AccessType:   ro
+  PDOMapping:   1
+  Sub:          0x39 - State_of_Health_of_Energy_Cell_25
+  DataType:     UNSIGNED8
+  DefaultValue: 0
+  AccessType:   ro
+  PDOMapping:   1
+  Sub:          0x3a - State_of_Health_of_Energy_Cell_26
+  DataType:     UNSIGNED8
+  DefaultValue: 0
+  AccessType:   ro
+  PDOMapping:   1
+  Sub:          0x3b - State_of_Health_of_Energy_Cell_27
+  DataType:     UNSIGNED8
+  DefaultValue: 0
+  AccessType:   ro
+  PDOMapping:   1
+  Sub:          0x3c - State_of_Health_of_Energy_Cell_28
+  DataType:     UNSIGNED8
+  DefaultValue: 0
+  AccessType:   ro
+  PDOMapping:   1
+  Sub:          0x3d - State_of_Health_of_Energy_Cell_29
+  DataType:     UNSIGNED8
+  DefaultValue: 0
+  AccessType:   ro
+  PDOMapping:   1
+  Sub:          0x3e - State_of_Health_of_Energy_Cell_30
+  DataType:     UNSIGNED8
+  DefaultValue: 0
+  AccessType:   ro
+  PDOMapping:   1
+
+Index:       0x3200 - Temperature
+DataType:    UNKNOWN
+ObjectCode:  Record
+  Sub:          0x00 - Highest sub-index supported
+  DataType:     UNSIGNED8
+  DefaultValue: 7
+  AccessType:   ro
+  PDOMapping:   0
+  Sub:          0x01 - DPMU_Temperature_Max_Limit
+  DataType:     INTEGER8
+  DefaultValue: 0
+  AccessType:   rw
+  PDOMapping:   1
+  Sub:          0x02 - Temperature_Measured_At_DPMU_Hottest_Point
+  DataType:     INTEGER8
+  DefaultValue: 0
+  AccessType:   ro
+  PDOMapping:   1
+  Description: 1/4 C is good enough.
+  Sub:          0x03 - DPMU_Temperature_High_Limit
+  DataType:     INTEGER8
+  DefaultValue: 0
+  AccessType:   rw
+  PDOMapping:   1
+  Sub:          0x04 - TEMPERATURE_BASE
+  DataType:     INTEGER8
+  DefaultValue: 0
+  AccessType:   ro
+  PDOMapping:   1
+  Sub:          0x05 - TEMPERATURE_MAIN
+  DataType:     INTEGER8
+  DefaultValue: 0
+  AccessType:   ro
+  PDOMapping:   1
+  Sub:          0x06 - TEMPERATURE_MEZZANINE
+  DataType:     INTEGER8
+  DefaultValue: 0
+  AccessType:   ro
+  PDOMapping:   1
+  Sub:          0x07 - TEMPERATURE_PWR_BANK
+  DataType:     INTEGER8
+  DefaultValue: 0
+  AccessType:   ro
+  PDOMapping:   1
+
+Index:       0x3301 - Maximum_Allowed_Load_Power
+DataType:    UNSIGNED16
+ObjectCode:  Variable
+Description: Watt (DC Bus voltage x input current), Resolution 1W.
+  Sub:          0x00 - Maximum_Allowed_Load_Power
+  DataType:     UNSIGNED16
+  DefaultValue: 0
+  AccessType:   rw
+  PDOMapping:   1
+
+Index:       0x3302 - Power_Budget_DC_Input
+DataType:    UNSIGNED16
+ObjectCode:  Array
+  Sub:          0x00 - Highest sub-index supported
+  DataType:     UNSIGNED8
+  DefaultValue: 1
+  AccessType:   ro
+  PDOMapping:   0
+  Sub:          0x01 - Available_Power_Budget_DC_Input
+  DataType:     UNSIGNED16
+  AccessType:   rw
+  PDOMapping:   0
+  Description: Watt (DC Bus voltage x input current), Resolution 1W.
+
+Index:       0x3303 - Charge_Factor
+DataType:    UNSIGNED8
+ObjectCode:  Variable
+  Sub:          0x00 - Charge_Factor
+  DataType:     UNSIGNED8
+  DefaultValue: 0
+  AccessType:   rw
+  PDOMapping:   1
+
+Index:       0x3304 - Read_Power
+DataType:    UNSIGNED8
+ObjectCode:  Record
+  Sub:          0x00 - Highest sub-index supported
+  DataType:     UNSIGNED8
+  DefaultValue: 4
+  AccessType:   ro
+  PDOMapping:   0
+  Sub:          0x01 - Read_Voltage_At_DC_Bus
+  DataType:     UNSIGNED8
+  AccessType:   ro
+  PDOMapping:   4
+  Description: 1V resolution (0.55% of 180V).
+  Sub:          0x02 - Power_From_DC_Input
+  DataType:     UNSIGNED16
+  AccessType:   ro
+  PDOMapping:   4
+  Description: Watt (DC Bus voltage x input current), Resolution 1W.
+  Sub:          0x03 - Read_Load_Current
+  DataType:     INTEGER8
+  AccessType:   ro
+  PDOMapping:   4
+  Description: Resolution of 157.5 mA for maximum current of 20A (20/127).
+  Sub:          0x04 - Power_Consumed_By_Load
+  DataType:     UNSIGNED16
+  AccessType:   ro
+  PDOMapping:   4
+  Description: Watt (DC Bus voltage x output current), Resolution 1W.
+
+Index:       0x3305 - DPMU_State
+DataType:    UNSIGNED8
+ObjectCode:  Array
+  Sub:          0x00 - Highest sub-index supported
+  DataType:     UNSIGNED8
+  DefaultValue: 2
+  AccessType:   ro
+  PDOMapping:   0
+  Sub:          0x01 - DPMU Operation Request State
+  DataType:     UNSIGNED8
+  AccessType:   rw
+  PDOMapping:   0
+  Description: State Machine command to request change of state (IOP write this state).
+Updated by CPU2 after CANopen request if allowed.
+  Sub:          0x02 - DPMU Operation Current State
+  DataType:     UNSIGNED8
+  AccessType:   ro
+  PDOMapping:   0
+  Description: State Machine current state (IOP read this state).
+
+Index:       0x3400 - Energy_Bank_Summary
+DataType:    UNKNOWN
+ObjectCode:  Record
+  Sub:          0x00 - Highest sub-index supported
+  DataType:     UNSIGNED8
+  DefaultValue: 11
+  AccessType:   ro
+  PDOMapping:   0
+  Sub:          0x01 - Max_Voltage_Applied_To_Energy_Bank
+  DataType:     UNSIGNED8
+  DefaultValue: 90
+  AccessType:   rw
+  PDOMapping:   3
+  Sub:          0x02 - Min_Voltage_Applied_To_Energy_Bank
+  DataType:     UNSIGNED8
+  DefaultValue: 30
+  AccessType:   rw
+  PDOMapping:   3
+  Sub:          0x04 - Safety_Threshold_State_of_Charge
+  DataType:     UNSIGNED16
+  DefaultValue: 45
+  AccessType:   rw
+  PDOMapping:   3
+  Sub:          0x05 - State_of_Charge_of_Energy_Bank
+  DataType:     UNSIGNED8
+  DefaultValue: 0
+  AccessType:   ro
+  PDOMapping:   4
+  Description: [0;90] V
+Voltage at Vstor_iso - DPMU Main, max 90V, resolution around 0.353V (90/255). This value is calculated based on the sum of the individual supercapacitor SoC.
+  Sub:          0x06 - State_of_Health_of_Energy_Bank
+  DataType:     UNSIGNED8
+  DefaultValue: 0
+  AccessType:   ro
+  PDOMapping:   4
+  Description: I percent of initial value calculated at first charge.
+Fixed point 1111111.1.
+
+Average of SoH of each energy cell, resolution of 0.5%. This value is calculated based on the capacitance calculated on each SoH, proper manipulation and compared to the initial SoH of the bank. This value shall represent a % of the initial SoH value.
+  Sub:          0x07 - Remaining_Energy_To_Min_SoC_At_Energy_Bank
+  DataType:     UNSIGNED16
+  DefaultValue: 0
+  AccessType:   ro
+  PDOMapping:   4
+  Description: 0-65 536 J
+
+Joule (P x t) - Remaining useful Energy at the Supercapacitor Bank. This includes the Budget to operate the system and the budget to safe parking the RVC.
+  Sub:          0x09 - Stack_Temperature
+  DataType:     INTEGER8
+  DefaultValue: 0
+  AccessType:   ro
+  PDOMapping:   4
+  Description: Temperature at the Supercapacitor Bank, measured using an I2C temperature sensor.
+  Sub:          0x0a - Constant Voltage Threshold
+  DataType:     UNSIGNED8
+  DefaultValue: 0
+  AccessType:   rw
+  PDOMapping:   4
+  Description: Above the Constant Voltage Threshold Lithium batteries need to go through the Constant Voltage Charge, called CV Charge.
+Below this Lithium batteries goes through Constant Current Charge, called CC Charge.
+  Sub:          0x0b - Preconditional Threshold
+  DataType:     UNSIGNED8
+  DefaultValue: 0
+  AccessType:   rw
+  PDOMapping:   4
+  Description: Below the Preconditional Threshold batteries and Capacitors need to go through Pre-Charge, also called Trickle Charge
+
+Index:       0x4000 - Switch_State
+DataType:    UNSIGNED8
+ObjectCode:  Array
+  Sub:          0x00 - Highest sub-index supported
+  DataType:     UNSIGNED8
+  DefaultValue: 4
+  AccessType:   ro
+  PDOMapping:   0
+  Sub:          0x01 - SW_Qinrush_State
+  DataType:     UNSIGNED8
+  DefaultValue: 0
+  AccessType:   rw
+  PDOMapping:   4
+  Sub:          0x02 - SW_Qlb_State
+  DataType:     UNSIGNED8
+  DefaultValue: 0
+  AccessType:   rw
+  PDOMapping:   4
+  Sub:          0x03 - SW_Qsb_State
+  DataType:     UNSIGNED8
+  DefaultValue: 0
+  AccessType:   rw
+  PDOMapping:   4
+  Sub:          0x04 - SW_Qinb_State
+  DataType:     UNSIGNED8
+  DefaultValue: 0
+  AccessType:   rw
+  PDOMapping:   4
+
+Index:       0x4001 - DPMU_Power_Source_Type
+DataType:    UNSIGNED8
+ObjectCode:  Variable
+Description: Type of PSU, Primary/Secondary/battery energy storage/Default with Sharing needed/...
+  Sub:          0x00 - DPMU_Power_Source_Type
+  DataType:     UNSIGNED8
+  DefaultValue: 0
+  AccessType:   rw
+  PDOMapping:   1
+
+Index:       0x4002 - Send_reboot_request
+DataType:    UNSIGNED8
+ObjectCode:  Variable
+  Sub:          0x00 - Send_reboot_request
+  DataType:     UNSIGNED8
+  DefaultValue: 0
+  AccessType:   rw
+  PDOMapping:   1
+
+Index:       0x4003 - Operational_Error
+DataType:    UNSIGNED8
+ObjectCode:  Variable
+  Sub:          0x00 - Operational_Error
+  DataType:     UNSIGNED8
+  AccessType:   ro
+  PDOMapping:   1
+
+Index:       0x4010 - Debug_Log
+DataType:    UNSIGNED8
+ObjectCode:  Record
+Description: Handles the debug log.
+  Sub:          0x00 - Highest sub-index supported
+  DataType:     UNSIGNED8
+  DefaultValue: 3
+  AccessType:   ro
+  PDOMapping:   0
+  Sub:          0x01 - DEBUG_LOG_STATE
+  DataType:     UNSIGNED8
+  DefaultValue: 1
+  AccessType:   rw
+  PDOMapping:   0
+  Description: Start and stops the debug logging.
+  Sub:          0x02 - DEBUG_LOG_READ
+  DataType:     DOMAIN
+  AccessType:   ro
+  PDOMapping:   0
+  Description: Stops debug logging and reads the debug log.
+  Sub:          0x03 - DEBUG_LOG_RESET
+  DataType:     UNSIGNED8
+  AccessType:   wo
+  PDOMapping:   0
+  Description: Resets the debug log, i.e. removes all debug entries.
+
+Index:       0x4011 - CAN_LOG
+DataType:    UNSIGNED8
+ObjectCode:  Record
+Description: Handles the CAN log.
+  Sub:          0x00 - Highest sub-index supported
+  DataType:     UNSIGNED8
+  DefaultValue: 2
+  AccessType:   ro
+  PDOMapping:   0
+  Sub:          0x01 - CAN_LOG_READ
+  DataType:     DOMAIN
+  AccessType:   ro
+  PDOMapping:   0
+  Description: Read CAN log.
+  Sub:          0x02 - CAN_LOG_RESET
+  DataType:     UNSIGNED8
+  AccessType:   wo
+  PDOMapping:   0
+  Description: Reset CAN log.
+
+Index:       0x6000 - IO
+DataType:    UNSIGNED8
+ObjectCode:  Array
+  Sub:          0x00 - Highest sub-index supported
+  DataType:     UNSIGNED8
+  DefaultValue: 1
+  AccessType:   ro
+  PDOMapping:   0
+  Sub:          0x01 - State_Of_Switches
+  DataType:     UNSIGNED8
+  DefaultValue: 1
+  AccessType:   rw
+  PDOMapping:   4
+
+Index:       0x6002 - Polarity Input 8 Bit
+DataType:    UNSIGNED8
+ObjectCode:  Array
+  Sub:          0x00 - Number of Elements
+  DataType:     UNSIGNED8
+  DefaultValue: 3
+  AccessType:   ro
+  PDOMapping:   0
+  Sub:          0x01 - Polarity8
+  DataType:     UNSIGNED8
+  DefaultValue: 0
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x02 - Polarity8
+  DataType:     UNSIGNED8
+  DefaultValue: 0
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x03 - Polarity8
+  DataType:     UNSIGNED8
+  DefaultValue: 0
+  AccessType:   rw
+  PDOMapping:   0
+
+Index:       0x6005 - Global Interrupt Enable Digital 8Bit
+DataType:    UNSIGNED8
+ObjectCode:  Variable
+Description: Enable changes in the digital 8bit input ports to result in a PDO sent. Interrupts (PDOs) are generated according to the filter mask settings in objects 0x6006, 0x6007, 0x6008.
+
+  Sub:          0x00 - Global Interrupt Enable Digital 8Bit
+  DataType:     UNSIGNED8
+  DefaultValue: 1
+  AccessType:   rw
+  PDOMapping:   0
+  Description: Enable changes in the digital 8bit input ports to result in a PDO sent. Interrupts (PDOs) are generated according to the filter mask settings in objects 0x6006, 0x6007, 0x6008.
+
+
+Index:       0x6006 - Interrupt Mask Any Change 8 Bit
+DataType:    UNSIGNED8
+ObjectCode:  Array
+  Sub:          0x00 - Number of Elements
+  DataType:     UNSIGNED8
+  DefaultValue: 3
+  AccessType:   ro
+  PDOMapping:   0
+  Sub:          0x01 - InterruptAnyChange8
+  DataType:     UNSIGNED8
+  DefaultValue: 255
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x02 - InterruptAnyChange8
+  DataType:     UNSIGNED8
+  DefaultValue: 255
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x03 - InterruptAnyChange8
+  DataType:     UNSIGNED8
+  DefaultValue: 255
+  AccessType:   rw
+  PDOMapping:   0
+
+Index:       0x6007 - Interrupt Mask Low to High 8 Bit
+DataType:    UNSIGNED8
+ObjectCode:  Array
+  Sub:          0x00 - Number of Elements
+  DataType:     UNSIGNED8
+  DefaultValue: 3
+  AccessType:   ro
+  PDOMapping:   0
+  Sub:          0x01 - InterruptLowToHigh8
+  DataType:     UNSIGNED8
+  DefaultValue: 0
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x02 - InterruptLowToHigh8
+  DataType:     UNSIGNED8
+  DefaultValue: 0
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x03 - InterruptLowToHigh8
+  DataType:     UNSIGNED8
+  DefaultValue: 0
+  AccessType:   rw
+  PDOMapping:   0
+
+Index:       0x6008 - Interrupt Mask High to Low 8 Bit
+DataType:    UNSIGNED8
+ObjectCode:  Array
+  Sub:          0x00 - Number of Elements
+  DataType:     UNSIGNED8
+  DefaultValue: 3
+  AccessType:   ro
+  PDOMapping:   0
+  Sub:          0x01 - InterruptHighToLow8
+  DataType:     UNSIGNED8
+  DefaultValue: 0
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x02 - InterruptHighToLow8
+  DataType:     UNSIGNED8
+  DefaultValue: 0
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x03 - InterruptHighToLow8
+  DataType:     UNSIGNED8
+  DefaultValue: 0
+  AccessType:   rw
+  PDOMapping:   0
+
+Index:       0x6200 - Write Output 8 Bit
+DataType:    UNSIGNED8
+ObjectCode:  Array
+  Sub:          0x00 - Number of Elements
+  DataType:     UNSIGNED8
+  DefaultValue: 6
+  AccessType:   ro
+  PDOMapping:   0
+  Sub:          0x01 - DigOutput8
+  DataType:     UNSIGNED8
+  DefaultValue: 0
+  AccessType:   rww
+  PDOMapping:   3
+  Sub:          0x02 - DigOutput8
+  DataType:     UNSIGNED8
+  DefaultValue: 0
+  AccessType:   rww
+  PDOMapping:   3
+  Sub:          0x03 - DigOutput8
+  DataType:     UNSIGNED8
+  DefaultValue: 0
+  AccessType:   rww
+  PDOMapping:   3
+  Sub:          0x04 - DigOutput8
+  DataType:     UNSIGNED8
+  DefaultValue: 0
+  AccessType:   rww
+  PDOMapping:   3
+  Sub:          0x05 - DigOutput8
+  DataType:     UNSIGNED8
+  DefaultValue: 0
+  AccessType:   rww
+  PDOMapping:   3
+  Sub:          0x06 - DigOutput8
+  DataType:     UNSIGNED8
+  DefaultValue: 0
+  AccessType:   rww
+  PDOMapping:   3
+
+Index:       0x6202 - Polarity Output 8 Bit
+DataType:    UNSIGNED8
+ObjectCode:  Array
+  Sub:          0x00 - Number of Elements
+  DataType:     UNSIGNED8
+  DefaultValue: 1
+  AccessType:   ro
+  PDOMapping:   0
+  Sub:          0x01 - Polarity8
+  DataType:     UNSIGNED8
+  DefaultValue: 0
+  AccessType:   rw
+  PDOMapping:   0
+
+Index:       0x6401 - ADC_Port_Value
+DataType:    INTEGER16
+ObjectCode:  Array
+  Sub:          0x00 - Number of Elements
+  DataType:     UNSIGNED8
+  DefaultValue: 4
+  AccessType:   ro
+  PDOMapping:   0
+  Sub:          0x01 - Read_Load_Current
+  DataType:     INTEGER16
+  AccessType:   ro
+  PDOMapping:   4
+  Sub:          0x03 - Read_Voltage_At_DC_Bus
+  DataType:     INTEGER16
+  AccessType:   ro
+  PDOMapping:   4
+  Sub:          0x04 - DPMU_Temperature
+  DataType:     INTEGER16
+  AccessType:   ro
+  PDOMapping:   4
+
+Index:       0x6411 - Write Analogue Output 16 Bit
+DataType:    INTEGER16
+ObjectCode:  Array
+  Sub:          0x00 - Number of Elements
+  DataType:     UNSIGNED8
+  DefaultValue: 8
+  AccessType:   ro
+  PDOMapping:   0
+  Sub:          0x01 - AnalogueOutput16
+  DataType:     INTEGER16
+  DefaultValue: 0
+  AccessType:   rww
+  PDOMapping:   3
+  Sub:          0x02 - AnalogueOutput16
+  DataType:     INTEGER16
+  DefaultValue: 0
+  AccessType:   rww
+  PDOMapping:   3
+  Sub:          0x03 - AnalogueOutput16
+  DataType:     INTEGER16
+  DefaultValue: 0
+  AccessType:   rww
+  PDOMapping:   3
+  Sub:          0x04 - AnalogueOutput16
+  DataType:     INTEGER16
+  DefaultValue: 0
+  AccessType:   rww
+  PDOMapping:   3
+  Sub:          0x05 - AnalogueOutput16
+  DataType:     INTEGER16
+  DefaultValue: 0
+  AccessType:   rww
+  PDOMapping:   3
+  Sub:          0x06 - AnalogueOutput16
+  DataType:     INTEGER16
+  DefaultValue: 0
+  AccessType:   rww
+  PDOMapping:   3
+  Sub:          0x07 - AnalogueOutput16
+  DataType:     INTEGER16
+  DefaultValue: 0
+  AccessType:   rww
+  PDOMapping:   3
+  Sub:          0x08 - AnalogueOutput16
+  DataType:     INTEGER16
+  DefaultValue: 0
+  AccessType:   rww
+  PDOMapping:   3
+
+Index:       0x6421 - Interrupt Trigger Selection
+DataType:    UNSIGNED8
+ObjectCode:  Array
+Description: Bit no.            Interrupt trigger                                              
+ 0                   Upper limit exceeded
+ 1                   Input below lower limit
+ 2                   Input changed by more than delta
+ 3                   Input reduced by more than negative delta
+ 4                   Input increased by more than positive delta
+ 5 to 7           reserved for future use.
+  Sub:          0x00 - Number of Elements
+  DataType:     UNSIGNED8
+  DefaultValue: 1
+  AccessType:   ro
+  PDOMapping:   0
+  Sub:          0x01 - InterruptTriggerSelection
+  DataType:     UNSIGNED8
+  DefaultValue: 3
+  AccessType:   rw
+  PDOMapping:   0
+
+Index:       0x6423 - Analog Input global interrupt enable
+DataType:    UNSIGNED8
+ObjectCode:  Variable
+Description: enables globally all analog interrupts. Interrupts are generated according the trigger selection.
+
+  Sub:          0x00 - Analog Input global interrupt enable
+  DataType:     UNSIGNED8
+  DefaultValue: 1
+  AccessType:   rw
+  PDOMapping:   0
+  Description: enables globally all analog interrupts. Interrupts are generated according the trigger selection.
+
+
+Index:       0x6424 - Analogue Input Interrupt Upper Limit Integer
+DataType:    INTEGER32
+ObjectCode:  Array
+  Sub:          0x00 - Number of Elements
+  DataType:     UNSIGNED8
+  DefaultValue: 4
+  AccessType:   ro
+  PDOMapping:   0
+  Sub:          0x01 - Load_Over_Current_Max_Limit
+  DataType:     INTEGER32
+  DefaultValue: 20000
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x03 - DC_Bus_Voltage_Max_Limit
+  DataType:     INTEGER32
+  DefaultValue: 20000
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x04 - DPMU_Temperature_Max_Limit
+  DataType:     INTEGER32
+  DefaultValue: 20000
+  AccessType:   rw
+  PDOMapping:   0
+
+Index:       0x6425 - Analogue Input Interrupt Lower Limit Integer
+DataType:    INTEGER32
+ObjectCode:  Array
+  Sub:          0x00 - Number of Elements
+  DataType:     UNSIGNED8
+  DefaultValue: 4
+  AccessType:   ro
+  PDOMapping:   0
+  Sub:          0x01 - Load_Over_Current_Min_Limit
+  DataType:     INTEGER32
+  DefaultValue: 500
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x03 - DC_Bus_Voltage_Min_Limit
+  DataType:     INTEGER32
+  DefaultValue: 500
+  AccessType:   rw
+  PDOMapping:   0
+  Sub:          0x04 - DPMU_Temperature_Min_Limit
+  DataType:     INTEGER32
+  DefaultValue: 500
+  AccessType:   rw
+  PDOMapping:   0
