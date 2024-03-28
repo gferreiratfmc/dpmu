@@ -1,0 +1,42 @@
+# Build Files
+
+# For CPU1
+**/CPU1_FLASH/
+**/CPU1_RAM/
+
+# For CPU2
+**/CPU2_FLASH/
+**/CPU2_RAM/
+
+#Eclipse Files
+#*.cproject
+#*.project
+*.ccsproject
+
+# Configuration
+**/.launches/
+**/.settings/
+
+# Object files
+*.o
+*.ko
+*.obj
+*.elf
+*.d
+*.out
+*.mk
+
+# Misc
+*.zip
+*.map
+*.clang-format
+*.bkp
+/FLASH/
+/.jxbrowser*
+/.metadata
+/flash_kernel_ex4_can_flash_kernel
+/flash_kernel_c28x_dual_ex1_c28x2
+/dvt
+/RemoteSystemsTempFiles
+# copy of old code, possible before tar/zip of part of project
+a055-dpmu-fw/
