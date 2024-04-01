@@ -38,11 +38,12 @@ volatile static debug_log_t debug_log_copy;
 
 /* common struct to read logs from external memories */
 EMIF1_Config emif1_log_read;
-EMIF1_Config domain_emif1_log_read;
+//EMIF1_Config domain_emif1_log_read;
 
 /* for debug log in external RAM */
-static uint32_t debug_log_start_address              = EXT_RAM_START_ADDRESS_CS2;
+//static uint32_t debug_log_start_address              = EXT_RAM_START_ADDRESS_CS2;
 static uint32_t debug_log_next_free_address          = EXT_RAM_START_ADDRESS_CS2;
+static uint32_t debug_log_last_read_address          = EXT_RAM_START_ADDRESS_CS2;
 static uint32_t debug_log_last_writen_address        = 0;
 static bool     debug_log_address_has_wrapped_around = false;
 static uint32_t debug_log_size                       = sizeof(debug_log_t); //0;
@@ -80,6 +81,11 @@ void log_read_domain(UNSIGNED16 index, UNSIGNED8 subindex, UNSIGNED32 domainBufS
 {
     uint32_t start_address = 0;
 
+    if( debug_log_last_read_address >= debug_log_next_free_address   ) {
+        debug_log_last_read_address = debug_log_last_read_address;
+        return;
+    }
+
     // Doublecheck that domainbufsize are not bigger than allocated buf size.
     if (domainBufSize > TRANSFER_SIZE ) {
         domainBufSize = TRANSFER_SIZE;
@@ -91,7 +97,8 @@ void log_read_domain(UNSIGNED16 index, UNSIGNED8 subindex, UNSIGNED32 domainBufS
 
     if(I_DEBUG_LOG == index)
     {
-        start_address = EXT_RAM_START_ADDRESS_CS2 + domainTransferedSize;
+        //start_address = EXT_RAM_START_ADDRESS_CS2 + domainTransferedSize;
+        start_address = debug_log_last_read_address;
         if(start_address >= (EXT_RAM_START_ADDRESS_CS2 + EXT_RAM_SIZE_CS2))
             start_address = EXT_RAM_START_ADDRESS_CS2;
     }
@@ -102,21 +109,26 @@ void log_read_domain(UNSIGNED16 index, UNSIGNED8 subindex, UNSIGNED32 domainBufS
             start_address = CAN_LOG_ADDRESS_START;
         }
     }
-    domain_emif1_log_read.address = start_address;
-    domain_emif1_log_read.size = domainBufSize;
-    domain_emif1_log_read.data = (uint16_t*)message;
+
 
     /* set CPU1 as master for memory */
     MemCfg_setGSRAMMasterSel(MEMCFG_SECT_GS0, MEMCFG_GSRAMMASTER_CPU1);
     //MemCfg_setGSRAMMasterSel(MEMCFG_SECT_GS3, MEMCFG_GSRAMMASTER_CPU1);
 
     if (I_DEBUG_LOG == index) {
+
+        emif1_log_read.address = start_address;
+        emif1_log_read.cpuType = CPU_TYPE_ONE;
+        emif1_log_read.data = message;
+        emif1_log_read.size = domainBufSize;
         //DMA_configBurst(CPU1_EXT_MEM_BASE, TRANSFER_SIZE, 1, 1);
-        emifc_cpu_read_memory(&domain_emif1_log_read);
+        emifc_cpu_read_memory(&emif1_log_read);
+        debug_log_last_read_address = start_address + domainBufSize;
+
     }
 
     if (I_CAN_LOG == index) {
-        ext_flash_read_buf(domain_emif1_log_read.address, (uint16_t*)domain_emif1_log_read.data, domain_emif1_log_read.size);
+        ext_flash_read_buf(emif1_log_read.address, (uint16_t*)emif1_log_read.data, emif1_log_read.size);
     }
 
 //    Serial_debug(DEBUG_INFO, &cli_serial, "%08x  ", start_address);
@@ -135,27 +147,42 @@ uint8_t log_debug_log_read(
         UNSIGNED8   subIndex
     )
 {
-    //TODO probably EXT_RAM_START_ADDRESS_CS2 -> debug_log_start_address
-    /* set the correct starting address of the external memory */
-    emif1_log_read = (EMIF1_Config)
-                     {
-                      EXT_RAM_START_ADDRESS_CS2,
-                      CPU_TYPE_ONE,
-                      TRANSFER_SIZE,
-                      (uint16_t*)message
-                     };
+    uint32_t sizeToTransfer;
 
-    /* set the CANopen OD object to point to the right domain, the variable message
-     * set the CANopen OD object size to MESSAGE_LENGTH
-     */
-    coOdDomainAddrSet(
-                        index,              /**< index of object */
-                        subIndex,           /**< subindex of object */
-                        message,            /**< pointer to domain */
-                        2 * debug_log_size  /**< domain length */ /* '2x' we use 16 bit Words */
-                     );
+    sizeToTransfer = 2 * (debug_log_next_free_address - debug_log_last_read_address);
 
-    return RET_OK;
+    if(  (debug_log_last_read_address < debug_log_next_free_address) && ( sizeToTransfer > 0 ) ) {
+
+        //TODO probably EXT_RAM_START_ADDRESS_CS2 -> debug_log_start_address
+        /* set the correct starting address of the external memory */
+        emif1_log_read = (EMIF1_Config){
+            debug_log_last_read_address, //EXT_RAM_START_ADDRESS_CS2,
+            CPU_TYPE_ONE,
+            TRANSFER_SIZE,
+            (uint16_t*)message
+         };
+
+        /* set the CANopen OD object to point to the right domain, the variable message
+         * set the CANopen OD object size to MESSAGE_LENGTH
+         */
+        coOdDomainAddrSet(
+                            index,              /**< index of object */
+                            subIndex,           /**< subindex of object */
+                            message,            /**< pointer to domain */
+                            sizeToTransfer  //2 * debug_log_size  /**< domain length */ /* '2x' we use 16 bit Words */
+                         );
+        return RET_OK;
+    } else {
+        coOdDomainAddrSet(
+                            index,              /**< index of object */
+                            subIndex,           /**< subindex of object */
+                            message,            /**< pointer to domain */
+                            0 //2 * debug_log_size  /**< domain length */ /* '2x' we use 16 bit Words */
+                         );
+        return RET_FLASH_EMPTY;
+    }
+
+
 }
 
 void log_debug_log_reset(void)
@@ -163,7 +190,7 @@ void log_debug_log_reset(void)
     // reset number of entries
     // reset position in memory to beginning of RAM portion ???
 
-    debug_log_start_address              = EXT_RAM_START_ADDRESS_CS2;
+    //debug_log_start_address              = EXT_RAM_START_ADDRESS_CS2;
     debug_log_next_free_address          = EXT_RAM_START_ADDRESS_CS2;
     debug_log_address_has_wrapped_around = false;
     debug_log_size                       = 0;
@@ -325,13 +352,13 @@ bool log_store_debug_log(unsigned char *pnt)
 
         if(debug_log_address_has_wrapped_around)
         {
-            debug_log_start_address = debug_log_next_free_address + size_in_words;  /* stores at most all possible log entries - 1 */
+            //debug_log_start_address = debug_log_next_free_address + size_in_words;  /* stores at most all possible log entries - 1 */
             /* check if log start address wraps around in memory */
-            if(debug_log_start_address > (EXT_RAM_START_ADDRESS_CS2 + EXT_RAM_SIZE_CS2))
-            {
-                /* address wraps around */
-                debug_log_start_address = EXT_RAM_START_ADDRESS_CS2;
-            }
+//            if(debug_log_start_address > (EXT_RAM_START_ADDRESS_CS2 + EXT_RAM_SIZE_CS2))
+//            {
+//                /* address wraps around */
+//                debug_log_start_address = EXT_RAM_START_ADDRESS_CS2;
+//            }
         }
         else
         {

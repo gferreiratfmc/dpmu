@@ -206,6 +206,9 @@ void emifc_cpu_read_memory(EMIF1_Config* emif1)
             current_transfer_size = remaining_words_to_transfer;
         }
 
+        if( remaining_words_to_transfer == 0) {
+            break;
+        }
         /*** preferred solution - DMA ***/
         dma_test_xfer_done = 0;
 
