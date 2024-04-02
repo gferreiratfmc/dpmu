@@ -43,7 +43,7 @@ uint16_t TestCellNr = 1;
 
 extern bool test_update_of_error_codes;
 
-float cellVoltagesVector[30];     /* used for first charge - SoH */
+extern float cellVoltagesVector[30];     /* used for first charge - SoH */
 float energyBankVoltage;    /* used for first charge - SoH */
 bool cellVoltageOverThreshold;
 

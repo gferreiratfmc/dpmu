@@ -16,6 +16,7 @@
 #include "main.h"
 #include "serial.h"
 #include "shared_variables.h"
+#include "temperature_sensor.h"
 #include "timer.h"
 #include "../../../dpmu_cpu2/app/inc/switches.h"
 
@@ -93,23 +94,23 @@ static inline uint8_t indices_I_TPDO_MAPPING_TEMPERATURES(UNSIGNED8 subIndex)
     switch (subIndex)
     {
     case S_TEMPERATURE_MEASURED_AT_DPMU_HOTTEST_POINT_PDO:
-        retVal = coOdGetObj_u8(I_TPDO_MAPPING_TEMPERATURES, S_TEMPERATURE_MEASURED_AT_DPMU_HOTTEST_POINT_PDO, &value);
-        Serial_debug(DEBUG_INFO, &cli_serial, "S_TEMPERATURE_MEASURED_AT_DPMU_HOTTEST_POINT_PDO: 0x%x\r\n", value);
+        coOdPutObj_i8( I_TPDO_MAPPING_TEMPERATURES, S_TEMPERATURE_MEASURED_AT_DPMU_HOTTEST_POINT_PDO, temperatureHotPoint);
+        Serial_debug(DEBUG_INFO, &cli_serial, "S_TEMPERATURE_MEASURED_AT_DPMU_HOTTEST_POINT_PDO: 0x%x\r\n", temperatureHotPoint);
         break;
     case S_TEMPERATURE_BASE_PDO:
-        retVal = coOdGetObj_u8(I_TPDO_MAPPING_TEMPERATURES, S_TEMPERATURE_BASE_PDO, &value);
+        coOdPutObj_i8( I_TPDO_MAPPING_TEMPERATURES, S_TEMPERATURE_BASE_PDO, temperatureSensorVector[TEMPERATURE_SENSOR_BASE]);
         Serial_debug(DEBUG_INFO, &cli_serial, "S_TEMPERATURE_BASE_PDO: 0x%x\r\n", value);
         break;
     case S_TEMPERATURE_MAIN_PDO:
-        retVal = coOdGetObj_u8(I_TPDO_MAPPING_TEMPERATURES, S_TEMPERATURE_MAIN_PDO, &value);
+        coOdPutObj_i8( I_TPDO_MAPPING_TEMPERATURES, S_TEMPERATURE_MAIN_PDO, temperatureSensorVector[TEMPERATURE_SENSOR_MAIN] );
         Serial_debug(DEBUG_INFO, &cli_serial, "S_TEMPERATURE_MAIN_PDO: 0x%x\r\n", value);
         break;
     case S_TEMPERATURE_MEZZANINE_PDO:
-        retVal = coOdGetObj_u8(I_TPDO_MAPPING_TEMPERATURES, S_TEMPERATURE_MEZZANINE_PDO, &value);
+        coOdPutObj_i8( I_TPDO_MAPPING_TEMPERATURES, S_TEMPERATURE_MEZZANINE_PDO, temperatureSensorVector[TEMPERATURE_SENSOR_MEZZANINE] );
         Serial_debug(DEBUG_INFO, &cli_serial, "S_TEMPERATURE_MEZZANINE_PDO: 0x%x\r\n", value);
         break;
     case S_TEMPERATURE_PWR_BANK_PDO:
-        retVal = coOdGetObj_u8(I_TPDO_MAPPING_TEMPERATURES, S_TEMPERATURE_PWR_BANK_PDO, &value);
+        coOdPutObj_i8( I_TPDO_MAPPING_TEMPERATURES, S_TEMPERATURE_PWR_BANK_PDO, temperatureSensorVector[TEMPERATURE_SENSOR_PWR_BANK] );
         Serial_debug(DEBUG_INFO, &cli_serial, "S_TEMPERATURE_PWR_BANK_PDO: 0x%x\r\n", value);
         break;
     default:
@@ -185,7 +186,9 @@ static inline uint8_t indices_I_ESS_CURRENT(void)
     uint8_t retVal = CO_FALSE;
     uint8_t value;
 
-    retVal = coOdGetObj_u8(I_ESS_CURRENT, 0, &value);
+    value = convert_ess_current_to_OD(sharedVars_cpu1toCpu2.ess_current);
+    retVal = coOdPutObj_u8(I_ESS_CURRENT, 0, value );
+
     Serial_debug(DEBUG_INFO, &cli_serial, "I_ESS_CURRENT: 0x%x\r\n", value);
 
     return retVal;
@@ -199,17 +202,21 @@ static inline uint8_t indices_I_ENERGY_CELL_SUMMARY(UNSIGNED8 subIndex)
     switch (subIndex)
     {
     case S_MIN_VOLTAGE_ENERGY_CELL:
-        retVal = coOdGetObj_u8(I_ENERGY_CELL_SUMMARY, S_MIN_VOLTAGE_ENERGY_CELL, &value);
+        value = convert_voltage_energy_cell_to_OD( sharedVars_cpu1toCpu2.min_allowed_voltage_energy_cell );
+        retVal = coOdPutObj_u8(I_ENERGY_CELL_SUMMARY, S_MIN_VOLTAGE_ENERGY_CELL, value );
         Serial_debug(DEBUG_INFO, &cli_serial, "S_MIN_VOLTAGE_ENERGY_CELL: 0x%x\r\n", value);
         break;
     case S_MAX_VOLTAGE_ENERGY_CELL:
-        retVal = coOdGetObj_u8(I_ENERGY_CELL_SUMMARY, S_MAX_VOLTAGE_ENERGY_CELL, &value);
+        value = convert_voltage_energy_cell_to_OD( sharedVars_cpu1toCpu2.max_allowed_voltage_energy_cell );
+        retVal = coOdPutObj_u8(I_ENERGY_CELL_SUMMARY, S_MAX_VOLTAGE_ENERGY_CELL, value );
+
         Serial_debug(DEBUG_INFO, &cli_serial, "S_MAX_VOLTAGE_ENERGY_CELL: 0x%x\r\n", value);
         break;
     default:
         if((subIndex >= S_STATE_OF_CHARGE_OF_ENERGY_CELL_01) && (subIndex <= S_STATE_OF_CHARGE_OF_ENERGY_CELL_30))
         {
-            retVal = coOdGetObj_u8(I_ENERGY_CELL_SUMMARY, subIndex, &value);
+            value = convert_voltage_energy_cell_to_OD( sharedVars_cpu2toCpu1.soc_energy_cell[subIndex-3]);
+            retVal = coOdPutObj_u8(I_ENERGY_CELL_SUMMARY, subIndex, value );
             Serial_debug(
                     DEBUG_INFO, &cli_serial,
                     "S_STATE_OF_CHARGE_OF_ENERGY_CELL_%d: 0x%x\r\n",
@@ -239,15 +246,15 @@ static inline uint8_t indices_I_TEMPERATURE(UNSIGNED8 subIndex)
     switch (subIndex)
     {
     case S_DPMU_TEMPERATURE_MAX_LIMIT:
-        retVal = coOdGetObj_i8(I_TEMPERATURE, S_DPMU_TEMPERATURE_MAX_LIMIT, &value);
+        coOdPutObj_u8(I_TEMPERATURE, S_DPMU_TEMPERATURE_MAX_LIMIT, temperature_absolute_max_limit );
         Serial_debug(DEBUG_INFO, &cli_serial, "S_MAX_ALLOWED_DPMU_TEMPERATURE: 0x%x\r\n", value);
         break;
     case S_TEMPERATURE_MEASURED_AT_DPMU_HOTTEST_POINT:
-        retVal = coOdGetObj_i8(I_TEMPERATURE, S_TEMPERATURE_MEASURED_AT_DPMU_HOTTEST_POINT, &value);
+        coOdPutObj_i8( I_TPDO_MAPPING_TEMPERATURES, S_TEMPERATURE_MEASURED_AT_DPMU_HOTTEST_POINT_PDO, temperatureHotPoint);
         Serial_debug(DEBUG_INFO, &cli_serial, "S_TEMPERATURE_MEASURED_AT_DPMU_HOTTEST_POINT: 0x%x\r\n", value);
         break;
     case S_DPMU_TEMPERATURE_HIGH_LIMIT:
-        retVal = coOdGetObj_i8(I_TEMPERATURE, S_DPMU_TEMPERATURE_HIGH_LIMIT, &value);
+        coOdPutObj_u8(I_TEMPERATURE, S_DPMU_TEMPERATURE_HIGH_LIMIT, temperature_high_limit );
         Serial_debug(DEBUG_INFO, &cli_serial, "S_DPMU_TEMPERATURE_HIGH_LIMIT: 0x%x\r\n", value);
         break;
     default:
@@ -260,10 +267,12 @@ static inline uint8_t indices_I_TEMPERATURE(UNSIGNED8 subIndex)
 static inline uint8_t indices_I_MAXIMUM_ALLOWED_LOAD_POWER(void)
 {
     uint8_t retVal = CO_FALSE;
-    uint16_t value;
+    uint16_t value16;
 
-    retVal = coOdGetObj_u16(I_MAXIMUM_ALLOWED_LOAD_POWER, 0, &value);
-    Serial_debug(DEBUG_INFO, &cli_serial, "I_MAXIMUM_ALLOWED_LOAD_POWER: 0x%x\r\n", value);
+    value16 = convert_power_to_OD( sharedVars_cpu1toCpu2.max_allowed_load_power );
+    retVal = coOdPutObj_u16(I_MAXIMUM_ALLOWED_LOAD_POWER, 0, value16);
+
+    Serial_debug(DEBUG_INFO, &cli_serial, "I_MAXIMUM_ALLOWED_LOAD_POWER: 0x%x\r\n", value16);
 
     return retVal;
 }
@@ -271,13 +280,14 @@ static inline uint8_t indices_I_MAXIMUM_ALLOWED_LOAD_POWER(void)
 static inline uint8_t indices_I_POWER_BUDGET_DC_INPUT(UNSIGNED8 subIndex)
 {
     uint8_t retVal = CO_FALSE;
-    uint16_t value;
+    uint16_t value16;
 
     switch (subIndex)
     {
     case S_AVAILABLE_POWER_BUDGET_DC_INPUT:
-        retVal = coOdGetObj_u16(I_POWER_BUDGET_DC_INPUT, S_AVAILABLE_POWER_BUDGET_DC_INPUT, &value);
-        Serial_debug(DEBUG_INFO, &cli_serial, "S_AVAILABLE_POWER_BUDGET_DC_INPUT: 0x%x\r\n", value);
+        value16 = convert_power_to_OD( sharedVars_cpu1toCpu2.available_power_budget_dc_input );
+        retVal = coOdPutObj_u16(I_POWER_BUDGET_DC_INPUT, S_AVAILABLE_POWER_BUDGET_DC_INPUT, value16);
+        Serial_debug(DEBUG_INFO, &cli_serial, "S_AVAILABLE_POWER_BUDGET_DC_INPUT: 0x%x\r\n", value16);
         break;
 //    case S_MAX_CURRENT_POWER_LINE_A:
 //        retVal = coOdGetObj_u16(I_POWER_BUDGET_DC_INPUT, S_MAX_CURRENT_POWER_LINE_A, &value);
@@ -379,50 +389,47 @@ static inline uint8_t indices_I_ENERGY_BANK_SUMMARY(UNSIGNED8 subIndex)
 {
     uint8_t retVal = CO_FALSE;
     uint8_t value;
-     int8_t read_temperature;
+    uint16_t value16;
 
     switch (subIndex)
     {
     case S_MAX_VOLTAGE_APPLIED_TO_ENERGY_BANK:
-        retVal = coOdGetObj_u8(I_ENERGY_BANK_SUMMARY, S_MAX_VOLTAGE_APPLIED_TO_ENERGY_BANK, &value);
+        value = convert_voltage_energy_bank_to_OD( sharedVars_cpu1toCpu2.max_voltage_applied_to_energy_bank );
+        retVal = coOdPutObj_u8(I_ENERGY_BANK_SUMMARY, S_MAX_VOLTAGE_APPLIED_TO_ENERGY_BANK, value );
         Serial_debug(DEBUG_INFO, &cli_serial, "S_MAX_VOLTAGE_APPLIED_TO_STORAGE_BANK: 0x%x\r\n", value);
         break;
     case S_MIN_VOLTAGE_APPLIED_TO_ENERGY_BANK:
-        retVal = coOdGetObj_u8(I_ENERGY_BANK_SUMMARY, S_MIN_VOLTAGE_APPLIED_TO_ENERGY_BANK, &value);
+        value = convert_min_voltage_applied_to_energy_bank_to_OD( sharedVars_cpu1toCpu2.min_voltage_applied_to_energy_bank );
+        retVal = coOdPutObj_u8(I_ENERGY_BANK_SUMMARY, S_MIN_VOLTAGE_APPLIED_TO_ENERGY_BANK, value );
         Serial_debug(DEBUG_INFO, &cli_serial, "S_MIN_ALLOWED_STATE_OF_CHARGE_OF_ENERGY_BANK: 0x%x\r\n", value);
         break;
     case S_SAFETY_THRESHOLD_STATE_OF_CHARGE:
-        retVal = coOdGetObj_u16(I_ENERGY_BANK_SUMMARY, S_SAFETY_THRESHOLD_STATE_OF_CHARGE, &value);
-        Serial_debug(DEBUG_INFO, &cli_serial, "S_SAFETY_THRESHOLD_STATE_OF_CHARGE: 0x%x\r\n", value);
+        value16 = convert_energy_soc_energy_bank_to_OD( sharedVars_cpu1toCpu2.safety_threshold_state_of_charge );
+        retVal = coOdPutObj_u16(I_ENERGY_BANK_SUMMARY, S_SAFETY_THRESHOLD_STATE_OF_CHARGE, value16 );
+        Serial_debug(DEBUG_INFO, &cli_serial, "S_SAFETY_THRESHOLD_STATE_OF_CHARGE: xx%x\r\n", value16);
         break;
     case S_STATE_OF_CHARGE_OF_ENERGY_BANK:
-        retVal = coOdPutObj_u8(I_ENERGY_BANK_SUMMARY,
-                               S_STATE_OF_CHARGE_OF_ENERGY_BANK,
-                               sharedVars_cpu2toCpu1.soc_energy_bank);
-        Serial_debug(DEBUG_INFO, &cli_serial, "S_STATE_OF_CHARGE_OF_ENERGY_BANK: 0x%x\r\n", value);
+        value = convert_energy_soc_energy_bank_to_OD( sharedVars_cpu2toCpu1.soc_energy_bank );
+        retVal = coOdPutObj_u8(I_ENERGY_BANK_SUMMARY, S_STATE_OF_CHARGE_OF_ENERGY_BANK, value );
+         Serial_debug(DEBUG_INFO, &cli_serial, "S_STATE_OF_CHARGE_OF_ENERGY_BANK: 0x%x\r\n", value);
         break;
     case S_STATE_OF_HEALTH_OF_ENERGY_BANK:
-        retVal = coOdPutObj_u8(I_ENERGY_BANK_SUMMARY, S_STATE_OF_HEALTH_OF_ENERGY_BANK,
-                               sharedVars_cpu2toCpu1.soh_energy_bank);
+        value = convert_soh_energy_bank_to_OD( sharedVars_cpu2toCpu1.soh_energy_bank );
+        retVal = coOdPutObj_u8(I_ENERGY_BANK_SUMMARY, S_STATE_OF_HEALTH_OF_ENERGY_BANK, value);
         Serial_debug(DEBUG_INFO, &cli_serial, "S_STATE_OF_HEALTH_OF_ENERGY_BANK: 0x%x\r\n", value);
         break;
     case S_REMAINING_ENERGY_TO_MIN_SOC_AT_ENERGY_BANK:
-        retVal = coOdPutObj_u16(I_ENERGY_BANK_SUMMARY,
-                               S_REMAINING_ENERGY_TO_MIN_SOC_AT_ENERGY_BANK,
-                               sharedVars_cpu2toCpu1.remaining_energy_to_min_soc_energy_bank);
+        value = convert_soh_energy_bank_to_OD( sharedVars_cpu2toCpu1.remaining_energy_to_min_soc_energy_bank );
+        retVal = coOdPutObj_u16(I_ENERGY_BANK_SUMMARY, S_REMAINING_ENERGY_TO_MIN_SOC_AT_ENERGY_BANK, value);
         Serial_debug(DEBUG_INFO, &cli_serial, "S_REMAINING_ENERGY_TO_MIN_SOC_AT_ENERGY_BANK: 0x%x\r\n", value);
         break;
+    case S_PRECONDITIONAL_THRESHOLD:
+        value = convert_voltage_energy_bank_to_OD( sharedVars_cpu1toCpu2.preconditional_threshold );
+        retVal = coOdPutObj_u8(I_ENERGY_BANK_SUMMARY, S_PRECONDITIONAL_THRESHOLD, value );
+        Serial_debug(DEBUG_INFO, &cli_serial, "S_PRECONDITIONAL_THRESHOLD: xx%x\r\n", value);
+        break;
     case S_STACK_TEMPERATURE:
-        retVal = coOdGetObj_i8(I_TEMPERATURE, S_TEMPERATURE_PWR_BANK, &read_temperature);
-        if(RET_OK == retVal)
-            retVal = coOdPutObj_i8(I_ENERGY_BANK_SUMMARY,
-                                   S_STACK_TEMPERATURE,
-                                   read_temperature);
-        else
-            retVal = coOdPutObj_i8(I_ENERGY_BANK_SUMMARY,
-                                   S_STACK_TEMPERATURE,
-                                   0xff);
-        Serial_debug(DEBUG_INFO, &cli_serial, "S_STACK_TEMPERATURE: 0x%x\r\n", read_temperature);
+        retVal = coOdPutObj_i8(I_ENERGY_BANK_SUMMARY, S_STACK_TEMPERATURE, temperatureSensorVector[TEMPERATURE_SENSOR_PWR_BANK]);
         break;
     default:
         Serial_debug(DEBUG_ERROR, &cli_serial, "UNKNOWN CAN OD SUBINDEX: 0x%x\r\n", subIndex);

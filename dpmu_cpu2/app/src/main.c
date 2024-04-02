@@ -217,7 +217,8 @@ void main(void)
         energy_storage_update_settings();
         energy_storage_check();
 
-        UpdateDebugLog();
+        //UpdateDebugLog();
+        UpdateDebugLogFake();
 
         CheckMainStateMachineIsRunning();
 

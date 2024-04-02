@@ -117,3 +117,42 @@ void UpdateDebugLog(void) {
     }
 }
 
+
+void UpdateDebugLogFake(void) {
+    static uint32_t last_timer = 0;
+    uint32_t current_timer, elapsed_time;
+    static uint32_t debug_period_in_ms = LOG_PERIOD_IDLE;
+    debug_period_in_ms = SetDebugLogPeriod();
+    if( debug_log_enable_flag == true) {
+        current_timer = timer_get_ticks();
+        elapsed_time = current_timer - last_timer;
+        if( current_timer < last_timer ) {
+            current_timer = 0;
+        } else if( ( elapsed_time >= debug_period_in_ms ) ) {
+            debug_counter++;
+            sharedVars_cpu2toCpu1.debug_log.counter = debug_counter;
+            sharedVars_cpu2toCpu1.debug_log.ISen1 = 1234;     // Storage current sensor (supercap) x10
+            sharedVars_cpu2toCpu1.debug_log.ISen2 = 2233;     // Output load current sensor x10
+            sharedVars_cpu2toCpu1.debug_log.IF_1 =  4455;       // Input current x10
+            sharedVars_cpu2toCpu1.debug_log.I_Dab2 = 1234;  // CLLC1 Current x100
+            sharedVars_cpu2toCpu1.debug_log.I_Dab3 = 2233;  // CLLC2 Current x100
+            sharedVars_cpu2toCpu1.debug_log.Vbus = 4455;        // VBus voltage x10
+            sharedVars_cpu2toCpu1.debug_log.AvgVbus = 1234;        // VBus voltage x10
+            sharedVars_cpu2toCpu1.debug_log.VStore = 2233;    // VStore voltage x10
+            sharedVars_cpu2toCpu1.debug_log.AvgVStore  = 4455;        // VBus voltage x10
+            sharedVars_cpu2toCpu1.debug_log.RegulateAvgInputCurrent = 1234;
+            sharedVars_cpu2toCpu1.debug_log.RegulateAvgVStore = 2233;
+            sharedVars_cpu2toCpu1.debug_log.RegulateAvgVbus = 4455;
+            sharedVars_cpu2toCpu1.debug_log.RegulateavgOutputCurrent = 1234;
+            sharedVars_cpu2toCpu1.debug_log.RegulateIRef = 2233;
+
+            sharedVars_cpu2toCpu1.debug_log.CurrentState = 1010;    // CPU2 current state of main state machine
+            sharedVars_cpu2toCpu1.debug_log.elapsed_time = elapsed_time;
+            for(int i=0; i<NUMBER_OF_CELLS; i++) {
+                sharedVars_cpu2toCpu1.debug_log.cellVoltage[i] = 100+i;
+            }
+            last_timer = current_timer;
+        }
+    }
+}
+

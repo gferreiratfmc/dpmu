@@ -63,5 +63,8 @@ void readAlltemperatures();
 
 
 extern int16_t temperatureSensorVector[4];
+extern int16_t temperatureHotPoint;
+extern int8_t temperature_absolute_max_limit;
+extern int8_t temperature_high_limit;
 
 #endif /* APP_INC_TEMPERATURE_SENSOR_H_ */

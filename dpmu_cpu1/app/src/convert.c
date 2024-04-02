@@ -202,6 +202,9 @@ float convert_voltage_energy_cell_from_OD(uint16_t value)
 }
 uint8_t convert_voltage_energy_cell_to_OD(float value)
 {
+    if( value < 0) {
+        return 0;
+    }
     return (uint8_t)(value * pow(2, 4));
 }
 

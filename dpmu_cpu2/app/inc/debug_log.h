@@ -21,7 +21,7 @@ uint32_t SetDebugLogPeriod(void);
 void DisableDebugLog(void);
 void UpdateDebugLog(void);
 void ForceUpdateDebugLog(void);
-
+void UpdateDebugLogFake(void);
 
 
 #endif /* APP_INC_DEBUG_LOG_H_ */

@@ -13,6 +13,7 @@
 
 energy_bank_t energy_bank_settings = {0};
 
+float cellVoltagesVector[30];
 
 void energy_storage_update_settings(void)
 {
@@ -71,28 +72,18 @@ void energy_storage_update_settings(void)
 
 void energy_storage_check(void)
 {
+    static uint16_t cellCount = 0;
+
     /* several of possible checks for this function is handled in CPU1 in
      * checks_CPU2() in check_cpu2.c
      */
 
-    /*TODO Is this really needed?
-     *     Shall we send this to IOP?
-     *     Would it help?
-     *     If implemented - logic as for SoC below Min_SoC !!
-     */
-//    /* check for under Voltage of cells */
-//    bool undercharegedCell = false;
-//    for(int i = 0; i < 30; i++)
-//    {
-//        if(CellVoltages[i] <= sharedVars_cpu1toCpu2.min_allowed_voltage_energy_cell)
-//            undercharegedCell = true;
-//        /* to low cell Voltage */
-//    }
-//
-//    if(undercharegedCell)
-//        sharedVars_cpu2toCpu1.ErrorCode |= ERROR_CELL_SOC_BELOW_LIMIT;
-//    else
-//        sharedVars_cpu2toCpu1.ErrorCode &= ~ERROR_CELL_SOC_BELOW_LIMIT;
+    sharedVars_cpu2toCpu1.soc_energy_cell[cellCount] = cellVoltagesVector[cellCount];
+    cellCount++;
+    if(cellCount == NUMBER_OF_CELLS) {
+        cellCount=0;
+    }
+
 }
 
 

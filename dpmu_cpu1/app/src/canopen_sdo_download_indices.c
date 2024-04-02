@@ -27,6 +27,7 @@
 #include "shared_variables.h"
 #include "savedobjs.h"
 #include "canopen_params_flash.h"
+#include "temperature_sensor.h"
 #include "timer.h"
 
 //static save_od_t savedData[sizeof(saveObj) / sizeof(save_od_t)];
@@ -386,6 +387,7 @@ static RET_T indices_I_TEMPERATURE(UNSIGNED8 subIndex)
          * all occurrences of temperatures is in full degrees, no decimals
          * */
         retVal = coOdGetObj_i8(I_TEMPERATURE, S_DPMU_TEMPERATURE_MAX_LIMIT, &value);
+        temperature_absolute_max_limit = value;
         Serial_debug(DEBUG_INFO, &cli_serial, "S_MAX_ALLOWED_DPMU_TEMPERATURE: 0x%x\r\n", value);
         break;
 //    case S_TEMPERATURE_MEASURED_AT_DPMU_HOTTEST_POINT_PDO:
@@ -397,6 +399,7 @@ static RET_T indices_I_TEMPERATURE(UNSIGNED8 subIndex)
          * all occurrences of temperatures is in full degrees, no decimals
          * */
         retVal = coOdGetObj_i8(I_TEMPERATURE, S_DPMU_TEMPERATURE_HIGH_LIMIT, &value);
+        temperature_high_limit = value;
         Serial_debug(DEBUG_INFO, &cli_serial, "S_DPMU_TEMPERATURE_HIGH_LIMIT: 0x%x\r\n", value);
         break;
     default:
@@ -497,6 +500,7 @@ static RET_T indices_I_ENERGY_BANK_SUMMARY(UNSIGNED8 subIndex)
 {
     RET_T retVal = RET_OK;
     uint8_t value;
+    uint16_t value16;
     float   value_converted;
 
     switch (subIndex)
@@ -514,8 +518,8 @@ static RET_T indices_I_ENERGY_BANK_SUMMARY(UNSIGNED8 subIndex)
         Serial_debug(DEBUG_INFO, &cli_serial, "S_MIN_ALLOWED_STATE_OF_CHARGE_OF_ENERGY_BANK: 0x%x\r\n", value);
         break;
     case S_SAFETY_THRESHOLD_STATE_OF_CHARGE:
-        retVal = coOdGetObj_u16(I_ENERGY_BANK_SUMMARY, S_SAFETY_THRESHOLD_STATE_OF_CHARGE, &value);
-        value_converted = convert_soc_energy_bank_to_OD(value);
+        retVal = coOdGetObj_u16(I_ENERGY_BANK_SUMMARY, S_SAFETY_THRESHOLD_STATE_OF_CHARGE, &value16);
+        value_converted = convert_energy_soc_energy_bank_from_OD(value16);
         sharedVars_cpu1toCpu2.safety_threshold_state_of_charge = value_converted;
         Serial_debug(DEBUG_INFO, &cli_serial, "S_SAFETY_THRESHOLD_STATE_OF_CHARGE: 0x%x\r\n", value);
         break;

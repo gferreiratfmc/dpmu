@@ -33,8 +33,8 @@ typedef struct sharedVars_cpu1toCpu2_t // commonCpu1ToCpu2
      */
     uint16_t safe_parking_allowed;
 
-    uint16_t max_voltage_applied_to_energy_bank;
-    uint16_t safety_threshold_state_of_charge;
+    float max_voltage_applied_to_energy_bank;
+    float safety_threshold_state_of_charge;
     float min_voltage_applied_to_energy_bank;
 //    uint16_t safe_parking_allowed;
 

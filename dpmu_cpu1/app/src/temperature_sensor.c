@@ -28,6 +28,9 @@ uint16_t RX_MsgBuffer[MAX_BUFFER_SIZE];
 uint32_t controlAddress;
 uint16_t status;
 int16_t temperatureSensorVector[4];
+int16_t temperatureHotPoint;
+int8_t temperature_absolute_max_limit;
+int8_t temperature_high_limit;
 /*
  * returns pointer do wanted sensor struct
  */
@@ -120,7 +123,7 @@ void temperature_sensor_read_all_temperatures(void)
     static bool normal_reached = true;
     int16_t status = SUCCESS;
     int16_t read_temperature;
-    int16_t read_temperature_max = 0;
+    static int16_t read_temperature_max = 0;
     static uint16_t sensorCount = 0;
 
     switch( sensorCount )
@@ -195,16 +198,16 @@ void temperature_sensor_read_all_temperatures(void)
 
     }
     /* store maximum measured temperature */
-    coOdPutObj_i8(I_TEMPERATURE, S_TEMPERATURE_MEASURED_AT_DPMU_HOTTEST_POINT, read_temperature_max);
+    temperatureHotPoint = read_temperature_max;
+    //coOdPutObj_i8(I_TEMPERATURE, S_TEMPERATURE_MEASURED_AT_DPMU_HOTTEST_POINT, read_temperature_max);
 
     /* get temperature limits */
-    int8_t absolute_max_limit;
-    int8_t high_limit;
-    coOdGetObj_i8(I_TEMPERATURE, S_DPMU_TEMPERATURE_MAX_LIMIT, &absolute_max_limit);
-    coOdGetObj_i8(I_TEMPERATURE, S_DPMU_TEMPERATURE_HIGH_LIMIT, &high_limit);
+
+    //coOdGetObj_i8(I_TEMPERATURE, S_DPMU_TEMPERATURE_MAX_LIMIT, &absolute_max_limit);
+    //coOdGetObj_i8(I_TEMPERATURE, S_DPMU_TEMPERATURE_HIGH_LIMIT, &high_limit);
 
     /* check if to high temperature */
-    if(read_temperature_max >= absolute_max_limit)
+    if(read_temperature_max >= temperature_absolute_max_limit)
     {   /* critical state, turn off everything and cool down */
 
         if(!absolute_max_limit_reached)
@@ -227,7 +230,7 @@ void temperature_sensor_read_all_temperatures(void)
         /* mark it false so we can send a clear message if temperature reaches
          * read_temperature_max < high_limit */
         normal_reached = false;
-    } else if(read_temperature_max >= high_limit)
+    } else if(read_temperature_max >= temperature_high_limit)
     {   /* non critical state, send warning to IOP */
         if(!high_limit_reached)
         {
