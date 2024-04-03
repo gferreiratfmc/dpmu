@@ -83,10 +83,10 @@ typedef struct sharedVars_cpu2toCpu1_t // commonCpu2ToCpu1
     /* these values are in use in the control algorithm
      * here in case we want to compare it with IOP settings */
 
-    uint16_t current_charging_limit;            /* ESS current */
-    uint16_t current_charging_current;          /* last measured charging current */
-    uint16_t current_max_allowed_load_power;    /* max_allowed_load_power, read */
-     int16_t current_load_current;              /* last measured load current */
+    float current_charging_limit;            /* ESS current */
+    float current_charging_current;          /* last measured charging current */
+    float current_max_allowed_load_power;    /* max_allowed_load_power, read */
+    float current_load_current;              /* last measured load current */
     shared_energy_bank_t energy_bank;
 } sharedVars_cpu2toCpu1_t;
 

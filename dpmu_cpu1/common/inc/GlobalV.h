@@ -49,20 +49,20 @@ typedef struct debug_log
     int16_t VStore;    // VStore voltage x10
     uint16_t AvgVbus;
     uint16_t AvgVStore;
-    uint16_t CurrentState; // State of CPU2 state machine
-    uint16_t counter;
-    uint16_t elapsed_time;
-    uint16_t cellVoltage[NUMBER_OF_CELLS];
     int16_t BaseBoardTemperature;
     int16_t MainBoardTemperature;
     int16_t MezzanineBoardTemperature;
     int16_t PowerBankBoardTemperature;
     uint16_t RegulateAvgInputCurrent;
-    uint16_t RegulateavgOutputCurrent;
+    uint16_t RegulateAvgOutputCurrent;
     uint16_t RegulateAvgVStore;
     uint16_t RegulateAvgVbus;
     uint16_t RegulateIRef;
+    uint16_t cellVoltage[NUMBER_OF_CELLS];
+    uint16_t CurrentState; // State of CPU2 state machine
+    uint16_t counter;
     uint32_t CurrentTime;
+    uint16_t elapsed_time;
 } debug_log_t;
 
 

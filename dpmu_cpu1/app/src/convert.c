@@ -221,9 +221,9 @@ float convert_ess_current_from_OD(uint16_t value)
 {
     return (float)value * pow(2, -4);
 }
-uint8_t convert_ess_current_to_OD(float value)
+int8_t convert_ess_current_to_OD(float value)
 {
-    return (uint8_t)(value * pow(2, 4));
+    return (int8_t)(value * pow(2, 4));
 }
 
 

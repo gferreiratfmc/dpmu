@@ -88,7 +88,7 @@ static inline uint8_t indices_I_RESTORE_DEFAULT_PARAMETERS(UNSIGNED8 subIndex)
 static inline uint8_t indices_I_TPDO_MAPPING_TEMPERATURES(UNSIGNED8 subIndex)
 {
     uint8_t retVal = CO_FALSE;
-    uint8_t value;
+
 
     /* all values were stored in the OD directly after each measurements */
     switch (subIndex)
@@ -99,19 +99,19 @@ static inline uint8_t indices_I_TPDO_MAPPING_TEMPERATURES(UNSIGNED8 subIndex)
         break;
     case S_TEMPERATURE_BASE_PDO:
         coOdPutObj_i8( I_TPDO_MAPPING_TEMPERATURES, S_TEMPERATURE_BASE_PDO, temperatureSensorVector[TEMPERATURE_SENSOR_BASE]);
-        Serial_debug(DEBUG_INFO, &cli_serial, "S_TEMPERATURE_BASE_PDO: 0x%x\r\n", value);
+        Serial_debug(DEBUG_INFO, &cli_serial, "S_TEMPERATURE_BASE_PDO: 0x%x\r\n", temperatureSensorVector[TEMPERATURE_SENSOR_BASE]);
         break;
     case S_TEMPERATURE_MAIN_PDO:
         coOdPutObj_i8( I_TPDO_MAPPING_TEMPERATURES, S_TEMPERATURE_MAIN_PDO, temperatureSensorVector[TEMPERATURE_SENSOR_MAIN] );
-        Serial_debug(DEBUG_INFO, &cli_serial, "S_TEMPERATURE_MAIN_PDO: 0x%x\r\n", value);
+        Serial_debug(DEBUG_INFO, &cli_serial, "S_TEMPERATURE_MAIN_PDO: 0x%x\r\n", temperatureSensorVector[TEMPERATURE_SENSOR_MAIN]);
         break;
     case S_TEMPERATURE_MEZZANINE_PDO:
         coOdPutObj_i8( I_TPDO_MAPPING_TEMPERATURES, S_TEMPERATURE_MEZZANINE_PDO, temperatureSensorVector[TEMPERATURE_SENSOR_MEZZANINE] );
-        Serial_debug(DEBUG_INFO, &cli_serial, "S_TEMPERATURE_MEZZANINE_PDO: 0x%x\r\n", value);
+        Serial_debug(DEBUG_INFO, &cli_serial, "S_TEMPERATURE_MEZZANINE_PDO: 0x%x\r\n", temperatureSensorVector[TEMPERATURE_SENSOR_MEZZANINE]);
         break;
     case S_TEMPERATURE_PWR_BANK_PDO:
         coOdPutObj_i8( I_TPDO_MAPPING_TEMPERATURES, S_TEMPERATURE_PWR_BANK_PDO, temperatureSensorVector[TEMPERATURE_SENSOR_PWR_BANK] );
-        Serial_debug(DEBUG_INFO, &cli_serial, "S_TEMPERATURE_PWR_BANK_PDO: 0x%x\r\n", value);
+        Serial_debug(DEBUG_INFO, &cli_serial, "S_TEMPERATURE_PWR_BANK_PDO: 0x%x\r\n", temperatureSensorVector[TEMPERATURE_SENSOR_PWR_BANK]);
         break;
     default:
         Serial_debug(DEBUG_ERROR, &cli_serial, "UNKNOWN CAN OD SUBINDEX: 0x%x\r\n", subIndex);
@@ -184,9 +184,9 @@ static inline uint8_t indices_I_DC_BUS_VOLTAGE(UNSIGNED8 subIndex)
 static inline uint8_t indices_I_ESS_CURRENT(void)
 {
     uint8_t retVal = CO_FALSE;
-    uint8_t value;
+    int8_t value;
 
-    value = convert_ess_current_to_OD(sharedVars_cpu1toCpu2.ess_current);
+    value = convert_ess_current_to_OD(sharedVars_cpu2toCpu1.current_charging_current);
     retVal = coOdPutObj_u8(I_ESS_CURRENT, 0, value );
 
     Serial_debug(DEBUG_INFO, &cli_serial, "I_ESS_CURRENT: 0x%x\r\n", value);
@@ -247,16 +247,33 @@ static inline uint8_t indices_I_TEMPERATURE(UNSIGNED8 subIndex)
     {
     case S_DPMU_TEMPERATURE_MAX_LIMIT:
         coOdPutObj_u8(I_TEMPERATURE, S_DPMU_TEMPERATURE_MAX_LIMIT, temperature_absolute_max_limit );
-        Serial_debug(DEBUG_INFO, &cli_serial, "S_MAX_ALLOWED_DPMU_TEMPERATURE: 0x%x\r\n", value);
+        Serial_debug(DEBUG_INFO, &cli_serial, "S_MAX_ALLOWED_DPMU_TEMPERATURE: 0x%x\r\n", temperature_absolute_max_limit);
         break;
     case S_TEMPERATURE_MEASURED_AT_DPMU_HOTTEST_POINT:
-        coOdPutObj_i8( I_TPDO_MAPPING_TEMPERATURES, S_TEMPERATURE_MEASURED_AT_DPMU_HOTTEST_POINT_PDO, temperatureHotPoint);
-        Serial_debug(DEBUG_INFO, &cli_serial, "S_TEMPERATURE_MEASURED_AT_DPMU_HOTTEST_POINT: 0x%x\r\n", value);
+        coOdPutObj_i8( I_TEMPERATURE, S_TEMPERATURE_MEASURED_AT_DPMU_HOTTEST_POINT, temperatureHotPoint);
+        Serial_debug(DEBUG_INFO, &cli_serial, "S_TEMPERATURE_MEASURED_AT_DPMU_HOTTEST_POINT: 0x%x\r\n", temperatureHotPoint);
         break;
     case S_DPMU_TEMPERATURE_HIGH_LIMIT:
         coOdPutObj_u8(I_TEMPERATURE, S_DPMU_TEMPERATURE_HIGH_LIMIT, temperature_high_limit );
-        Serial_debug(DEBUG_INFO, &cli_serial, "S_DPMU_TEMPERATURE_HIGH_LIMIT: 0x%x\r\n", value);
+        Serial_debug(DEBUG_INFO, &cli_serial, "S_DPMU_TEMPERATURE_HIGH_LIMIT: 0x%x\r\n", temperature_high_limit);
         break;
+    case S_TEMPERATURE_BASE:
+        coOdPutObj_i8( I_TEMPERATURE, S_TEMPERATURE_BASE, temperatureSensorVector[TEMPERATURE_SENSOR_BASE]);
+        Serial_debug(DEBUG_INFO, &cli_serial, "S_TEMPERATURE_BASE: 0x%x\r\n", temperatureSensorVector[TEMPERATURE_SENSOR_BASE]);
+        break;
+    case S_TEMPERATURE_MAIN:
+        coOdPutObj_i8( I_TEMPERATURE, S_TEMPERATURE_MAIN, temperatureSensorVector[TEMPERATURE_SENSOR_MAIN] );
+        Serial_debug(DEBUG_INFO, &cli_serial, "S_TEMPERATURE_MAIN: 0x%x\r\n", temperatureSensorVector[TEMPERATURE_SENSOR_MAIN]);
+        break;
+    case S_TEMPERATURE_MEZZANINE:
+        coOdPutObj_i8( I_TEMPERATURE, S_TEMPERATURE_MEZZANINE, temperatureSensorVector[TEMPERATURE_SENSOR_MEZZANINE] );
+        Serial_debug(DEBUG_INFO, &cli_serial, "S_TEMPERATURE_MEZZANINE: 0x%x\r\n", temperatureSensorVector[TEMPERATURE_SENSOR_MEZZANINE]);
+        break;
+    case S_TEMPERATURE_PWR_BANK:
+        coOdPutObj_i8( I_TEMPERATURE, S_TEMPERATURE_PWR_BANK, temperatureSensorVector[TEMPERATURE_SENSOR_PWR_BANK] );
+        Serial_debug(DEBUG_INFO, &cli_serial, "S_TEMPERATURE_PWR_BANK: 0x%x\r\n", temperatureSensorVector[TEMPERATURE_SENSOR_PWR_BANK]);
+        break;
+
     default:
         Serial_debug(DEBUG_ERROR, &cli_serial, "UNKNOWN CAN OD SUBINDEX: 0x%x\r\n", subIndex);
     }
@@ -430,6 +447,7 @@ static inline uint8_t indices_I_ENERGY_BANK_SUMMARY(UNSIGNED8 subIndex)
         break;
     case S_STACK_TEMPERATURE:
         retVal = coOdPutObj_i8(I_ENERGY_BANK_SUMMARY, S_STACK_TEMPERATURE, temperatureSensorVector[TEMPERATURE_SENSOR_PWR_BANK]);
+        Serial_debug(DEBUG_INFO, &cli_serial, "S_STACK_TEMPERATURE: xx%x\r\n", temperatureSensorVector[TEMPERATURE_SENSOR_PWR_BANK]);
         break;
     default:
         Serial_debug(DEBUG_ERROR, &cli_serial, "UNKNOWN CAN OD SUBINDEX: 0x%x\r\n", subIndex);

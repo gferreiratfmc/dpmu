@@ -80,4 +80,5 @@ void dcbus_check(void)
     sharedVars_cpu2toCpu1.current_load_current = sensorVector[ISen1fIdx].realValue;
 
 
+
 }

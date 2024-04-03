@@ -924,6 +924,7 @@ void log_store_debug_log_to_ram(void)
 
     volatile static uint32_t last_debug_log_number = 0;
 
+    timer_time_t ptime;
 
 
     /* check if there are new debug data to store */
@@ -932,7 +933,8 @@ void log_store_debug_log_to_ram(void)
 
         /* make local copy of data */
         memcpy(&debug_log_copy, (void *)&sharedVars_cpu2toCpu1.debug_log, sizeof(debug_log_t));
-        debug_log_copy.CurrentTime = timer_get_can_time();
+        timer_get_time(&ptime);
+        debug_log_copy.CurrentTime = ptime.can_time;
         debug_log_copy.BaseBoardTemperature = temperatureSensorVector[TEMPERATURE_SENSOR_BASE];
         debug_log_copy.MainBoardTemperature = temperatureSensorVector[TEMPERATURE_SENSOR_MAIN];
         debug_log_copy.MezzanineBoardTemperature = temperatureSensorVector[TEMPERATURE_SENSOR_MEZZANINE];
@@ -991,7 +993,7 @@ void log_debug_read_from_ram() {
         Serial_debug(DEBUG_INFO, &cli_serial, "AvgVstore:[%03d] ", readBack.RegulateAvgVStore);
         Serial_debug(DEBUG_INFO, &cli_serial, "AvgVbus:[%03d] ", readBack.RegulateAvgVbus);
         Serial_debug(DEBUG_INFO, &cli_serial, "AvgInputCurrent:[%03d] ", readBack.RegulateAvgInputCurrent);
-        Serial_debug(DEBUG_INFO, &cli_serial, "AvgOutpurCurrent:[%03d] ", readBack.RegulateavgOutputCurrent);
+        Serial_debug(DEBUG_INFO, &cli_serial, "AvgOutpurCurrent:[%03d] ", readBack.RegulateAvgOutputCurrent);
         Serial_debug(DEBUG_INFO, &cli_serial, "Iref:[%03d]\r\n", readBack.RegulateIRef);
 
         Serial_debug(DEBUG_INFO, &cli_serial, "\r\nTemperatures:\r\n");

@@ -33,7 +33,7 @@ uint8_t  convert_min_voltage_applied_to_energy_bank_to_OD(float value);
 float    convert_voltage_energy_cell_from_OD(uint16_t value);
 uint8_t  convert_voltage_energy_cell_to_OD(float value);
 float    convert_ess_current_from_OD(uint16_t value);
-uint8_t  convert_ess_current_to_OD(float value);
+int8_t  convert_ess_current_to_OD(float value);
 
 /*** DPMU -> IOP ***/
 uint16_t convert_soc_energy_bank_to_OD(float value);    /* state of charge */

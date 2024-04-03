@@ -27,8 +27,8 @@ uint16_t TX_MsgBuffer[MAX_BUFFER_SIZE];
 uint16_t RX_MsgBuffer[MAX_BUFFER_SIZE];
 uint32_t controlAddress;
 uint16_t status;
-int16_t temperatureSensorVector[4];
-int16_t temperatureHotPoint;
+int8_t temperatureSensorVector[4];
+int8_t temperatureHotPoint;
 int8_t temperature_absolute_max_limit;
 int8_t temperature_high_limit;
 /*

@@ -12,8 +12,9 @@
 
 void payload_gen_load_current(uint8_t status, uint8_t ampere[4])
 {
-    ampere[0] = (sharedVars_cpu2toCpu1.current_load_current >> 0) & 0xff;
-    ampere[1] = (sharedVars_cpu2toCpu1.current_load_current >> 8) & 0xff;
+    int8_t current_load_current = convert_ess_current_to_OD( sharedVars_cpu2toCpu1.current_load_current );
+    ampere[0] = (current_load_current >> 0) & 0xff;
+    ampere[1] = 0;
     ampere[2] = 0;
     ampere[3] = 0;
 }

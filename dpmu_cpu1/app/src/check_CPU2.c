@@ -312,32 +312,32 @@ void store_SoH_in_OD(uint8_t soH_energy_bank, float cell[30])
 
 void calculate_capacitance(void)
 {
-    uint16_t charge_time    = sharedVars_cpu2toCpu1.energy_bank.chargeTime;
-    float    charge_time_sec;
-    float    charge_current = sharedVars_cpu2toCpu1.energy_bank.chargeCurrent;
-    float    time_current;  /* charge_time_sec * charge_current_float */
-
-    charge_time_sec = convert_charge_time_to_seconds(charge_time);
-    time_current = charge_time_sec * charge_current;
-
-    /* calculate present capacitance per cell
-     *
-     * C[n] = i_charge       * (T_end - T_start) / (V_end[n] - V_start[n])
-     * C[n] = charge_current * (charge_time)     / (voltage_delta)
-     * C[n] = time_current                       / (voltage_delta)
-     * there 'n' is the number of the individual cell
-     * */
-    for (int i = 0; i <= 30; i++)
-    {
-        /* calculate delta Voltage */
-        float voltage_delta = sharedVars_cpu2toCpu1.energy_bank.cellVoltageAfterFirstCharge[i]
-                - sharedVars_cpu2toCpu1.energy_bank.cellVoltageBeforeFirstCharge[i];
-        /* calculate capacitance of cell */
-        float cap = time_current / voltage_delta;
-        cap_energy_cell[i] = (uint8_t) cap;
-        /* add capacitance to energy bank capacitance */
-        cap_energy_bank += cap;
-    }
+//    uint16_t charge_time    = sharedVars_cpu2toCpu1.energy_bank.chargeTime;
+//    float    charge_time_sec;
+//    float    charge_current = sharedVars_cpu2toCpu1.energy_bank.chargeCurrent;
+//    float    time_current;  /* charge_time_sec * charge_current_float */
+//
+//    charge_time_sec = convert_charge_time_to_seconds(charge_time);
+//    time_current = charge_time_sec * charge_current;
+//
+//    /* calculate present capacitance per cell
+//     *
+//     * C[n] = i_charge       * (T_end - T_start) / (V_end[n] - V_start[n])
+//     * C[n] = charge_current * (charge_time)     / (voltage_delta)
+//     * C[n] = time_current                       / (voltage_delta)
+//     * there 'n' is the number of the individual cell
+//     * */
+//    for (int i = 0; i <= 30; i++)
+//    {
+//        /* calculate delta Voltage */
+//        float voltage_delta = sharedVars_cpu2toCpu1.energy_bank.cellVoltageAfterFirstCharge[i]
+//                - sharedVars_cpu2toCpu1.energy_bank.cellVoltageBeforeFirstCharge[i];
+//        /* calculate capacitance of cell */
+//        float cap = time_current / voltage_delta;
+//        cap_energy_cell[i] = (uint8_t) cap;
+//        /* add capacitance to energy bank capacitance */
+//        cap_energy_bank += cap;
+//    }
 }
 
 RET_T store_initial_capacitances(void)
