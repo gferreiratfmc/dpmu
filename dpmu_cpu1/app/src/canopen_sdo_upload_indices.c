@@ -187,7 +187,7 @@ static inline uint8_t indices_I_ESS_CURRENT(void)
     int8_t value;
 
     value = convert_ess_current_to_OD(sharedVars_cpu2toCpu1.current_charging_current);
-    retVal = coOdPutObj_u8(I_ESS_CURRENT, 0, value );
+    retVal = coOdPutObj_i8(I_ESS_CURRENT, 0, value );
 
     Serial_debug(DEBUG_INFO, &cli_serial, "I_ESS_CURRENT: 0x%x\r\n", value);
 

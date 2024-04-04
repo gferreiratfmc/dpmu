@@ -81,6 +81,8 @@ void log_read_domain(UNSIGNED16 index, UNSIGNED8 subindex, UNSIGNED32 domainBufS
 {
     uint32_t start_address = 0;
 
+    static uint32_t sumOfTransferedBytes = 0;
+
     if( debug_log_last_read_address >= debug_log_next_free_address   ) {
         debug_log_last_read_address = debug_log_last_read_address;
         return;
@@ -119,11 +121,16 @@ void log_read_domain(UNSIGNED16 index, UNSIGNED8 subindex, UNSIGNED32 domainBufS
 
         emif1_log_read.address = start_address;
         emif1_log_read.cpuType = CPU_TYPE_ONE;
-        emif1_log_read.data = message;
+        emif1_log_read.data = (uint16_t *)message;
         emif1_log_read.size = domainBufSize;
         //DMA_configBurst(CPU1_EXT_MEM_BASE, TRANSFER_SIZE, 1, 1);
         emifc_cpu_read_memory(&emif1_log_read);
         debug_log_last_read_address = start_address + domainBufSize;
+        sumOfTransferedBytes = sumOfTransferedBytes + domainBufSize;
+        if( sumOfTransferedBytes >= sizeof(debug_log_t) ) {
+            //debug_log_last_read_address = debug_log_last_read_address + sizeof(debug_log_t);
+            sumOfTransferedBytes = 0;
+        }
 
     }
 
@@ -192,6 +199,7 @@ void log_debug_log_reset(void)
 
     //debug_log_start_address              = EXT_RAM_START_ADDRESS_CS2;
     debug_log_next_free_address          = EXT_RAM_START_ADDRESS_CS2;
+    debug_log_last_read_address          = EXT_RAM_START_ADDRESS_CS2;
     debug_log_address_has_wrapped_around = false;
     debug_log_size                       = 0;
 
@@ -932,8 +940,9 @@ void log_store_debug_log_to_ram(void)
     {
 
         /* make local copy of data */
-        memcpy(&debug_log_copy, (void *)&sharedVars_cpu2toCpu1.debug_log, sizeof(debug_log_t));
+        memcpy((void *)&debug_log_copy, (void *)&sharedVars_cpu2toCpu1.debug_log, sizeof(debug_log_t));
         timer_get_time(&ptime);
+        debug_log_copy.MagicNumber = 0x1234;
         debug_log_copy.CurrentTime = ptime.can_time;
         debug_log_copy.BaseBoardTemperature = temperatureSensorVector[TEMPERATURE_SENSOR_BASE];
         debug_log_copy.MainBoardTemperature = temperatureSensorVector[TEMPERATURE_SENSOR_MAIN];

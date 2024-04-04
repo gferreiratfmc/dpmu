@@ -40,6 +40,7 @@ typedef struct Counters
 
 typedef struct debug_log
 {
+    uint16_t MagicNumber;
     int16_t ISen1;    // Output load current sensor x10
     int16_t ISen2;    // Storage current sensor (supercap) x10
     int16_t IF_1;     // Input current x10
