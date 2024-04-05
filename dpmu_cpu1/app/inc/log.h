@@ -29,6 +29,10 @@ typedef enum{
 
 }LogType_e;
 
+typedef enum {
+    LOG_RESET_FULL = 0,
+    LOG_RESET_REWIND,
+} LogResetType_e;
 
 typedef struct {
     uint32_t address;
@@ -60,7 +64,7 @@ uint8_t log_debug_log_read(
         UNSIGNED16  index,
         UNSIGNED8   subIndex
     );
-void log_debug_log_reset(void);
+void log_debug_log_reset(LogResetType_e resetType);
 
 uint8_t log_can_log_read(
         BOOL_T      execute,

@@ -352,7 +352,7 @@ static inline uint8_t indices_I_READ_POWER(UNSIGNED8 subIndex)
     case S_POWER_FROM_DC_INPUT:
 
         realValue = sharedVars_cpu2toCpu1.power_from_dc_input;
-        value16 = convert_dc_bus_voltage_to_OD( realValue );
+        value16 = convert_power_to_OD( realValue );
         retVal = coOdPutObj_u16(I_READ_POWER, S_POWER_FROM_DC_INPUT,  value16 );
         Serial_debug(DEBUG_INFO, &cli_serial, "S_POWER_FROM_DC_INPUT: %d\r\n", value16);
         break;

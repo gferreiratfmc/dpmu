@@ -249,7 +249,7 @@ void main(void)
         log_debug_read_from_ram( );
 
         /* check every second */
-        if(!(timer_get_ticks()%250)) {
+        if(!(timer_get_ticks()%1000)) {
             //readAlltemperatures();
             temperature_sensor_read_all_temperatures();
         }

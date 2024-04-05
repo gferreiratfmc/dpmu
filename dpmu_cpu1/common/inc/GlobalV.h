@@ -30,6 +30,9 @@
 #define MAX_INDUCTOR_BOOST_CURRENT 19
 #define UPDATE_CPU2_FIRMWARE_CODE 9999
 #define NUMBER_OF_CELLS 30
+#define MAX_VOLTAGE_ENERGY_BANK 90.0
+#define MAX_VOLTAGE_ENERGY_CELL 3.0
+
 
 typedef struct Counters
 {
@@ -40,7 +43,7 @@ typedef struct Counters
 
 typedef struct debug_log
 {
-    uint16_t MagicNumber;
+    uint32_t MagicNumber;
     int16_t ISen1;    // Output load current sensor x10
     int16_t ISen2;    // Storage current sensor (supercap) x10
     int16_t IF_1;     // Input current x10
@@ -48,19 +51,19 @@ typedef struct debug_log
     int16_t I_Dab3;   // CLLC2 Current x100
     int16_t Vbus;      // VBus voltage x10
     int16_t VStore;    // VStore voltage x10
-    uint16_t AvgVbus;
-    uint16_t AvgVStore;
+    int16_t AvgVbus;
+    int16_t AvgVStore;
     int16_t BaseBoardTemperature;
     int16_t MainBoardTemperature;
     int16_t MezzanineBoardTemperature;
     int16_t PowerBankBoardTemperature;
-    uint16_t RegulateAvgInputCurrent;
-    uint16_t RegulateAvgOutputCurrent;
-    uint16_t RegulateAvgVStore;
-    uint16_t RegulateAvgVbus;
-    uint16_t RegulateIRef;
-    uint16_t cellVoltage[NUMBER_OF_CELLS];
-    uint16_t CurrentState; // State of CPU2 state machine
+    int16_t RegulateAvgInputCurrent;
+    int16_t RegulateAvgOutputCurrent;
+    int16_t RegulateAvgVStore;
+    int16_t RegulateAvgVbus;
+    int16_t RegulateIRef;
+    int16_t cellVoltage[NUMBER_OF_CELLS];
+    int16_t CurrentState; // State of CPU2 state machine
     uint16_t counter;
     uint32_t CurrentTime;
     uint16_t elapsed_time;

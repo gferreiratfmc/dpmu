@@ -48,6 +48,7 @@ static uint32_t debug_log_last_writen_address        = 0;
 static bool     debug_log_address_has_wrapped_around = false;
 static uint32_t debug_log_size                       = sizeof(debug_log_t); //0;
 static bool     debug_log_active                     = true;
+static bool     debug_log_reading_flag                    = false;
 
 /* for can log in external FLASH */
 //static uint32_t can_log_start_address                = EXT_RAM_START_ADDRESS_CS2;
@@ -131,6 +132,9 @@ void log_read_domain(UNSIGNED16 index, UNSIGNED8 subindex, UNSIGNED32 domainBufS
             //debug_log_last_read_address = debug_log_last_read_address + sizeof(debug_log_t);
             sumOfTransferedBytes = 0;
         }
+        if( (debug_log_next_free_address - debug_log_last_read_address) == 0 ){
+            debug_log_reading_flag = false;
+        }
 
     }
 
@@ -178,6 +182,7 @@ uint8_t log_debug_log_read(
                             message,            /**< pointer to domain */
                             sizeToTransfer  //2 * debug_log_size  /**< domain length */ /* '2x' we use 16 bit Words */
                          );
+        debug_log_reading_flag = true;
         return RET_OK;
     } else {
         coOdDomainAddrSet(
@@ -192,16 +197,25 @@ uint8_t log_debug_log_read(
 
 }
 
-void log_debug_log_reset(void)
+void log_debug_log_reset(LogResetType_e resetType)
 {
     // reset number of entries
     // reset position in memory to beginning of RAM portion ???
 
     //debug_log_start_address              = EXT_RAM_START_ADDRESS_CS2;
-    debug_log_next_free_address          = EXT_RAM_START_ADDRESS_CS2;
-    debug_log_last_read_address          = EXT_RAM_START_ADDRESS_CS2;
-    debug_log_address_has_wrapped_around = false;
-    debug_log_size                       = 0;
+
+    switch( resetType ) {
+        case LOG_RESET_REWIND:
+            debug_log_last_read_address          = EXT_RAM_START_ADDRESS_CS2;
+            break;
+        case LOG_RESET_FULL:
+        default:
+            debug_log_next_free_address          = EXT_RAM_START_ADDRESS_CS2;
+            debug_log_last_read_address          = EXT_RAM_START_ADDRESS_CS2;
+            debug_log_address_has_wrapped_around = false;
+            debug_log_size                       = 0;
+            break;
+    }
 
     /* activate debug log */
     debug_log_active                     = true;
@@ -330,6 +344,10 @@ bool log_store_debug_log(unsigned char *pnt)
     uint16_t size_in_words = sizeof(debug_log_t);
     uint32_t debug_log_write_address = debug_log_next_free_address;
 
+
+    if( debug_log_reading_flag == true ) {
+        return true;
+    }
     /* copy the data, do it early
      *
      * the data _must_ be stored in RAMGSx
@@ -942,7 +960,7 @@ void log_store_debug_log_to_ram(void)
         /* make local copy of data */
         memcpy((void *)&debug_log_copy, (void *)&sharedVars_cpu2toCpu1.debug_log, sizeof(debug_log_t));
         timer_get_time(&ptime);
-        debug_log_copy.MagicNumber = 0x1234;
+        debug_log_copy.MagicNumber = 0xDEADFACE;
         debug_log_copy.CurrentTime = ptime.can_time;
         debug_log_copy.BaseBoardTemperature = temperatureSensorVector[TEMPERATURE_SENSOR_BASE];
         debug_log_copy.MainBoardTemperature = temperatureSensorVector[TEMPERATURE_SENSOR_MAIN];

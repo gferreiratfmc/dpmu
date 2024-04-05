@@ -340,35 +340,29 @@ static RET_T indices_I_ENERGY_CELL_SUMMARY(UNSIGNED8 subIndex)
     case S_MIN_VOLTAGE_ENERGY_CELL:
         retVal = coOdGetObj_u8(I_ENERGY_CELL_SUMMARY, S_MIN_VOLTAGE_ENERGY_CELL, &value);
         value_converted = convert_voltage_energy_cell_from_OD(value);
-        Serial_debug(DEBUG_INFO, &cli_serial, "S_MIN_VOLTAGE_ENERGY_CELL: 0x%x\r\n", value);
-        sharedVars_cpu1toCpu2.min_allowed_voltage_energy_cell = value_converted;
+        if( value_converted <= MAX_VOLTAGE_ENERGY_CELL ) {
+            sharedVars_cpu1toCpu2.min_allowed_voltage_energy_cell = value_converted;
+            Serial_debug(DEBUG_INFO, &cli_serial, "S_MIN_VOLTAGE_ENERGY_CELL: 0x%x\r\n", value);
+        } else {
+            Serial_debug(DEBUG_INFO, &cli_serial, "INVALID S_MIN_VOLTAGE_ENERGY_CELL: %x > MAX_VOLTAGE_ENERGY_CELL\r\n", value);
+            retVal = RET_SDO_INVALID_VALUE;
+        }
         break;
     case S_MAX_VOLTAGE_ENERGY_CELL:
         retVal = coOdGetObj_u8(I_ENERGY_CELL_SUMMARY, S_MAX_VOLTAGE_ENERGY_CELL, &value);
         value_converted = convert_voltage_energy_cell_from_OD(value);
-        Serial_debug(DEBUG_INFO, &cli_serial, "S_MAX_VOLTAGE_ENERGY_CELL: 0x%x\r\n", value);
-        sharedVars_cpu1toCpu2.max_allowed_voltage_energy_cell = value_converted;
+        if( value_converted <= MAX_VOLTAGE_ENERGY_CELL ) {
+            sharedVars_cpu1toCpu2.max_allowed_voltage_energy_cell = value_converted;
+            Serial_debug(DEBUG_INFO, &cli_serial, "S_MAX_VOLTAGE_ENERGY_CELL: 0x%x\r\n", value);
+        } else {
+            Serial_debug(DEBUG_INFO, &cli_serial, "INVALID S_MAX_VOLTAGE_ENERGY_CELL: %x > MAX_VOLTAGE_ENERGY_CELL\r\n", value);
+            retVal = RET_SDO_INVALID_VALUE;
+        }
+
         break;
     default:
-//        if((subIndex >= S_STATE_OF_CHARGE_OF_ENERGY_CELL_01) && (subIndex <= S_STATE_OF_CHARGE_OF_ENERGY_CELL_30))
-//        {
-//            retVal = coOdGetObj_u8(I_ENERGY_CELL_SUMMARY, subIndex, &value);
-//            Serial_debug(
-//                    DEBUG_INFO, &cli_serial,
-//                    "S_STATE_OF_CHARGE_OF_ENERGY_CELL_%d: 0x%x\r\n",
-//                    subIndex - S_MAX_VOLTAGE_ENERGY_CELL, value);
-//        } else if((subIndex >= S_STATE_OF_HEALTH_OF_ENERGY_CELL_01) && (subIndex <= S_STATE_OF_HEALTH_OF_ENERGY_CELL_30))
-//        {
-//            retVal = coOdGetObj_u8(I_ENERGY_CELL_SUMMARY, subIndex, &value);
-//            Serial_debug(
-//                    DEBUG_INFO, &cli_serial,
-//                    "S_STATE_OF_HEALTH_OF_ENERGY_CELL_%d: 0x%x\r\n",
-//                    subIndex - S_MAX_VOLTAGE_ENERGY_CELL, value);
-//        } else
-//        {
-            Serial_debug(DEBUG_ERROR, &cli_serial, "UNKNOWN CAN OD SUBINDEX: 0x%x\r\n", subIndex);
-            retVal = RET_SUBIDX_NOT_FOUND;
-//        }
+        Serial_debug(DEBUG_ERROR, &cli_serial, "UNKNOWN CAN OD SUBINDEX: 0x%x\r\n", subIndex);
+        retVal = RET_SUBIDX_NOT_FOUND;
         break;
     }
 
@@ -383,21 +377,11 @@ static RET_T indices_I_TEMPERATURE(UNSIGNED8 subIndex)
     switch (subIndex)
     {
     case S_DPMU_TEMPERATURE_MAX_LIMIT:
-        /* no conversion needed
-         * all occurrences of temperatures is in full degrees, no decimals
-         * */
         retVal = coOdGetObj_i8(I_TEMPERATURE, S_DPMU_TEMPERATURE_MAX_LIMIT, &value);
         temperature_absolute_max_limit = value;
         Serial_debug(DEBUG_INFO, &cli_serial, "S_MAX_ALLOWED_DPMU_TEMPERATURE: 0x%x\r\n", value);
         break;
-//    case S_TEMPERATURE_MEASURED_AT_DPMU_HOTTEST_POINT_PDO:
-//        retVal = coOdGetObj_i8(I_TEMPERATURE, S_TEMPERATURE_MEASURED_AT_DPMU_HOTTEST_POINT_PDO, &value);
-//        Serial_debug(DEBUG_INFO, &cli_serial, "S_TEMPERATURE_MEASURED_AT_DPMU_HOTTEST_POINT_PDO: 0x%x\r\n", value);
-//        break;
     case S_DPMU_TEMPERATURE_HIGH_LIMIT:
-        /* no conversion needed
-         * all occurrences of temperatures is in full degrees, no decimals
-         * */
         retVal = coOdGetObj_i8(I_TEMPERATURE, S_DPMU_TEMPERATURE_HIGH_LIMIT, &value);
         temperature_high_limit = value;
         Serial_debug(DEBUG_INFO, &cli_serial, "S_DPMU_TEMPERATURE_HIGH_LIMIT: 0x%x\r\n", value);
@@ -477,16 +461,9 @@ static inline RET_T indices_I_DPMU_STATE(UNSIGNED8 subIndex)
     case S_DPMU_OPERATION_REQUEST_STATE:
         retVal = coOdGetObj_u8(I_DPMU_STATE, S_DPMU_OPERATION_REQUEST_STATE, &state);
         Serial_debug(DEBUG_INFO, &cli_serial, "S_DPMU_OPERATION_REQUEST_STATE: 0x%x\r\n", state);
-        if( state == UPDATE_CPU2_FIRMWARE_CODE) {
-            startCPU2FirmwareUpdate();
-        }
         sharedVars_cpu1toCpu2.iop_operation_request_state = state;
         IPC_setFlagLtoR(IPC_CPU1_L_CPU2_R, IPC_IOP_REQUEST_CHANGE_OF_STATE);
         break;
-//    case S_DPMU_OPERATION_CURRENT_STATE:
-//        retVal = coOdGetObj_u8(I_DPMU_STATE, S_DPMU_OPERATION_CURRENT_STATE, &state);
-//        Serial_debug(DEBUG_INFO, &cli_serial, "S_DPMU_OPERATION_CURRENT_STATE: 0x%x\r\n", state);
-//        break;
     default:
         Serial_debug(DEBUG_ERROR, &cli_serial, "UNKNOWN CAN OD SUBINDEX: 0x%x\r\n", subIndex);
         retVal = RET_SUBIDX_NOT_FOUND;
@@ -508,20 +485,36 @@ static RET_T indices_I_ENERGY_BANK_SUMMARY(UNSIGNED8 subIndex)
     case S_MAX_VOLTAGE_APPLIED_TO_ENERGY_BANK:
         retVal = coOdGetObj_u8(I_ENERGY_BANK_SUMMARY, S_MAX_VOLTAGE_APPLIED_TO_ENERGY_BANK, &value);
         value_converted = convert_voltage_energy_bank_from_OD(value);
-        sharedVars_cpu1toCpu2.max_voltage_applied_to_energy_bank = value_converted;
-        Serial_debug(DEBUG_INFO, &cli_serial, "S_MAX_VOLTAGE_APPLIED_TO_STORAGE_BANK: 0x%x\r\n", value);
+        if( value_converted > 0.0 &&  value_converted <= MAX_VOLTAGE_ENERGY_BANK ) {
+            sharedVars_cpu1toCpu2.max_voltage_applied_to_energy_bank = value_converted;
+            Serial_debug(DEBUG_INFO, &cli_serial, "S_MAX_VOLTAGE_APPLIED_TO_STORAGE_BANK: 0x%x\r\n", value);
+        } else {
+            retVal = RET_SDO_INVALID_VALUE;
+            Serial_debug(DEBUG_INFO, &cli_serial, "INVALID S_MAX_VOLTAGE_APPLIED_TO_STORAGE_BANK: 0x%x\r\n", value);
+        }
         break;
     case S_MIN_VOLTAGE_APPLIED_TO_ENERGY_BANK:
         retVal = coOdGetObj_u8(I_ENERGY_BANK_SUMMARY, S_MIN_VOLTAGE_APPLIED_TO_ENERGY_BANK, &value);
         value_converted = convert_min_voltage_applied_to_energy_bank_from_OD(value);
-        sharedVars_cpu1toCpu2.min_voltage_applied_to_energy_bank = value_converted;
-        Serial_debug(DEBUG_INFO, &cli_serial, "S_MIN_ALLOWED_STATE_OF_CHARGE_OF_ENERGY_BANK: 0x%x\r\n", value);
+        if( value_converted > 0.0 &&  value_converted <= MAX_VOLTAGE_ENERGY_BANK) {
+            sharedVars_cpu1toCpu2.min_voltage_applied_to_energy_bank = value_converted;
+            Serial_debug(DEBUG_INFO, &cli_serial, "S_MIN_ALLOWED_STATE_OF_CHARGE_OF_ENERGY_BANK: 0x%x\r\n", value);
+        } else {
+            retVal = RET_SDO_INVALID_VALUE;
+            Serial_debug(DEBUG_INFO, &cli_serial, "INVALID S_MIN_ALLOWED_STATE_OF_CHARGE_OF_ENERGY_BANK: 0x%x\r\n", value);
+        }
+
         break;
     case S_SAFETY_THRESHOLD_STATE_OF_CHARGE:
         retVal = coOdGetObj_u16(I_ENERGY_BANK_SUMMARY, S_SAFETY_THRESHOLD_STATE_OF_CHARGE, &value16);
         value_converted = convert_energy_soc_energy_bank_from_OD(value16);
-        sharedVars_cpu1toCpu2.safety_threshold_state_of_charge = value_converted;
-        Serial_debug(DEBUG_INFO, &cli_serial, "S_SAFETY_THRESHOLD_STATE_OF_CHARGE: 0x%x\r\n", value);
+        if( value_converted > 0.0 &&  value_converted <= MAX_VOLTAGE_ENERGY_BANK) {
+            sharedVars_cpu1toCpu2.safety_threshold_state_of_charge = value_converted;
+            Serial_debug(DEBUG_INFO, &cli_serial, "S_SAFETY_THRESHOLD_STATE_OF_CHARGE: 0x%x\r\n", value);
+        } else {
+            retVal = RET_SDO_INVALID_VALUE;
+            Serial_debug(DEBUG_INFO, &cli_serial, "INVALID S_SAFETY_THRESHOLD_STATE_OF_CHARGE: 0x%x\r\n", value);
+        }
         break;
 //    case S_STATE_OF_CHARGE_OF_ENERGY_BANK:
 //        retVal = coOdGetObj_u8(I_ENERGY_BANK_SUMMARY, S_STATE_OF_CHARGE_OF_ENERGY_BANK, &value);
@@ -542,14 +535,24 @@ static RET_T indices_I_ENERGY_BANK_SUMMARY(UNSIGNED8 subIndex)
     case S_CONSTANT_VOLTAGE_THRESHOLD:
         retVal = coOdGetObj_u8(I_ENERGY_BANK_SUMMARY, S_CONSTANT_VOLTAGE_THRESHOLD, &value);
         value_converted = convert_voltage_energy_bank_from_OD(value);
-        sharedVars_cpu1toCpu2.constant_voltage_threshold = value_converted;
-        Serial_debug(DEBUG_INFO, &cli_serial, "S_CONSTANT_VOLTAGE_THRESHOLD: 0x%x\r\n", value);
+        if( value_converted > 0.0 &&  value_converted <= MAX_VOLTAGE_ENERGY_BANK) {
+            sharedVars_cpu1toCpu2.constant_voltage_threshold = value_converted;
+            Serial_debug(DEBUG_INFO, &cli_serial, "S_CONSTANT_VOLTAGE_THRESHOLD: 0x%x\r\n", value);
+        } else {
+            retVal = RET_SDO_INVALID_VALUE;
+            Serial_debug(DEBUG_INFO, &cli_serial, "INVALID S_CONSTANT_VOLTAGE_THRESHOLD: 0x%x\r\n", value);
+        }
         break;
     case S_PRECONDITIONAL_THRESHOLD:
         retVal = coOdGetObj_u8(I_ENERGY_BANK_SUMMARY, S_PRECONDITIONAL_THRESHOLD, &value);
         value_converted = convert_voltage_energy_bank_from_OD(value);
-        sharedVars_cpu1toCpu2.preconditional_threshold = value_converted;
-        Serial_debug(DEBUG_INFO, &cli_serial, "S_PRECONDITIONAL_THRESHOLD: 0x%x\r\n", value);
+        if( value_converted > 0.0 &&  value_converted <= MAX_VOLTAGE_ENERGY_BANK) {
+            sharedVars_cpu1toCpu2.preconditional_threshold = value_converted;
+            Serial_debug(DEBUG_INFO, &cli_serial, "S_PRECONDITIONAL_THRESHOLD: 0x%x\r\n", value);
+        } else {
+            retVal = RET_SDO_INVALID_VALUE;
+            Serial_debug(DEBUG_INFO, &cli_serial, "INVALID S_PRECONDITIONAL_THRESHOLD: 0x%x\r\n", value);
+        }
         break;
     default:
         Serial_debug(DEBUG_ERROR, &cli_serial, "UNKNOWN CAN OD SUBINDEX: 0x%x\r\n", subIndex);
@@ -670,7 +673,7 @@ static RET_T indices_I_DEBUG_LOG(BOOL_T execute, UNSIGNED8 sdoNr, UNSIGNED16  in
     case S_DEBUG_LOG_RESET:
         retVal = coOdGetObj_u8(I_DEBUG_LOG, S_DEBUG_LOG_RESET, &value);
         if (retVal == RET_OK) {
-            log_debug_log_reset();
+            log_debug_log_reset(value);
             Serial_debug(DEBUG_INFO, &cli_serial, "S_DEBUG_LOG_RESET\r\n");
         }
         break;

@@ -60,6 +60,9 @@ float convert_dc_bus_voltage_from_OD(uint8_t value)
 }
 uint8_t convert_dc_bus_voltage_to_OD(float value)
 {
+    if( value < 0.0) {
+        return 0;
+    }
     return (uint8_t)value;
 }
 
@@ -103,7 +106,8 @@ float convert_power_from_OD(uint16_t value)
 }
 uint16_t convert_power_to_OD(float value)
 {
-    return (uint16_t)value;
+
+    return (uint16_t)fabs(value);
 }
 
 /* see SPC70057501
@@ -145,6 +149,9 @@ float convert_voltage_energy_bank_from_OD(uint8_t value)
 }
 uint8_t convert_voltage_energy_bank_to_OD(float value)
 {
+    if( value < 0.0) {
+        return 0;
+    }
     return (uint8_t)value;
 }
 
@@ -174,6 +181,9 @@ float convert_min_voltage_applied_to_energy_bank_from_OD(uint8_t value)
 }
 uint8_t convert_min_voltage_applied_to_energy_bank_to_OD(float value)
 {
+    if( value < 0.0 ){
+        value = 0.0;
+    }
     return (uint8_t)(value * pow(2, 1));
 }
 
@@ -196,9 +206,11 @@ uint8_t convert_min_voltage_applied_to_energy_bank_to_OD(float value)
  * comment: Minimum Voltage (Energy Cell).
  *          Fixed point of 1111.1111
  */
-float convert_voltage_energy_cell_from_OD(uint16_t value)
+float convert_voltage_energy_cell_from_OD(uint8_t value)
 {
-    return (float)value * pow(2, -4);
+    float retVlue;
+    retVlue = (float)value * pow(2, -4);
+    return retVlue;
 }
 uint8_t convert_voltage_energy_cell_to_OD(float value)
 {
@@ -262,6 +274,9 @@ float convert_soh_energy_bank_from_OD(uint8_t value)
 }
 uint8_t convert_soh_energy_bank_to_OD(float value)
 {
+    if( value < 0.0){
+        return 0;
+    }
     return (uint8_t)(value * pow(2, 1));
 }
 
@@ -281,6 +296,9 @@ float convert_energy_soc_energy_bank_from_OD(uint16_t value)
 }
 uint16_t convert_energy_soc_energy_bank_to_OD(float value)
 {
+    if( value < 0.0 ) {
+        return 0;
+    }
     return (uint16_t)value;
 }
 
