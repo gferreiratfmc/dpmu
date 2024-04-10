@@ -5,6 +5,8 @@
  *      Author: vb
  */
 
+#include <string.h>
+
 #include "board.h"
 #include "co_canopen.h"
 #include "co_common.h"
@@ -19,6 +21,7 @@
 #include "main.h"
 #include "serial.h"
 #include "shared_variables.h"
+#include "temperature_sensor.h"
 #include "timer.h"
 
 #define CAN_LOG_ADDRESS_START   (0x8000 /*ext_flash_info[FIRST_LOG_SECTOR].addr*/ +  EXT_FLASH_START_ADDRESS_CS3)
@@ -26,21 +29,26 @@
 
 #define SIZE_OF_TIMESTAMP 4 /* in Bytes */
 
-#define TRANSFER_SIZE (32*7)                         /* number of segments * 7 bytes per segments - (1 segment = 1 message)  */
+#define TRANSFER_SIZE (64*7)                         /* number of segments * 7 bytes per segments - (1 segment = 1 message)  */
 #define MESSAGE_LENGTH (TRANSFER_SIZE * 5 - 2 - 1)  /* size of one transfer (several messages) * number of transfers */
 #pragma DATA_ALIGN(message, 4)
 #pragma DATA_SECTION(message, "ramgs0");  // map the TX data to memory
 unsigned char message[TRANSFER_SIZE];
+volatile static debug_log_t debug_log_copy;
 
 /* common struct to read logs from external memories */
 EMIF1_Config emif1_log_read;
+//EMIF1_Config domain_emif1_log_read;
 
 /* for debug log in external RAM */
-static uint32_t debug_log_start_address              = EXT_RAM_START_ADDRESS_CS2;
+//static uint32_t debug_log_start_address              = EXT_RAM_START_ADDRESS_CS2;
 static uint32_t debug_log_next_free_address          = EXT_RAM_START_ADDRESS_CS2;
+static uint32_t debug_log_last_read_address          = EXT_RAM_START_ADDRESS_CS2;
+static uint32_t debug_log_last_writen_address        = 0;
 static bool     debug_log_address_has_wrapped_around = false;
-static uint32_t debug_log_size                       = 0;
+static uint32_t debug_log_size                       = sizeof(debug_log_t); //0;
 static bool     debug_log_active                     = true;
+//static bool     debug_log_reading_flag                    = false;
 
 /* for can log in external FLASH */
 //static uint32_t can_log_start_address                = EXT_RAM_START_ADDRESS_CS2;
@@ -48,7 +56,7 @@ static bool     debug_log_active                     = true;
 static uint32_t can_log_start_address               = CAN_LOG_ADDRESS_START;
 static uint32_t can_log_next_free_address           = CAN_LOG_ADDRESS_START;
 static bool     can_log_address_has_wrapped_around  = false;
-static uint32_t can_log_size                        = 0;
+static uint32_t can_log_size                        = sizeof(debug_log_t); //0;
 
 RET_T log_debug_log_set_state(uint8_t value)
 {
@@ -74,8 +82,15 @@ void log_read_domain(UNSIGNED16 index, UNSIGNED8 subindex, UNSIGNED32 domainBufS
 {
     uint32_t start_address = 0;
 
+    static uint32_t sumOfTransferedBytes = 0;
+
+    if( debug_log_last_read_address >= debug_log_next_free_address   ) {
+        debug_log_last_read_address = debug_log_last_read_address;
+        return;
+    }
+
     // Doublecheck that domainbufsize are not bigger than allocated buf size.
-    if (TRANSFER_SIZE < domainBufSize) {
+    if (domainBufSize > TRANSFER_SIZE ) {
         domainBufSize = TRANSFER_SIZE;
     }
 
@@ -85,7 +100,8 @@ void log_read_domain(UNSIGNED16 index, UNSIGNED8 subindex, UNSIGNED32 domainBufS
 
     if(I_DEBUG_LOG == index)
     {
-        start_address = EXT_RAM_START_ADDRESS_CS2 + domainTransferedSize;
+        //start_address = EXT_RAM_START_ADDRESS_CS2 + domainTransferedSize;
+        start_address = debug_log_last_read_address;
         if(start_address >= (EXT_RAM_START_ADDRESS_CS2 + EXT_RAM_SIZE_CS2))
             start_address = EXT_RAM_START_ADDRESS_CS2;
     }
@@ -96,15 +112,30 @@ void log_read_domain(UNSIGNED16 index, UNSIGNED8 subindex, UNSIGNED32 domainBufS
             start_address = CAN_LOG_ADDRESS_START;
         }
     }
-    emif1_log_read.address = start_address;
-    emif1_log_read.size = domainBufSize;
+
 
     /* set CPU1 as master for memory */
     MemCfg_setGSRAMMasterSel(MEMCFG_SECT_GS0, MEMCFG_GSRAMMASTER_CPU1);
+    //MemCfg_setGSRAMMasterSel(MEMCFG_SECT_GS3, MEMCFG_GSRAMMASTER_CPU1);
 
     if (I_DEBUG_LOG == index) {
-        DMA_configBurst(CPU1_EXT_MEM_BASE, TRANSFER_SIZE, 1, 1);
+
+        emif1_log_read.address = start_address;
+        emif1_log_read.cpuType = CPU_TYPE_ONE;
+        emif1_log_read.data = (uint16_t *)message;
+        emif1_log_read.size = domainBufSize;
+        //DMA_configBurst(CPU1_EXT_MEM_BASE, TRANSFER_SIZE, 1, 1);
         emifc_cpu_read_memory(&emif1_log_read);
+        debug_log_last_read_address = start_address + domainBufSize;
+        sumOfTransferedBytes = sumOfTransferedBytes + domainBufSize;
+        if( sumOfTransferedBytes >= sizeof(debug_log_t) ) {
+            //debug_log_last_read_address = debug_log_last_read_address + sizeof(debug_log_t);
+            sumOfTransferedBytes = 0;
+        }
+        if( (debug_log_next_free_address - debug_log_last_read_address) == 0 ){
+            sharedVars_cpu1toCpu2.debug_log_reading_flag = false;
+        }
+
     }
 
     if (I_CAN_LOG == index) {
@@ -127,38 +158,64 @@ uint8_t log_debug_log_read(
         UNSIGNED8   subIndex
     )
 {
-    //TODO probably EXT_RAM_START_ADDRESS_CS2 -> debug_log_start_address
-    /* set the correct starting address of the external memory */
-    emif1_log_read = (EMIF1_Config)
-                     {
-                      EXT_RAM_START_ADDRESS_CS2,
-                      CPU_TYPE_ONE,
-                      TRANSFER_SIZE,
-                      (uint16_t*)message
-                     };
+    uint32_t sizeToTransfer;
 
-    /* set the CANopen OD object to point to the right domain, the variable message
-     * set the CANopen OD object size to MESSAGE_LENGTH
-     */
-    coOdDomainAddrSet(
-                        index,              /**< index of object */
-                        subIndex,           /**< subindex of object */
-                        message,            /**< pointer to domain */
-                        2 * debug_log_size  /**< domain length */ /* '2x' we use 16 bit Words */
-                     );
+    sizeToTransfer = 2 * (debug_log_next_free_address - debug_log_last_read_address);
 
-    return RET_OK;
+    if(  (debug_log_last_read_address < debug_log_next_free_address) && ( sizeToTransfer > 0 ) ) {
+
+        //TODO probably EXT_RAM_START_ADDRESS_CS2 -> debug_log_start_address
+        /* set the correct starting address of the external memory */
+        emif1_log_read = (EMIF1_Config){
+            debug_log_last_read_address, //EXT_RAM_START_ADDRESS_CS2,
+            CPU_TYPE_ONE,
+            TRANSFER_SIZE,
+            (uint16_t*)message
+         };
+
+        /* set the CANopen OD object to point to the right domain, the variable message
+         * set the CANopen OD object size to MESSAGE_LENGTH
+         */
+        coOdDomainAddrSet(
+                            index,              /**< index of object */
+                            subIndex,           /**< subindex of object */
+                            message,            /**< pointer to domain */
+                            sizeToTransfer  //2 * debug_log_size  /**< domain length */ /* '2x' we use 16 bit Words */
+                         );
+        sharedVars_cpu1toCpu2.debug_log_reading_flag = true;
+        return RET_OK;
+    } else {
+        coOdDomainAddrSet(
+                            index,              /**< index of object */
+                            subIndex,           /**< subindex of object */
+                            message,            /**< pointer to domain */
+                            0 //2 * debug_log_size  /**< domain length */ /* '2x' we use 16 bit Words */
+                         );
+        return RET_FLASH_EMPTY;
+    }
+
+
 }
 
-void log_debug_log_reset(void)
+void log_debug_log_reset(LogResetType_e resetType)
 {
     // reset number of entries
     // reset position in memory to beginning of RAM portion ???
 
-    debug_log_start_address              = EXT_RAM_START_ADDRESS_CS2;
-    debug_log_next_free_address          = EXT_RAM_START_ADDRESS_CS2;
-    debug_log_address_has_wrapped_around = false;
-    debug_log_size                       = 0;
+    //debug_log_start_address              = EXT_RAM_START_ADDRESS_CS2;
+
+    switch( resetType ) {
+        case LOG_RESET_REWIND:
+            debug_log_last_read_address          = EXT_RAM_START_ADDRESS_CS2;
+            break;
+        case LOG_RESET_FULL:
+        default:
+            debug_log_next_free_address          = EXT_RAM_START_ADDRESS_CS2;
+            debug_log_last_read_address          = EXT_RAM_START_ADDRESS_CS2;
+            debug_log_address_has_wrapped_around = false;
+            debug_log_size                       = 0;
+            break;
+    }
 
     /* activate debug log */
     debug_log_active                     = true;
@@ -287,6 +344,7 @@ bool log_store_debug_log(unsigned char *pnt)
     uint16_t size_in_words = sizeof(debug_log_t);
     uint32_t debug_log_write_address = debug_log_next_free_address;
 
+
     /* copy the data, do it early
      *
      * the data _must_ be stored in RAMGSx
@@ -317,13 +375,13 @@ bool log_store_debug_log(unsigned char *pnt)
 
         if(debug_log_address_has_wrapped_around)
         {
-            debug_log_start_address = debug_log_next_free_address + size_in_words;  /* stores at most all possible log entries - 1 */
+            //debug_log_start_address = debug_log_next_free_address + size_in_words;  /* stores at most all possible log entries - 1 */
             /* check if log start address wraps around in memory */
-            if(debug_log_start_address > (EXT_RAM_START_ADDRESS_CS2 + EXT_RAM_SIZE_CS2))
-            {
-                /* address wraps around */
-                debug_log_start_address = EXT_RAM_START_ADDRESS_CS2;
-            }
+//            if(debug_log_start_address > (EXT_RAM_START_ADDRESS_CS2 + EXT_RAM_SIZE_CS2))
+//            {
+//                /* address wraps around */
+//                debug_log_start_address = EXT_RAM_START_ADDRESS_CS2;
+//            }
         }
         else
         {
@@ -337,7 +395,7 @@ bool log_store_debug_log(unsigned char *pnt)
 
         /* write to external RAM */
         emifc_cpu_write_memory(&emif1_ram_log);
-
+        debug_log_last_writen_address = debug_log_write_address;
 //        Serial_debug(DEBUG_INFO, &cli_serial, "debug_log_next_free_address %lx  size %08lx\r\n", debug_log_next_free_address, size_in_words);
 
         retVal = true;
@@ -375,10 +433,9 @@ static uint16_t find_first_log_entry_in_next_sector(uint32_t can_log_start_addre
         if(0xffff != log_type)
         {
             /* OK - we have a log entry here
-             * probably an error states
+             * probably an error state
              * */
         }
-
         log_entry_size = log_size_of_CAN_log_entry(log_type);
 
         look_up_start_address_of_sector(&sector_info);
@@ -887,22 +944,109 @@ void log_store_new_state(uint16_t state)
 /* check if there are new debug data to store */
 void log_store_debug_log_to_ram(void)
 {
-    static uint32_t last_debug_log_number = 0;
+
+    volatile static uint32_t last_debug_log_number = 0;
+
+    timer_time_t ptime;
+
+    if( sharedVars_cpu1toCpu2.debug_log_reading_flag == true ) {
+        return;
+    }
 
     /* check if there are new debug data to store */
     if (last_debug_log_number != sharedVars_cpu2toCpu1.debug_log.counter)
     {
+
         /* make local copy of data */
-        debug_log_t debug_log_copy;
-        memcpy(&debug_log_copy, &sharedVars_cpu2toCpu1.debug_log,
-               sizeof(debug_log_t));
+        memcpy((void *)&debug_log_copy, (void *)&sharedVars_cpu2toCpu1.debug_log, sizeof(debug_log_t));
+        timer_get_time(&ptime);
+        debug_log_copy.MagicNumber = 0xDEADFACE;
+        debug_log_copy.CurrentTime = ptime.can_time;
+        debug_log_copy.BaseBoardTemperature = temperatureSensorVector[TEMPERATURE_SENSOR_BASE];
+        debug_log_copy.MainBoardTemperature = temperatureSensorVector[TEMPERATURE_SENSOR_MAIN];
+        debug_log_copy.MezzanineBoardTemperature = temperatureSensorVector[TEMPERATURE_SENSOR_MEZZANINE];
+        debug_log_copy.PowerBankBoardTemperature = temperatureSensorVector[TEMPERATURE_SENSOR_PWR_BANK];
+
+
         /* update last read counter value */
         last_debug_log_number = debug_log_copy.counter;
+
         /* store data in log */
         log_store_debug_log((unsigned char*) &debug_log_copy);
+        //log_store_debug_log((unsigned char *)&sharedVars_cpu2toCpu1.debug_log);
 //        if(log_store_debug_log((unsigned char*) &debug_log_copy))
 //            Serial_debug(DEBUG_INFO, &cli_serial,
 //                         "wrote debug_log to debug log with counter: %lx\r\n",
 //                         last_debug_log_number);
     }
+}
+
+void log_debug_read_from_ram() {
+    volatile static uint32_t lastAddressRead = 0;
+    debug_log_t readBack;
+
+    EMIF1_Config emif1_ram_debug_log_read = {EXT_RAM_START_ADDRESS_CS2,
+                                         CPU_TYPE_ONE,
+                                         sizeof(debug_log_t),
+                                         (uint16_t*)message};
+
+    if( lastAddressRead != debug_log_last_writen_address) {
+        emif1_ram_debug_log_read.address = debug_log_last_writen_address;
+        emif1_ram_debug_log_read.cpuType = CPU_TYPE_ONE;
+        emif1_ram_debug_log_read.size = sizeof(debug_log_t);
+        emif1_ram_debug_log_read.data = (uint16_t*)message;
+
+        memset(&readBack, 0, sizeof(debug_log_t) );
+        memset((void *)message, 0, TRANSFER_SIZE );
+
+        emifc_cpu_read_memory(&emif1_ram_debug_log_read);
+
+        memcpy((void *)&readBack, (void *)message,  sizeof(debug_log_t));
+
+        lastAddressRead = debug_log_last_writen_address;
+        //Serial_debug(DEBUG_INFO, &cli_serial, "\033[2J");
+        Serial_debug(DEBUG_INFO, &cli_serial, "\r\nVoltages:\r\n");
+        Serial_debug(DEBUG_INFO, &cli_serial, "Vbus:[%03d] ", readBack.Vbus);
+        Serial_debug(DEBUG_INFO, &cli_serial, "AvgVbus:[%03d] ", readBack.AvgVbus);
+        Serial_debug(DEBUG_INFO, &cli_serial, "VStore:[%03d] ", readBack.VStore);
+        Serial_debug(DEBUG_INFO, &cli_serial, "AvgVStore:[%03d] ", readBack.AvgVStore);
+        Serial_debug(DEBUG_INFO, &cli_serial, "\r\nCurrents:\r\n");
+        Serial_debug(DEBUG_INFO, &cli_serial, "IF_1:[%03d] ", readBack.IF_1);
+        Serial_debug(DEBUG_INFO, &cli_serial, "ISen1:[%03d] ", readBack.ISen1);
+        Serial_debug(DEBUG_INFO, &cli_serial, "ISen2:[%03d] ", readBack.ISen2);
+        Serial_debug(DEBUG_INFO, &cli_serial, "I_Dab2:[%03d] ", readBack.I_Dab2);
+        Serial_debug(DEBUG_INFO, &cli_serial, "I_Dab3:[%03d]\r\n", readBack.I_Dab3);
+        Serial_debug(DEBUG_INFO, &cli_serial, "\r\nRegulate Vars:\r\n");
+        Serial_debug(DEBUG_INFO, &cli_serial, "AvgVstore:[%03d] ", readBack.RegulateAvgVStore);
+        Serial_debug(DEBUG_INFO, &cli_serial, "AvgVbus:[%03d] ", readBack.RegulateAvgVbus);
+        Serial_debug(DEBUG_INFO, &cli_serial, "AvgInputCurrent:[%03d] ", readBack.RegulateAvgInputCurrent);
+        Serial_debug(DEBUG_INFO, &cli_serial, "AvgOutpurCurrent:[%03d] ", readBack.RegulateAvgOutputCurrent);
+        Serial_debug(DEBUG_INFO, &cli_serial, "Iref:[%03d]\r\n", readBack.RegulateIRef);
+
+        Serial_debug(DEBUG_INFO, &cli_serial, "\r\nTemperatures:\r\n");
+        Serial_debug(DEBUG_INFO, &cli_serial, "Base:   [%02d] ", readBack.BaseBoardTemperature);
+        Serial_debug(DEBUG_INFO, &cli_serial, "Main:   [%02d] ", readBack.MainBoardTemperature);
+        Serial_debug(DEBUG_INFO, &cli_serial, "Mezz:   [%02d] ", readBack.MezzanineBoardTemperature);
+        Serial_debug(DEBUG_INFO, &cli_serial, "PWRBANK:[%02d] \r\n", readBack.PowerBankBoardTemperature);
+        Serial_debug(DEBUG_INFO, &cli_serial, "\r\nOthers:\r\n");
+        Serial_debug(DEBUG_INFO, &cli_serial, "Counter:     [%05d] ", readBack.counter);
+        Serial_debug(DEBUG_INFO, &cli_serial, "CurrentState:[%02d] ", readBack.CurrentState);
+        Serial_debug(DEBUG_INFO, &cli_serial, "Elapsed_time:[%08d] ", readBack.elapsed_time);
+        Serial_debug(DEBUG_INFO, &cli_serial, "Time:[%08lu] \r\n", readBack.CurrentTime);
+
+//        Serial_debug(DEBUG_INFO, &cli_serial, "debug_log_last_address:[%lu] ", debug_log_last_writen_address );
+//        Serial_debug(DEBUG_INFO, &cli_serial, "lastAddressRead:[%lu]\r\n", lastAddressRead );
+
+        Serial_debug(DEBUG_INFO, &cli_serial, "\r\nCell Voltages:");
+        Serial_debug(DEBUG_INFO, &cli_serial, "\r\n");
+
+        for(int c=0; c<NUMBER_OF_CELLS; c++){
+            Serial_debug(DEBUG_INFO, &cli_serial, "%2d:[%03d] ", c+1, readBack.cellVoltage[c]);
+            if( (c+1) % 6 == 0 ) {
+                Serial_debug(DEBUG_INFO, &cli_serial, "\r\n");
+            }
+        }
+        Serial_debug(DEBUG_INFO, &cli_serial, "\r\n=============================\r\n");
+    }
+
 }

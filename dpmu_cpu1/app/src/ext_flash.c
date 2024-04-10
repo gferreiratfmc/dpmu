@@ -21,7 +21,7 @@
 #define MEM_RW_ITER                 0x1U
 #define BUFFER_WORDS                256
 #define EXT_FLASH_RESET_DELAY       50      // 50 us delay for active low RESET
-#define EXT_FLASH_BUSY_DELAY        2       // 1 us delay between Flash Command and Read/Busy# valid
+#define EXT_FLASH_BUSY_DELAY        1       // 1 us delay between Flash Command and Read/Busy# valid
 #define EXT_FLASH_RESET             33      // GPIO pin connected to external flash RESET pin
 #define EXT_FLASH_READY             36      // GPIO pin connected to external flash RDY/BSY pin
 #define EXT_FLASH_A19               91
@@ -39,7 +39,7 @@ extern struct Serial cli_serial;
 /**
  * Global data.
  */
-const ext_flash_desc_t ext_flash_info[] = {
+const ext_flash_desc_t ex_flash_info[] = {
     EXT_FLASH_SA0,   0x000000, 0x002000,
     EXT_FLASH_SA1,   0x002000, 0x001000,
     EXT_FLASH_SA2,   0x003000, 0x001000,
@@ -80,6 +80,7 @@ const ext_flash_desc_t ext_flash_info[] = {
 #pragma DATA_SECTION(g_ext_flash_data, ".em1_cs3");
 uint16_t g_ext_flash_data[EXT_FLASH_SIZE_CS3];
 
+
 /**
  * Local data.
  */
@@ -88,9 +89,9 @@ uint16_t g_ext_flash_data[EXT_FLASH_SIZE_CS3];
 void look_up_start_address_of_sector(ext_flash_desc_t *sector_desc)
 {
     /* add virtual address offset of external flash */
-    sector_desc->addr = ext_flash_info[sector_desc->sector].addr +
+    sector_desc->addr = ex_flash_info[sector_desc->sector].addr +
                                                     EXT_FLASH_START_ADDRESS_CS3;
-    sector_desc->size = ext_flash_info[sector_desc->sector].size;
+    sector_desc->size = ex_flash_info[sector_desc->sector].size;
 }
 
 static inline uint32_t a19(uint32_t addr)
@@ -152,7 +153,7 @@ const ext_flash_desc_t *ext_flash_sector_from_address(uint32_t addr)
         sector = (ext_flash_sector_t)((k >> 3) + EXT_FLASH_SA3);
     }
 
-    return &ext_flash_info[sector];
+    return &ex_flash_info[sector];
 }
 
 /**
@@ -187,7 +188,6 @@ void ext_flash_write_word(uint32_t addr, uint16_t data)
     if (ext_flash_read_word(addr) != 0xffff) {
         return;
     }
-
     set_a19(0);
 
     FLASH_SEQ(0x555, 0xAA);

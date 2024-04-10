@@ -18,7 +18,7 @@
  */
 bool write_params_to_ext_flash(const save_od_t *params, uint16_t count)
 {
-    const ext_flash_desc_t *sector_info = &ext_flash_info[EXT_FLASH_SA2];
+    const ext_flash_desc_t *sector_info = &ex_flash_info[EXT_FLASH_SA2];
 
     save_od_info_t od_info;
 
@@ -58,7 +58,7 @@ bool write_params_to_ext_flash(const save_od_t *params, uint16_t count)
  */
 int read_params_from_ext_flash(save_od_t *params, const od_range_t *excluded)
 {
-    const ext_flash_desc_t *sector_info = &ext_flash_info[EXT_FLASH_SA2];
+    const ext_flash_desc_t *sector_info = &ex_flash_info[EXT_FLASH_SA2];
 
     save_od_info_t od_info;
     uint16_t count = 0;

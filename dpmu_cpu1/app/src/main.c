@@ -88,11 +88,14 @@ void main(void)
 
     CPU1_Board_init();
 
-    GPIO_writePin(LED1, 1);
-
-    /* init the struct for the temperature sensors */
-    //temperature_sensors_init();
-
+    //
+    // Boot CPU2 core
+    //
+#ifdef _FLASH
+    Device_bootCPU2(BOOTMODE_BOOT_TO_FLASH_SECTOR0);
+#else
+    Device_bootCPU2(BOOTMODE_BOOT_TO_M0RAM);    // NOT tested by HB
+#endif
     //
     // Clear any IPC flags if set already
     //
@@ -129,24 +132,12 @@ void main(void)
     Serial_printf(&cli_serial, "BOOTDEF-LOW   = 0x%lX\r\n", boot_def_low);
     Serial_printf(&cli_serial, "DPMU_CPU1 Firmware compilation timestamp= %s %s\r\n", __DATE__, __TIME__ );
 
-    //    emifc_pinConfiguration();
-    //emifc_configuration();
+    cli_ok();
     ext_flash_config();
-
-    //log_can_init();
+    log_can_init();
 
     Serial_printf(&cli_serial, "IPC_PUMPREQUEST_REG %08X\r\n", IPC_PUMPREQUEST_REG);
-    //
-    // Boot CPU2 core
-    //
-#ifdef _FLASH
-    Device_bootCPU2(BOOTMODE_BOOT_TO_FLASH_SECTOR0);
-#else
-    Device_bootCPU2(BOOTMODE_BOOT_TO_M0RAM);    // NOT tested by HB
-#endif
 
-    cli_ok();
-    emifc_pinConfiguration();
 
     /*** FW update of CPU2 ***/
     uint16_t cpu2BinaryStatus = fwupdate_updateExtRamWithCPU2Binary();
@@ -174,7 +165,7 @@ void main(void)
     }
 
     // Release EMIF1, CPU2 might need it in its bootloader
-    emifc_realease_cpun_as_master(CPU_TYPE_ONE);
+    //emifc_realease_cpun_as_master(CPU_TYPE_ONE);
 
     /* Flags to sync/signal cpu2 bootloader */
     //IPC_sync(IPC_CPU1_L_CPU2_R, IPC_FLAG11);
@@ -245,8 +236,10 @@ void main(void)
         check_cpu2_dbg();
 
         /* check if there are new debug data to store */
-        log_store_debug_log_to_ram();
-        log_debug_read_from_ram( );
+//        log_store_debug_log_to_ram();
+//        log_debug_read_from_ram( );
+        log_store_debug_log_to_flash();
+        log_debug_read_from_flash();
 
         /* check every second */
         if(!(timer_get_ticks()%1000)) {
@@ -269,10 +262,6 @@ void main(void)
          * */
         watchdog_feed();
 
-        /*** FW update of CPU2 ***/
-        //if( cpu2FirmwareReady() ) {
-        //    executeCPU2FirmwareUpdate( );
-        //}
     }
 }
 

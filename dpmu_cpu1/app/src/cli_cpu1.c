@@ -1033,7 +1033,8 @@ static void cli_write_testlog_can(void)
     uint8_t starting_value = 0;
     uint32_t nr_of_log_entries = 10;
     unsigned char teslog[8];
-    EMIF1_Config emif1_ram_can_log_read = {EXT_RAM_START_ADDRESS_CS2,
+    //EMIF1_Config emif1_ram_can_log_read = {EXT_RAM_START_ADDRESS_CS2,
+    EMIF1_Config emif1_ram_can_log_read = {EXT_FLASH_START_ADDRESS_CS3,
                                              CPU_TYPE_ONE,
                                              6, /* 16 bit words + 2 words for time stamp */
                                              (uint16_t*)message};

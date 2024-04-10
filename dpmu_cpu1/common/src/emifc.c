@@ -284,6 +284,7 @@ void emifc_pinmux_setup_memory(uint16_t memType)
     GPIO_setPinConfig(GPIO_87_EMIF1_A14);
     GPIO_setPinConfig(GPIO_88_EMIF1_A15);
     GPIO_setPinConfig(GPIO_89_EMIF1_A16);
+    GPIO_setPinConfig(GPIO_90_EMIF1_A17);
 
     //
     // Selecting 16 data lines.

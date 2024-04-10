@@ -32,6 +32,7 @@
 #define NUMBER_OF_CELLS 30
 #define MAX_VOLTAGE_ENERGY_BANK 90.0
 #define MAX_VOLTAGE_ENERGY_CELL 3.0
+#define MAGIC_NUMBER 0xDEADFACE
 
 
 typedef struct Counters

@@ -366,7 +366,8 @@ void StateMachine(void)
     StateVector.State_Current = StateVector.State_Next;
 
     /* reflect state in CANopen OD */
-    sharedVars_cpu2toCpu1.current_state = convert_current_state_to_OD(StateVector.State_Current);
+//    sharedVars_cpu2toCpu1.current_state = convert_current_state_to_OD(StateVector.State_Current);
+    sharedVars_cpu2toCpu1.current_state = StateVector.State_Current;
 
     CounterGroup.StateMachineCounter++;
 

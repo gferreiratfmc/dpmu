@@ -90,5 +90,7 @@ void log_store_pdo_ds401(uint8_t port);
 void log_store_new_state(uint16_t state);
 void log_store_debug_log_to_ram(void);
 void log_debug_read_from_ram(void);
+void log_store_debug_log_to_flash(void);
+void log_debug_read_from_flash();
 
 #endif /* COAPPL_LOG_H_ */

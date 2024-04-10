@@ -1008,8 +1008,7 @@ RET_T retval;
 						/* send TPDO object related */
 						retval = coPdoReqObj(0x6000u + CO_401_PROFILE_OFFSET, port, 0);
 
-						/* store CANopen profile DS401 message to CAN_LOG */
-						log_store_pdo_ds401((uint8_t)port);
+
 					}
 				}
 #endif /* defined(CO_PDO_TRANSMIT_CNT) */

@@ -156,7 +156,7 @@ void ext_flash_config(void);
 void ext_flash_test(void);
 
 // Information base describing the external flash.
-extern const ext_flash_desc_t ext_flash_info[];
+extern const ext_flash_desc_t ex_flash_info[];
 
 // Data buffer mapped to external flash. (CS3 area is max 1MB.)
 extern uint16_t g_ext_flash_data[EXT_FLASH_SIZE_CS3];
