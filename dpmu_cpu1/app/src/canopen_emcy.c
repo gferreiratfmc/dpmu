@@ -22,7 +22,7 @@ static void canopen_emcy_send(void)
     error_message[0] = 'E';
 
     /* store the error in CAN log  because it is sent over CANopen */
-    log_store_can_log(8, error_message);    //TODO update code to read Bytes, not words
+    //log_store_can_log(8, error_message);    //TODO update code to read Bytes, not words
 
     /* set CANopen error register bits */
     coOdPutObj_u8(CO_INDEX_ERROR_REGISTER, 0, error_message[3]);

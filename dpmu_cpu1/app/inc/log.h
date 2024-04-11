@@ -17,6 +17,11 @@
 #define FIRST_LOG_SECTOR    EXT_FLASH_SA4
 #define LAST_LOG_SECTOR     EXT_FLASH_SA34
 
+typedef enum  {
+    Logging,
+    EraseFlash,
+    WaitingEraseDone
+} states_can_log_e;
 
 typedef enum{
 

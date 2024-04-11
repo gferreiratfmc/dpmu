@@ -74,6 +74,11 @@ void DisableDebugLog(void){
     debug_log_enable_flag = false;
 }
 
+void EnableDebugLog(void){
+    debug_log_enable_flag = true;
+}
+
+
 void ForceUpdateDebugLog(void) {
     debug_log_force_update_flag = true;
 }
@@ -84,7 +89,7 @@ void UpdateDebugLog(void) {
     uint32_t current_timer, elapsed_time;
     static uint32_t debug_period_in_ms = LOG_PERIOD_IDLE;
     debug_period_in_ms = SetDebugLogPeriod();
-    if( debug_log_enable_flag == true && !(sharedVars_cpu1toCpu2.debug_log_reading_flag==true)) {
+    if( debug_log_enable_flag == true ) {
         current_timer = timer_get_ticks();
         elapsed_time = current_timer - last_timer;
         if( current_timer < last_timer ) {
@@ -123,7 +128,7 @@ void UpdateDebugLogFake(void) {
     uint32_t current_timer, elapsed_time;
     static uint32_t debug_period_in_ms = LOG_PERIOD_IDLE;
     debug_period_in_ms = SetDebugLogPeriod();
-    if( debug_log_enable_flag == true) {
+    if( debug_log_enable_flag == true ) {
         current_timer = timer_get_ticks();
         elapsed_time = current_timer - last_timer;
         if( current_timer < last_timer ) {

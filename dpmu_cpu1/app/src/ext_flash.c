@@ -200,9 +200,32 @@ void ext_flash_write_word(uint32_t addr, uint16_t data)
 
     DEVICE_DELAY_US(EXT_FLASH_BUSY_DELAY); // Wait for Ready/Busy# signal to become valid
 
-    while (GPIO_readPin(EXT_FLASH_READY) == 0) {
+    while ( !ext_flash_ready() ) {
         // Wait for Flash to complete command
         //TODO locking
+    }
+}
+
+void ext_command_flash_chip_erase() {
+    set_a19(0);
+
+    FLASH_SEQ(0x555, 0xAA);
+    FLASH_SEQ(0x2AA, 0x55);
+    FLASH_SEQ(0x555, 0x80);
+    FLASH_SEQ(0x555, 0xAA);
+    FLASH_SEQ(0x2AA, 0x55);
+    FLASH_SEQ(0x555, 0x10);
+
+    DEVICE_DELAY_US(EXT_FLASH_BUSY_DELAY); // Wait for Ready/Busy# signal to become valid
+
+}
+
+bool ext_flash_ready() {
+
+    if ( GPIO_readPin(EXT_FLASH_READY) == 0 ) {
+        false;
+    } else {
+        true;
     }
 }
 
@@ -222,18 +245,8 @@ void ext_flash_write_buf(uint32_t addr, uint16_t *buf, size_t len)
  */
 void ext_flash_chip_erase(void)
 {
-    set_a19(0);
-
-    FLASH_SEQ(0x555, 0xAA);
-    FLASH_SEQ(0x2AA, 0x55);
-    FLASH_SEQ(0x555, 0x80);
-    FLASH_SEQ(0x555, 0xAA);
-    FLASH_SEQ(0x2AA, 0x55);
-    FLASH_SEQ(0x555, 0x10);
-
-    DEVICE_DELAY_US(EXT_FLASH_BUSY_DELAY); // Wait for Ready/Busy# signal to become valid
-
-    while (GPIO_readPin(EXT_FLASH_READY) == 0) {
+    ext_command_flash_chip_erase();
+    while ( !ext_flash_ready() ) {
         // Wait for Flash to complete command
     }
 }

@@ -800,7 +800,7 @@ RET_T co_usr_sdo_dl_indices(
         CO_CONST CO_OBJECT_DESC_T *pObjDesc;
         coOdGetObjDescPtr(index, subIndex, &pObjDesc);
         getObjData(pObjDesc, &log_received_data[4], index, subIndex);
-        log_store_can_log(8, log_received_data);
+        //log_store_can_log(8, log_received_data);
     }
 
     return retVal;

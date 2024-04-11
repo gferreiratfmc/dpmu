@@ -46,7 +46,7 @@ typedef struct sharedVars_cpu1toCpu2_t // commonCpu1ToCpu2
 
     bool having_battery;    /* true for Lithium Battery, false for Super Capacitors */
 
-    bool debug_log_reading_flag;
+    bool debug_log_disable_flag;
 } sharedVars_cpu1toCpu2_t;
 
 extern struct sharedVars_cpu1toCpu2_t sharedVars_cpu1toCpu2;

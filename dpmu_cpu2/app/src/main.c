@@ -88,6 +88,12 @@ static void check_incoming_commands(void)
 
         // Acknowledge the flag.
         IPC_ackFlagRtoL(IPC_CPU2_L_CPU1_R, IPC_FLAG_MESSAGE_CPU1_TO_CPU2);
+
+        if( sharedVars_cpu1toCpu2.debug_log_disable_flag==true ) {
+            DisableDebugLog();
+        } else {
+            EnableDebugLog();
+        }
     }
 }
 
@@ -217,8 +223,8 @@ void main(void)
         energy_storage_update_settings();
         energy_storage_check();
 
-        //UpdateDebugLog();
-        UpdateDebugLogFake();
+        UpdateDebugLog();
+        //UpdateDebugLogFake();
 
         CheckMainStateMachineIsRunning();
 

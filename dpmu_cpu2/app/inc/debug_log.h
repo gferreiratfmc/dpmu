@@ -14,11 +14,12 @@
 #define LOG_PERIOD_CHARGE 500
 #define LOG_PERIOD_TRICKLE_CHARGE 1000
 #define LOG_PERIOD_REGULATE 1000
-#define LOG_PERIOD_IDLE 5000
+#define LOG_PERIOD_IDLE 5//000
 
 
 uint32_t SetDebugLogPeriod(void);
 void DisableDebugLog(void);
+void EnableDebugLog(void);
 void UpdateDebugLog(void);
 void ForceUpdateDebugLog(void);
 void UpdateDebugLogFake(void);

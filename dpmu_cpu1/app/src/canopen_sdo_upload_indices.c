@@ -571,9 +571,11 @@ static inline uint8_t indices_I_CAN_LOG(BOOL_T execute, UNSIGNED8 sdoNr, UNSIGNE
 
     switch (subIndex)
     {
-//    case S_CAN_LOG_RESET:
-//        retVal = log_can_log_reset();
-//        break;
+    case S_CAN_LOG_RESET:
+
+        log_can_log_reset();
+        retVal = CO_TRUE;
+        break;
     case S_CAN_LOG_READ:
         retVal = log_can_log_read(execute, sdoNr, index, subIndex);
         break;

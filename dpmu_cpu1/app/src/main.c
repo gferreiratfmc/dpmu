@@ -238,8 +238,8 @@ void main(void)
         /* check if there are new debug data to store */
 //        log_store_debug_log_to_ram();
 //        log_debug_read_from_ram( );
-        log_store_debug_log_to_flash();
-        log_debug_read_from_flash();
+        log_can_state_machine();
+
 
         /* check every second */
         if(!(timer_get_ticks()%1000)) {

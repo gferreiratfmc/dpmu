@@ -360,8 +360,7 @@ void IncreasePulseStateDutyToSuperCapsVoltage( void ) {
             break;
 
         case 1:
-            if (    DCDC_VI.avgVStore > trickleChargeRangeLevel[0] * energy_bank_settings.preconditional_threshold
-               && ( DCDC_VI.avgVStore < trickleChargeRangeLevel[1] * energy_bank_settings.preconditional_threshold ) )
+            if ( DCDC_VI.avgVStore > trickleChargeRangeLevel[0] * energy_bank_settings.preconditional_threshold )
             {
                 trickleChargeRangeState = 2;
                 trickChargeDutyCycle = trickleChargeDutyCycle[1] * EPWM_getTimeBasePeriod(BEG_1_2_BASE);
@@ -370,8 +369,7 @@ void IncreasePulseStateDutyToSuperCapsVoltage( void ) {
             break;
 
         case 2:
-            if (    DCDC_VI.avgVStore > trickleChargeRangeLevel[1] * energy_bank_settings.preconditional_threshold
-               && ( DCDC_VI.avgVStore < trickleChargeRangeLevel[2] * energy_bank_settings.preconditional_threshold ) )
+            if ( DCDC_VI.avgVStore > trickleChargeRangeLevel[1] * energy_bank_settings.preconditional_threshold )
             {
                 trickleChargeRangeState = 3;
                 trickChargeDutyCycle = trickleChargeDutyCycle[2] * EPWM_getTimeBasePeriod(BEG_1_2_BASE);
@@ -380,8 +378,7 @@ void IncreasePulseStateDutyToSuperCapsVoltage( void ) {
             break;
 
         case 3:
-            if (    DCDC_VI.avgVStore > trickleChargeRangeLevel[2] * energy_bank_settings.preconditional_threshold
-               && ( DCDC_VI.avgVStore < trickleChargeRangeLevel[3] * energy_bank_settings.preconditional_threshold ) )
+            if ( DCDC_VI.avgVStore > trickleChargeRangeLevel[2] * energy_bank_settings.preconditional_threshold )
             {
                 trickleChargeRangeState = 4;
                 trickChargeDutyCycle = trickleChargeDutyCycle[3] * EPWM_getTimeBasePeriod(BEG_1_2_BASE);

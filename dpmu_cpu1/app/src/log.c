@@ -27,6 +27,7 @@
 #define CAN_LOG_ADDRESS_START   (0x8000 /*ext_flash_info[FIRST_LOG_SECTOR].addr*/ +  EXT_FLASH_START_ADDRESS_CS3)
 #define CAN_LOG_ADDRESS_END     (EXT_FLASH_START_ADDRESS_CS3 + EXT_FLASH_SIZE_CS3)
 
+
 #define SIZE_OF_TIMESTAMP 4 /* in Bytes */
 
 #define TRANSFER_SIZE (32*7)                         /* number of segments * 7 bytes per segments - (1 segment = 1 message)  */
@@ -51,11 +52,13 @@ static bool     debug_log_active                     = true;
 
 /* for can log in external FLASH */
 static uint32_t can_log_start_address               = CAN_LOG_ADDRESS_START;
+static uint32_t can_log_last_read_address           = CAN_LOG_ADDRESS_START;
 static uint32_t can_log_next_free_address           = CAN_LOG_ADDRESS_START;
 static bool     can_log_address_has_wrapped_around  = false;
 static uint32_t can_log_size                        = sizeof(debug_log_t); //0;
 static bool can_log_possible = false;
 
+static States_t canLogState = { Logging, Logging, Logging, Logging };
 
 RET_T log_debug_log_set_state(uint8_t value)
 {
@@ -83,10 +86,6 @@ void log_read_domain(UNSIGNED16 index, UNSIGNED8 subindex, UNSIGNED32 domainBufS
 
     static uint32_t sumOfTransferedBytes = 0;
 
-    if( debug_log_last_read_address >= debug_log_next_free_address   ) {
-        debug_log_last_read_address = debug_log_last_read_address;
-        return;
-    }
 
     // Doublecheck that domainbufsize are not bigger than allocated buf size.
     if (domainBufSize > TRANSFER_SIZE ) {
@@ -99,14 +98,24 @@ void log_read_domain(UNSIGNED16 index, UNSIGNED8 subindex, UNSIGNED32 domainBufS
 
     if(I_DEBUG_LOG == index)
     {
-        //start_address = EXT_RAM_START_ADDRESS_CS2 + domainTransferedSize;
+        if( debug_log_last_read_address >= debug_log_next_free_address   ) {
+            debug_log_last_read_address = debug_log_last_read_address;
+            return;
+        }
+        // start_address = EXT_RAM_START_ADDRESS_CS2 + domainTransferedSize;
         start_address = debug_log_last_read_address;
         if(start_address >= (EXT_RAM_START_ADDRESS_CS2 + EXT_RAM_SIZE_CS2))
             start_address = EXT_RAM_START_ADDRESS_CS2;
     }
     if(I_CAN_LOG == index)
     {
-        start_address = can_log_start_address + domainTransferedSize;
+        if( can_log_last_read_address >= can_log_next_free_address   ) {
+            can_log_last_read_address = can_log_last_read_address;
+            return;
+        }
+
+        // start_address = can_log_start_address + domainTransferedSize;
+        start_address = can_log_last_read_address;
         if(start_address >= CAN_LOG_ADDRESS_END) {
             start_address = CAN_LOG_ADDRESS_START;
         }
@@ -132,13 +141,26 @@ void log_read_domain(UNSIGNED16 index, UNSIGNED8 subindex, UNSIGNED32 domainBufS
             sumOfTransferedBytes = 0;
         }
         if( (debug_log_next_free_address - debug_log_last_read_address) == 0 ){
-            sharedVars_cpu1toCpu2.debug_log_reading_flag = false;
+            sharedVars_cpu1toCpu2.debug_log_disable_flag = false;
         }
 
     }
 
     if (I_CAN_LOG == index) {
+        emif1_log_read.address = start_address;
+        emif1_log_read.cpuType = CPU_TYPE_ONE;
+        emif1_log_read.data = (uint16_t *)message;
+        emif1_log_read.size = domainBufSize;
         ext_flash_read_buf(emif1_log_read.address, (uint16_t*)emif1_log_read.data, emif1_log_read.size);
+        can_log_last_read_address = start_address + domainBufSize;
+        sumOfTransferedBytes = sumOfTransferedBytes + domainBufSize;
+        if( sumOfTransferedBytes >= sizeof(debug_log_t) ) {
+            //debug_log_last_read_address = debug_log_last_read_address + sizeof(debug_log_t);
+            sumOfTransferedBytes = 0;
+        }
+        if( (can_log_next_free_address - can_log_last_read_address) == 0 ){
+            sharedVars_cpu1toCpu2.debug_log_disable_flag = false;
+        }
     }
 
 //    Serial_debug(DEBUG_INFO, &cli_serial, "%08x  ", start_address);
@@ -181,7 +203,7 @@ uint8_t log_debug_log_read(
                             message,            /**< pointer to domain */
                             sizeToTransfer  //2 * debug_log_size  /**< domain length */ /* '2x' we use 16 bit Words */
                          );
-        sharedVars_cpu1toCpu2.debug_log_reading_flag = true;
+        sharedVars_cpu1toCpu2.debug_log_disable_flag = true;
         return RET_OK;
     } else {
         coOdDomainAddrSet(
@@ -236,43 +258,7 @@ void log_debug_log_reset(LogResetType_e resetType)
  * note: all CAN logs starts with a four Bytes timestamp
  *
  */
-static uint16_t log_size_of_CAN_log_entry(uint8_t log_type)
-{
-    uint16_t size_in_Bytes;
-    uint16_t size_in_words;
 
-    /* returns number of Bytes */
-    switch (log_type) {
-    case '4':   // stored by log_store_pdo_ds401()
-    case 'E': /* EMCY */
-    case 'R': /* SDO upload */
-    case 'W': /* SDO download */
-        size_in_Bytes = 8 + SIZE_OF_TIMESTAMP;
-        break;
-
-    case 'P': /* PDO upload */                  // NOTE: Currently not used!
-        size_in_Bytes = 8 + SIZE_OF_TIMESTAMP;  // TODO: not decided
-        break;
-
-    case 'S': /* state of DPMU state machine */ // NOTE: Currently not used!
-        size_in_Bytes = 6 + SIZE_OF_TIMESTAMP;
-        break;
-
-    default:    // TODO: decide what to do here!
-        break;
-    }
-
-    /* DMA requires 16 bit words
-     * convert size to smallest size that fits the size of the data to write
-     */
-    if (size_in_Bytes & 0b01)
-        /* add a empty byte to match whole 16 bit words */
-        size_in_words = size_in_Bytes / 2 + 1;
-    else
-        size_in_words = size_in_Bytes / 2;
-
-    return size_in_words;
-}
 
 uint8_t log_can_log_read(
         BOOL_T      execute,
@@ -282,55 +268,77 @@ uint8_t log_can_log_read(
     )
 {
 
-    //TODO probably EXT_FLASH_START_ADDRESS_CS3 -> can_log_start_address
-    /* set the correct starting address of the external memory */
-    emif1_log_read = (EMIF1_Config)
-                     {
-                      EXT_RAM_START_ADDRESS_CS2,
-                      CPU_TYPE_ONE,
-                      TRANSFER_SIZE,
-                      (uint16_t*)message
-                     };
+
+    uint32_t sizeToTransfer;
+
+    sizeToTransfer = 2 * (can_log_next_free_address - can_log_last_read_address);
+
+    if(  (can_log_last_read_address < can_log_next_free_address) && ( sizeToTransfer > 0 ) ) {
+
+        //TODO probably EXT_RAM_START_ADDRESS_CS2 -> debug_log_start_address
+        /* set the correct starting address of the external memory */
+        emif1_log_read = (EMIF1_Config){
+            can_log_last_read_address, //EXT_RAM_START_ADDRESS_CS2,
+            CPU_TYPE_ONE,
+            TRANSFER_SIZE,
+            (uint16_t*)message
+         };
+
+        /* set the CANopen OD object to point to the right domain, the variable message
+         * set the CANopen OD object size to MESSAGE_LENGTH
+         */
+        coOdDomainAddrSet(
+                            index,              /**< index of object */
+                            subIndex,           /**< subindex of object */
+                            message,            /**< pointer to domain */
+                            sizeToTransfer  //2 * debug_log_size  /**< domain length */ /* '2x' we use 16 bit Words */
+                         );
+        sharedVars_cpu1toCpu2.debug_log_disable_flag = true;
+        return RET_OK;
+    } else {
+        coOdDomainAddrSet(
+                            index,              /**< index of object */
+                            subIndex,           /**< subindex of object */
+                            message,            /**< pointer to domain */
+                            0 //2 * debug_log_size  /**< domain length */ /* '2x' we use 16 bit Words */
+                         );
+        return RET_FLASH_EMPTY;
+    }
+
+
+
+//    //TODO probably EXT_FLASH_START_ADDRESS_CS3 -> can_log_start_address
+//    /* set the correct starting address of the external memory */
 //    emif1_log_read = (EMIF1_Config)
-//                     {EXT_FLASH_START_ADDRESS_CS3,
+//                     {
+//                      EXT_RAM_START_ADDRESS_CS2,
 //                      CPU_TYPE_ONE,
 //                      TRANSFER_SIZE,
 //                      (uint16_t*)message
 //                     };
-
-    /* set the CANopen OD object to point to the right domain, the variable message
-     * set the CANopen OD object size to MESSAGE_LENGTH
-     */
-    coOdDomainAddrSet(
-                        index,              /**< index of object */
-                        subIndex,           /**< subindex of object */
-                        message,            /**< pointer to domain */
-                        2 * can_log_size    /**< domain length */ /* '2x' we use 16 bit Words */
-                     );
-
-    return RET_OK;
+////    emif1_log_read = (EMIF1_Config)
+////                     {EXT_FLASH_START_ADDRESS_CS3,
+////                      CPU_TYPE_ONE,
+////                      TRANSFER_SIZE,
+////                      (uint16_t*)message
+////                     };
+//
+//    /* set the CANopen OD object to point to the right domain, the variable message
+//     * set the CANopen OD object size to MESSAGE_LENGTH
+//     */
+//    coOdDomainAddrSet(
+//                        index,              /**< index of object */
+//                        subIndex,           /**< subindex of object */
+//                        message,            /**< pointer to domain */
+//                        2 * can_log_size    /**< domain length */ /* '2x' we use 16 bit Words */
+//                     );
+//
+//    return RET_OK;
 }
 
 void log_can_log_reset(void)
 {
-    // reset number of entries
-    // reset position in memory to beginning of RAM portion ???
-
-//    if timestamp 0xffff in first two words of sector
-//        next sector
-//        else if timestamp and type is 0xff
-//            test next word
-//    if timestamp not 0xffff or logtype is not 0xff
-//        logtype is type
-//        logcanstartaddress is address of sector
-//        continue searching for last log entry and cannextfreeaddress is the first address after this logtype
-
-    can_log_start_address              = CAN_LOG_ADDRESS_START;
-    can_log_next_free_address          = CAN_LOG_ADDRESS_START;
-    can_log_address_has_wrapped_around = false;
-    can_log_size                       = 0;
-
-    log_can_init();
+    canLogState.State_Next = EraseFlash;
 }
 
 /* store debug log in external RAM
@@ -431,14 +439,14 @@ bool can_log_search_free_debug_address( uint32_t *nextFreeAddress ){
 void log_can_init(void)
 {
 
-    can_log_next_free_address = CAN_LOG_ADDRESS_START;
     can_log_possible = true;
 
-    //ext_flash_chip_erase();
 
     if( can_log_search_free_debug_address( &can_log_next_free_address ) != true ) {
         can_log_possible = false;
     }
+    can_log_start_address = can_log_next_free_address;
+    can_log_last_read_address = can_log_next_free_address;
 }
 
 bool can_log_search_log(void)
@@ -656,6 +664,7 @@ void log_store_can_log(uint16_t size, unsigned char *pnt)
 
             // Mark that at least one wrap around has occurred in external flash.
             can_log_address_has_wrapped_around = true;
+
         }
 
         // Erase next sector.
@@ -670,8 +679,10 @@ void log_store_can_log(uint16_t size, unsigned char *pnt)
 //            can_log_start_address = find_first_log_entry_in_next_sector(can_log_start_address);  /* sector 4 erased, use next sector sector 5 */
 //#else
             can_log_start_address = CAN_LOG_ADDRESS_START;  /* sector 4 erased, use next sector sector 5 */
+            can_log_write_address = can_log_start_address;
 //#endif
         }
+
 
         /* update size of log */
         if(!can_log_address_has_wrapped_around)
@@ -696,7 +707,37 @@ void log_store_can_log(uint16_t size, unsigned char *pnt)
 }
 
 
+void log_can_state_machine() {
 
+    switch( canLogState.State_Current ) {
+
+        case Logging:
+            log_store_debug_log_to_flash();
+            log_debug_read_from_flash();
+            break;
+        case EraseFlash:
+            // Call command do erase entire flash_chip_erase
+            ext_command_flash_chip_erase();
+
+            canLogState.State_Next = WaitingEraseDone;
+            break;
+
+        case WaitingEraseDone:
+            if( ext_flash_ready() ) {
+                sharedVars_cpu1toCpu2.debug_log_disable_flag = true;
+                log_can_init();
+                sharedVars_cpu1toCpu2.debug_log_disable_flag = false;
+                canLogState.State_Next = Logging;
+            }
+            break;
+
+        default:
+            canLogState.State_Next = Logging;
+    }
+
+
+    canLogState.State_Current = canLogState.State_Next;
+}
 
 
 /* check if there are new debug data to store */
@@ -707,7 +748,7 @@ void log_store_debug_log_to_flash(void)
 
     timer_time_t ptime;
 
-    if( ( can_log_possible == false ) || ( sharedVars_cpu1toCpu2.debug_log_reading_flag == true ) ) {
+    if( ( can_log_possible == false ) || ( sharedVars_cpu1toCpu2.debug_log_disable_flag == true ) ) {
         return;
     }
 
@@ -742,7 +783,7 @@ void log_store_debug_log_to_ram(void)
 
     timer_time_t ptime;
 
-    if( sharedVars_cpu1toCpu2.debug_log_reading_flag == true ) {
+    if( sharedVars_cpu1toCpu2.debug_log_disable_flag == true ) {
         return;
     }
 
@@ -856,44 +897,49 @@ void log_debug_read_from_flash() {
 
         lastAddressRead = debug_log_last_writen_address;
         //Serial_debug(DEBUG_INFO, &cli_serial, "\033[2J");
-        Serial_debug(DEBUG_INFO, &cli_serial, "\r\nVoltages:\r\n");
-        Serial_debug(DEBUG_INFO, &cli_serial, "Vbus:[%03d] ", readBack.Vbus);
-        Serial_debug(DEBUG_INFO, &cli_serial, "AvgVbus:[%03d] ", readBack.AvgVbus);
-        Serial_debug(DEBUG_INFO, &cli_serial, "VStore:[%03d] ", readBack.VStore);
-        Serial_debug(DEBUG_INFO, &cli_serial, "AvgVStore:[%03d] ", readBack.AvgVStore);
-        Serial_debug(DEBUG_INFO, &cli_serial, "\r\nCurrents:\r\n");
-        Serial_debug(DEBUG_INFO, &cli_serial, "IF_1:[%03d] ", readBack.IF_1);
-        Serial_debug(DEBUG_INFO, &cli_serial, "ISen1:[%03d] ", readBack.ISen1);
-        Serial_debug(DEBUG_INFO, &cli_serial, "ISen2:[%03d] ", readBack.ISen2);
-        Serial_debug(DEBUG_INFO, &cli_serial, "I_Dab2:[%03d] ", readBack.I_Dab2);
-        Serial_debug(DEBUG_INFO, &cli_serial, "I_Dab3:[%03d]\r\n", readBack.I_Dab3);
-        Serial_debug(DEBUG_INFO, &cli_serial, "\r\nRegulate Vars:\r\n");
-        Serial_debug(DEBUG_INFO, &cli_serial, "AvgVstore:[%03d] ", readBack.RegulateAvgVStore);
-        Serial_debug(DEBUG_INFO, &cli_serial, "AvgVbus:[%03d] ", readBack.RegulateAvgVbus);
-        Serial_debug(DEBUG_INFO, &cli_serial, "AvgInputCurrent:[%03d] ", readBack.RegulateAvgInputCurrent);
-        Serial_debug(DEBUG_INFO, &cli_serial, "AvgOutpurCurrent:[%03d] ", readBack.RegulateAvgOutputCurrent);
-        Serial_debug(DEBUG_INFO, &cli_serial, "Iref:[%03d]\r\n", readBack.RegulateIRef);
+//        Serial_debug(DEBUG_INFO, &cli_serial, "\r\nVoltages:\r\n");
+//        Serial_debug(DEBUG_INFO, &cli_serial, "Vbus:[%03d] ", readBack.Vbus);
+//        Serial_debug(DEBUG_INFO, &cli_serial, "AvgVbus:[%03d] ", readBack.AvgVbus);
+//        Serial_debug(DEBUG_INFO, &cli_serial, "VStore:[%03d] ", readBack.VStore);
+//        Serial_debug(DEBUG_INFO, &cli_serial, "AvgVStore:[%03d] ", readBack.AvgVStore);
+//        Serial_debug(DEBUG_INFO, &cli_serial, "\r\nCurrents:\r\n");
+//        Serial_debug(DEBUG_INFO, &cli_serial, "IF_1:[%03d] ", readBack.IF_1);
+//        Serial_debug(DEBUG_INFO, &cli_serial, "ISen1:[%03d] ", readBack.ISen1);
+//        Serial_debug(DEBUG_INFO, &cli_serial, "ISen2:[%03d] ", readBack.ISen2);
+//        Serial_debug(DEBUG_INFO, &cli_serial, "I_Dab2:[%03d] ", readBack.I_Dab2);
+//        Serial_debug(DEBUG_INFO, &cli_serial, "I_Dab3:[%03d]\r\n", readBack.I_Dab3);
+//        Serial_debug(DEBUG_INFO, &cli_serial, "\r\nRegulate Vars:\r\n");
+//        Serial_debug(DEBUG_INFO, &cli_serial, "AvgVstore:[%03d] ", readBack.RegulateAvgVStore);
+//        Serial_debug(DEBUG_INFO, &cli_serial, "AvgVbus:[%03d] ", readBack.RegulateAvgVbus);
+//        Serial_debug(DEBUG_INFO, &cli_serial, "AvgInputCurrent:[%03d] ", readBack.RegulateAvgInputCurrent);
+//        Serial_debug(DEBUG_INFO, &cli_serial, "AvgOutpurCurrent:[%03d] ", readBack.RegulateAvgOutputCurrent);
+//        Serial_debug(DEBUG_INFO, &cli_serial, "Iref:[%03d]\r\n", readBack.RegulateIRef);
+//
+//        Serial_debug(DEBUG_INFO, &cli_serial, "\r\nTemperatures:\r\n");
+//        Serial_debug(DEBUG_INFO, &cli_serial, "Base:   [%02d] ", readBack.BaseBoardTemperature);
+//        Serial_debug(DEBUG_INFO, &cli_serial, "Main:   [%02d] ", readBack.MainBoardTemperature);
+//        Serial_debug(DEBUG_INFO, &cli_serial, "Mezz:   [%02d] ", readBack.MezzanineBoardTemperature);
+//        Serial_debug(DEBUG_INFO, &cli_serial, "PWRBANK:[%02d] \r\n", readBack.PowerBankBoardTemperature);
+//        Serial_debug(DEBUG_INFO, &cli_serial, "\r\nOthers:\r\n");
+//        Serial_debug(DEBUG_INFO, &cli_serial, "Counter:     [%05d] ", readBack.counter);
+//        Serial_debug(DEBUG_INFO, &cli_serial, "CurrentState:[%02d] ", readBack.CurrentState);
+//        Serial_debug(DEBUG_INFO, &cli_serial, "Elapsed_time:[%08d] ", readBack.elapsed_time);
+//        Serial_debug(DEBUG_INFO, &cli_serial, "Time:[%08lu] \r\n", readBack.CurrentTime);
+//
+//        Serial_debug(DEBUG_INFO, &cli_serial, "\r\nCell Voltages:");
+//        Serial_debug(DEBUG_INFO, &cli_serial, "\r\n");
 
-        Serial_debug(DEBUG_INFO, &cli_serial, "\r\nTemperatures:\r\n");
-        Serial_debug(DEBUG_INFO, &cli_serial, "Base:   [%02d] ", readBack.BaseBoardTemperature);
-        Serial_debug(DEBUG_INFO, &cli_serial, "Main:   [%02d] ", readBack.MainBoardTemperature);
-        Serial_debug(DEBUG_INFO, &cli_serial, "Mezz:   [%02d] ", readBack.MezzanineBoardTemperature);
-        Serial_debug(DEBUG_INFO, &cli_serial, "PWRBANK:[%02d] \r\n", readBack.PowerBankBoardTemperature);
-        Serial_debug(DEBUG_INFO, &cli_serial, "\r\nOthers:\r\n");
-        Serial_debug(DEBUG_INFO, &cli_serial, "Counter:     [%05d] ", readBack.counter);
-        Serial_debug(DEBUG_INFO, &cli_serial, "CurrentState:[%02d] ", readBack.CurrentState);
-        Serial_debug(DEBUG_INFO, &cli_serial, "Elapsed_time:[%08d] ", readBack.elapsed_time);
-        Serial_debug(DEBUG_INFO, &cli_serial, "Time:[%08lu] \r\n", readBack.CurrentTime);
+//        for(int c=0; c<NUMBER_OF_CELLS; c++){
+//            Serial_debug(DEBUG_INFO, &cli_serial, "%2d:[%03d] ", c+1, readBack.cellVoltage[c]);
+//            if( (c+1) % 6 == 0 ) {
+//                Serial_debug(DEBUG_INFO, &cli_serial, "\r\n");
+//            }
+//        }
 
-        Serial_debug(DEBUG_INFO, &cli_serial, "\r\nCell Voltages:");
-        Serial_debug(DEBUG_INFO, &cli_serial, "\r\n");
+        Serial_debug(DEBUG_INFO, &cli_serial, "\r\ncan_log_next_free_address:[%8lu] \r\n", can_log_next_free_address);
+        Serial_debug(DEBUG_INFO, &cli_serial, "\r\ncan_log_last_read_address:[%8lu] \r\n", can_log_last_read_address);
+        Serial_debug(DEBUG_INFO, &cli_serial, "\r\ncan_log_start_address:    [%8lu] \r\n", can_log_start_address);
 
-        for(int c=0; c<NUMBER_OF_CELLS; c++){
-            Serial_debug(DEBUG_INFO, &cli_serial, "%2d:[%03d] ", c+1, readBack.cellVoltage[c]);
-            if( (c+1) % 6 == 0 ) {
-                Serial_debug(DEBUG_INFO, &cli_serial, "\r\n");
-            }
-        }
         Serial_debug(DEBUG_INFO, &cli_serial, "\r\n=============================\r\n");
     }
 
@@ -1162,4 +1208,43 @@ void getObjData(
 //    }
 //
 //    return address;
+//}
+
+
+//static uint16_t log_size_of_CAN_log_entry(uint8_t log_type)
+//{
+//    uint16_t size_in_Bytes;
+//    uint16_t size_in_words;
+//
+//    /* returns number of Bytes */
+//    switch (log_type) {
+//    case '4':   // stored by log_store_pdo_ds401()
+//    case 'E': /* EMCY */
+//    case 'R': /* SDO upload */
+//    case 'W': /* SDO download */
+//        size_in_Bytes = 8 + SIZE_OF_TIMESTAMP;
+//        break;
+//
+//    case 'P': /* PDO upload */                  // NOTE: Currently not used!
+//        size_in_Bytes = 8 + SIZE_OF_TIMESTAMP;  // TODO: not decided
+//        break;
+//
+//    case 'S': /* state of DPMU state machine */ // NOTE: Currently not used!
+//        size_in_Bytes = 6 + SIZE_OF_TIMESTAMP;
+//        break;
+//
+//    default:    // TODO: decide what to do here!
+//        break;
+//    }
+//
+//    /* DMA requires 16 bit words
+//     * convert size to smallest size that fits the size of the data to write
+//     */
+//    if (size_in_Bytes & 0b01)
+//        /* add a empty byte to match whole 16 bit words */
+//        size_in_words = size_in_Bytes / 2 + 1;
+//    else
+//        size_in_words = size_in_Bytes / 2;
+//
+//    return size_in_words;
 //}
