@@ -42,47 +42,6 @@ void INT_CPU1_EXT_MEM_ISR(void)
     return;
 }
 
-//bool emifc_execute(void)
-//{
-//    bool returnValue = false;
-//    uint16_t errCountLocal;
-//    testStatusGlobalCPU1 = 1;
-//
-//    //    emifc_pinmux_setup_memory(MEM_TYPE_RAM);
-//
-//    for(iter = 0; iter < MEM_RW_ITER; iter++){
-//        // Grab EMIF1 for CPU1.
-//        while(HWREGH(EMIF1CONFIG_BASE + MEMCFG_O_EMIF1MSEL) != EMIF_MASTER_CPU1_G){
-//            EMIF_selectMaster(EMIF1CONFIG_BASE, EMIF_MASTER_CPU1_G);
-//        }
-//
-//
-//        // Check basic RD/WR access to CS2 space.
-//        errCountLocal = emifc_write_flash_data(EXT_FLASH_START_ADDRESS_CS3, EXT_FLASH_SIZE_CS3);
-//        emifc_read_flash_data(EXT_FLASH_START_ADDRESS_CS3, EXT_FLASH_SIZE_CS3);
-//
-//        errCountGlobalCPU1 = errCountGlobalCPU1 + errCountLocal;
-//
-//
-//        // Release EMI1
-//        EMIF_selectMaster(EMIF1CONFIG_BASE, EMIF_MASTER_CPU1_NG);
-//    }
-//
-//
-//    if(errCountGlobalCPU1 == 0x0U){
-//        testStatusGlobalCPU1 = 0;
-//        returnValue = true;
-//        //        printf ("TEST PASS \r\n");
-//    }
-//    else{
-//        testStatusGlobalCPU1 = 1;
-//        returnValue = true;
-//        //        printf ("TEST FAIL \r\n");
-//    }
-//
-//    return returnValue;
-//}
-
 void emifc_set_cpun_as_master(EMIF1_Config* emif1)
 {
     if (emif1->cpuType == CPU_TYPE_ONE && configMaster == 0){

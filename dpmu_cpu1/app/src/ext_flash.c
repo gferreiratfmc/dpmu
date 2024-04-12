@@ -206,7 +206,7 @@ void ext_flash_write_word(uint32_t addr, uint16_t data)
     }
 }
 
-void ext_command_flash_chip_erase() {
+void ext_command_flash_chip_erase(void) {
     set_a19(0);
 
     FLASH_SEQ(0x555, 0xAA);
@@ -223,9 +223,9 @@ void ext_command_flash_chip_erase() {
 bool ext_flash_ready() {
 
     if ( GPIO_readPin(EXT_FLASH_READY) == 0 ) {
-        false;
+        return false;
     } else {
-        true;
+        return true;
     }
 }
 

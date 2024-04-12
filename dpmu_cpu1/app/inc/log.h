@@ -18,7 +18,7 @@
 #define LAST_LOG_SECTOR     EXT_FLASH_SA34
 
 typedef enum  {
-    Logging,
+    Logging = 0,
     EraseFlash,
     WaitingEraseDone
 } states_can_log_e;
@@ -96,6 +96,7 @@ void log_store_new_state(uint16_t state);
 void log_store_debug_log_to_ram(void);
 void log_debug_read_from_ram(void);
 void log_store_debug_log_to_flash(void);
-void log_debug_read_from_flash();
+void log_debug_read_from_flash(void);
+void log_can_state_machine(void);
 
 #endif /* COAPPL_LOG_H_ */

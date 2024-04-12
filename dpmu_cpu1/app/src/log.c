@@ -39,7 +39,6 @@ volatile static debug_log_t debug_log_copy;
 
 /* common struct to read logs from external memories */
 EMIF1_Config emif1_log_read;
-//EMIF1_Config domain_emif1_log_read;
 
 /* for debug log in external RAM */
 //static uint32_t debug_log_start_address              = EXT_RAM_START_ADDRESS_CS2;
@@ -58,7 +57,7 @@ static bool     can_log_address_has_wrapped_around  = false;
 static uint32_t can_log_size                        = sizeof(debug_log_t); //0;
 static bool can_log_possible = false;
 
-static States_t canLogState = { Logging, Logging, Logging, Logging };
+static States_t canLogState = { 0 };
 
 RET_T log_debug_log_set_state(uint8_t value)
 {
@@ -102,19 +101,16 @@ void log_read_domain(UNSIGNED16 index, UNSIGNED8 subindex, UNSIGNED32 domainBufS
             debug_log_last_read_address = debug_log_last_read_address;
             return;
         }
-        // start_address = EXT_RAM_START_ADDRESS_CS2 + domainTransferedSize;
         start_address = debug_log_last_read_address;
         if(start_address >= (EXT_RAM_START_ADDRESS_CS2 + EXT_RAM_SIZE_CS2))
             start_address = EXT_RAM_START_ADDRESS_CS2;
     }
     if(I_CAN_LOG == index)
     {
-        if( can_log_last_read_address >= can_log_next_free_address   ) {
-            can_log_last_read_address = can_log_last_read_address;
-            return;
-        }
-
-        // start_address = can_log_start_address + domainTransferedSize;
+//        if( can_log_last_read_address >= can_log_next_free_address   ) {
+//            can_log_last_read_address = can_log_last_read_address;
+//            return;
+//        }
         start_address = can_log_last_read_address;
         if(start_address >= CAN_LOG_ADDRESS_END) {
             start_address = CAN_LOG_ADDRESS_START;
@@ -153,11 +149,14 @@ void log_read_domain(UNSIGNED16 index, UNSIGNED8 subindex, UNSIGNED32 domainBufS
         emif1_log_read.size = domainBufSize;
         ext_flash_read_buf(emif1_log_read.address, (uint16_t*)emif1_log_read.data, emif1_log_read.size);
         can_log_last_read_address = start_address + domainBufSize;
+
         sumOfTransferedBytes = sumOfTransferedBytes + domainBufSize;
         if( sumOfTransferedBytes >= sizeof(debug_log_t) ) {
             //debug_log_last_read_address = debug_log_last_read_address + sizeof(debug_log_t);
             sumOfTransferedBytes = 0;
         }
+
+
         if( (can_log_next_free_address - can_log_last_read_address) == 0 ){
             sharedVars_cpu1toCpu2.debug_log_disable_flag = false;
         }
@@ -218,12 +217,10 @@ uint8_t log_debug_log_read(
 
 }
 
-void log_debug_log_reset(LogResetType_e resetType)
+void log_debug_log_reset(uint8_t resetType)
 {
     // reset number of entries
     // reset position in memory to beginning of RAM portion ???
-
-    //debug_log_start_address              = EXT_RAM_START_ADDRESS_CS2;
 
     switch( resetType ) {
         case LOG_RESET_REWIND:
@@ -271,9 +268,15 @@ uint8_t log_can_log_read(
 
     uint32_t sizeToTransfer;
 
-    sizeToTransfer = 2 * (can_log_next_free_address - can_log_last_read_address);
 
-    if(  (can_log_last_read_address < can_log_next_free_address) && ( sizeToTransfer > 0 ) ) {
+    if( can_log_last_read_address > can_log_next_free_address) {
+        sizeToTransfer = 2 * (  CAN_LOG_ADDRESS_END - can_log_last_read_address);
+        sizeToTransfer = sizeToTransfer + 2 * ( can_log_next_free_address - CAN_LOG_ADDRESS_START);
+    } else {
+        sizeToTransfer = 2 * (can_log_next_free_address - can_log_last_read_address);
+    }
+
+    if(  sizeToTransfer > 0 ) {
 
         //TODO probably EXT_RAM_START_ADDRESS_CS2 -> debug_log_start_address
         /* set the correct starting address of the external memory */
@@ -449,181 +452,6 @@ void log_can_init(void)
     can_log_last_read_address = can_log_next_free_address;
 }
 
-bool can_log_search_log(void)
-{
-    bool noError = true; //TODO implement the checks for errors !
-    uint16_t tmp;
-    uint32_t addr = can_log_start_address;
-    bool log_start_address_set = false;
-    bool possible_wrap_around_detected = false;
-
-    /* search for first consecutive block of log entries
-     * could at maximum be two blocks of consecutive log entries,
-     * one in the end of the log that stretches over the log area and continues
-     * at the beginning of log area -> one block in the end and one block in the
-     * beginning
-     * */
-    do
-    {
-        /* read address - for magic number */
-        ext_flash_read_buf(addr, &tmp, 1);
-
-        /* is it Magic Number */
-        if(tmp == CAN_LOG_MAGIC)
-        {
-            /* save presumed start address of log
-             * at this stage, presume no wrap around, we handle that later
-             * */
-            if(!log_start_address_set)
-            {
-                can_log_start_address = addr;
-                log_start_address_set = true;
-            }
-
-            /* read size of log entry */
-            ext_flash_read_buf(addr + 2, &tmp, 1);  /* skip timestamp */
-            addr += tmp;
-            can_log_next_free_address = addr;
-
-            /* error if the last log entry stretches
-             * over the end of the log area
-             * */
-            if(can_log_next_free_address > CAN_LOG_ADDRESS_END)
-            {
-                noError = false;
-                return noError;
-            }
-        }
-        else
-        {
-            /* try at next possible address */
-            addr++;
-        }
-
-        /* have we found the end of the first consecutive block of log entries
-         * tmp != CAN_LOG_MAGIC - can_log_next_free_address does not contain
-         *                        Magic Number, possibly found end of log
-         *                        log could stretch over end of log area (wrap
-         *                        around)
-         * start_address_set - we have found at least one log entry
-         * */
-        if(tmp != CAN_LOG_MAGIC && log_start_address_set)
-        {
-            break;
-        }
-    } while(addr < CAN_LOG_ADDRESS_END); /* search up to the full log area */
-
-    /* we have found one consecutive block of log entries
-     * does there exist one more?
-     *
-     * the log can start in the middle of the log area, wrap around the end
-     * and continue from the beginning
-     * */
-    if(addr < CAN_LOG_ADDRESS_END)
-    {
-        if(tmp != CAN_LOG_MAGIC && log_start_address_set)
-        {
-            do
-            {
-                /* read address - for magic number */
-                ext_flash_read_buf(addr, &tmp, 1);
-
-                /* is it Magic Number */
-                if(tmp == CAN_LOG_MAGIC)
-                {
-                    /* save presumed start address of log */
-                    if(!possible_wrap_around_detected)
-                    {
-                        /* the log starts here
-                         * the log has wrapped around
-                         * the log ends somewhere before this address
-                         * */
-                        can_log_start_address = addr;
-                        possible_wrap_around_detected = true;
-                    }
-
-                    /* read size of log entry */
-                    ext_flash_read_buf(addr + 2, &tmp, 1);  /* skip timestamp */
-                    addr += tmp;
-
-                    /* keep code commented out as reference of difference
-                     *
-                     * the real end of log appears before this block of
-                     * consecutive log entries and updated earlier
-                     * */
-//                    can_log_next_free_address = addr;
-
-                    /* error if the last log entry stretches
-                     * over the end of the log area
-                     * */
-                    if(addr > CAN_LOG_ADDRESS_END)
-                    {
-                        noError = false;
-                        return noError;
-                    }
-                }
-                else
-                {
-                    /* try at next possible address */
-                    addr++;
-                }
-
-                /* have we found the end of the second consecutive blocks of log
-                 * entries
-                 * tmp != CAN_LOG_MAGIC - next possible log entry does not
-                 *                        contain Magic Number, found end of
-                 *                        second block of consecutive log
-                 *                        entries, log stretches over end of log
-                 *                        area (wrap around)
-                 * */
-                if(tmp != CAN_LOG_MAGIC)
-                {
-                    break;
-                }
-            } while(addr < CAN_LOG_ADDRESS_END);
-        }
-    }
-
-    /* we have found two consecutive block of log entries
-     * does there exist one more? if so we have an error
-     *
-     * the log can start in the middle of the log area, wrap around the end
-     * and continue from the beginning
-     * */
-    if(addr < CAN_LOG_ADDRESS_END)
-    {
-        if(possible_wrap_around_detected)
-        {
-            do
-            {
-                /* read address - for magic number */
-                ext_flash_read_buf(addr, &tmp, 1);
-
-                /* is it Magic Number */
-                if(tmp == CAN_LOG_MAGIC)
-                {
-                    /* we have found three consecutive blocks of log entries
-                     * maximum is consecutive blocks of log entries
-                     * the log can start in the middle of the log area,
-                     * wrap around the end and continue from the beginning,
-                     * meaning two consecutive blocks of log entries
-                     * */
-                    noError = false;
-                    return noError;
-                }
-                else
-                {
-                    /* try at next possible address */
-                    addr++;
-                }
-            } while(addr < CAN_LOG_ADDRESS_END);
-        }
-    }
-
-    return noError;
-}
-
-
 
 
 
@@ -675,12 +503,9 @@ void log_store_can_log(uint16_t size, unsigned char *pnt)
 
         // Update start address of log.
         if (can_log_address_has_wrapped_around) {
-//#if 0
-//            can_log_start_address = find_first_log_entry_in_next_sector(can_log_start_address);  /* sector 4 erased, use next sector sector 5 */
-//#else
+
             can_log_start_address = CAN_LOG_ADDRESS_START;  /* sector 4 erased, use next sector sector 5 */
             can_log_write_address = can_log_start_address;
-//#endif
         }
 
 
@@ -707,7 +532,9 @@ void log_store_can_log(uint16_t size, unsigned char *pnt)
 }
 
 
-void log_can_state_machine() {
+void log_can_state_machine(void) {
+
+    static uint32_t timeStart;
 
     switch( canLogState.State_Current ) {
 
@@ -717,15 +544,18 @@ void log_can_state_machine() {
             break;
         case EraseFlash:
             // Call command do erase entire flash_chip_erase
+            Serial_debug(DEBUG_INFO, &cli_serial, "External Flash erase start\r\n");
+            timeStart = timer_get_ticks();
             ext_command_flash_chip_erase();
-
             canLogState.State_Next = WaitingEraseDone;
+            sharedVars_cpu1toCpu2.debug_log_disable_flag = true;
             break;
 
         case WaitingEraseDone:
             if( ext_flash_ready() ) {
-                sharedVars_cpu1toCpu2.debug_log_disable_flag = true;
+
                 log_can_init();
+                Serial_debug(DEBUG_INFO, &cli_serial, "External Flash erase stop. Time:[%lu]\r\n", timer_get_ticks() - timeStart);
                 sharedVars_cpu1toCpu2.debug_log_disable_flag = false;
                 canLogState.State_Next = Logging;
             }
@@ -897,88 +727,54 @@ void log_debug_read_from_flash() {
 
         lastAddressRead = debug_log_last_writen_address;
         //Serial_debug(DEBUG_INFO, &cli_serial, "\033[2J");
-//        Serial_debug(DEBUG_INFO, &cli_serial, "\r\nVoltages:\r\n");
-//        Serial_debug(DEBUG_INFO, &cli_serial, "Vbus:[%03d] ", readBack.Vbus);
-//        Serial_debug(DEBUG_INFO, &cli_serial, "AvgVbus:[%03d] ", readBack.AvgVbus);
-//        Serial_debug(DEBUG_INFO, &cli_serial, "VStore:[%03d] ", readBack.VStore);
-//        Serial_debug(DEBUG_INFO, &cli_serial, "AvgVStore:[%03d] ", readBack.AvgVStore);
-//        Serial_debug(DEBUG_INFO, &cli_serial, "\r\nCurrents:\r\n");
-//        Serial_debug(DEBUG_INFO, &cli_serial, "IF_1:[%03d] ", readBack.IF_1);
-//        Serial_debug(DEBUG_INFO, &cli_serial, "ISen1:[%03d] ", readBack.ISen1);
-//        Serial_debug(DEBUG_INFO, &cli_serial, "ISen2:[%03d] ", readBack.ISen2);
-//        Serial_debug(DEBUG_INFO, &cli_serial, "I_Dab2:[%03d] ", readBack.I_Dab2);
-//        Serial_debug(DEBUG_INFO, &cli_serial, "I_Dab3:[%03d]\r\n", readBack.I_Dab3);
-//        Serial_debug(DEBUG_INFO, &cli_serial, "\r\nRegulate Vars:\r\n");
-//        Serial_debug(DEBUG_INFO, &cli_serial, "AvgVstore:[%03d] ", readBack.RegulateAvgVStore);
-//        Serial_debug(DEBUG_INFO, &cli_serial, "AvgVbus:[%03d] ", readBack.RegulateAvgVbus);
-//        Serial_debug(DEBUG_INFO, &cli_serial, "AvgInputCurrent:[%03d] ", readBack.RegulateAvgInputCurrent);
-//        Serial_debug(DEBUG_INFO, &cli_serial, "AvgOutpurCurrent:[%03d] ", readBack.RegulateAvgOutputCurrent);
-//        Serial_debug(DEBUG_INFO, &cli_serial, "Iref:[%03d]\r\n", readBack.RegulateIRef);
-//
-//        Serial_debug(DEBUG_INFO, &cli_serial, "\r\nTemperatures:\r\n");
-//        Serial_debug(DEBUG_INFO, &cli_serial, "Base:   [%02d] ", readBack.BaseBoardTemperature);
-//        Serial_debug(DEBUG_INFO, &cli_serial, "Main:   [%02d] ", readBack.MainBoardTemperature);
-//        Serial_debug(DEBUG_INFO, &cli_serial, "Mezz:   [%02d] ", readBack.MezzanineBoardTemperature);
-//        Serial_debug(DEBUG_INFO, &cli_serial, "PWRBANK:[%02d] \r\n", readBack.PowerBankBoardTemperature);
-//        Serial_debug(DEBUG_INFO, &cli_serial, "\r\nOthers:\r\n");
-//        Serial_debug(DEBUG_INFO, &cli_serial, "Counter:     [%05d] ", readBack.counter);
-//        Serial_debug(DEBUG_INFO, &cli_serial, "CurrentState:[%02d] ", readBack.CurrentState);
-//        Serial_debug(DEBUG_INFO, &cli_serial, "Elapsed_time:[%08d] ", readBack.elapsed_time);
-//        Serial_debug(DEBUG_INFO, &cli_serial, "Time:[%08lu] \r\n", readBack.CurrentTime);
-//
-//        Serial_debug(DEBUG_INFO, &cli_serial, "\r\nCell Voltages:");
-//        Serial_debug(DEBUG_INFO, &cli_serial, "\r\n");
+        Serial_debug(DEBUG_INFO, &cli_serial, "\r\nVoltages:\r\n");
+        Serial_debug(DEBUG_INFO, &cli_serial, "Vbus:[%03d] ", readBack.Vbus);
+        Serial_debug(DEBUG_INFO, &cli_serial, "AvgVbus:[%03d] ", readBack.AvgVbus);
+        Serial_debug(DEBUG_INFO, &cli_serial, "VStore:[%03d] ", readBack.VStore);
+        Serial_debug(DEBUG_INFO, &cli_serial, "AvgVStore:[%03d] ", readBack.AvgVStore);
+        Serial_debug(DEBUG_INFO, &cli_serial, "\r\nCurrents:\r\n");
+        Serial_debug(DEBUG_INFO, &cli_serial, "IF_1:[%03d] ", readBack.IF_1);
+        Serial_debug(DEBUG_INFO, &cli_serial, "ISen1:[%03d] ", readBack.ISen1);
+        Serial_debug(DEBUG_INFO, &cli_serial, "ISen2:[%03d] ", readBack.ISen2);
+        Serial_debug(DEBUG_INFO, &cli_serial, "I_Dab2:[%03d] ", readBack.I_Dab2);
+        Serial_debug(DEBUG_INFO, &cli_serial, "I_Dab3:[%03d]\r\n", readBack.I_Dab3);
+        Serial_debug(DEBUG_INFO, &cli_serial, "\r\nRegulate Vars:\r\n");
+        Serial_debug(DEBUG_INFO, &cli_serial, "AvgVstore:[%03d] ", readBack.RegulateAvgVStore);
+        Serial_debug(DEBUG_INFO, &cli_serial, "AvgVbus:[%03d] ", readBack.RegulateAvgVbus);
+        Serial_debug(DEBUG_INFO, &cli_serial, "AvgInputCurrent:[%03d] ", readBack.RegulateAvgInputCurrent);
+        Serial_debug(DEBUG_INFO, &cli_serial, "AvgOutpurCurrent:[%03d] ", readBack.RegulateAvgOutputCurrent);
+        Serial_debug(DEBUG_INFO, &cli_serial, "Iref:[%03d]\r\n", readBack.RegulateIRef);
 
-//        for(int c=0; c<NUMBER_OF_CELLS; c++){
-//            Serial_debug(DEBUG_INFO, &cli_serial, "%2d:[%03d] ", c+1, readBack.cellVoltage[c]);
-//            if( (c+1) % 6 == 0 ) {
-//                Serial_debug(DEBUG_INFO, &cli_serial, "\r\n");
-//            }
-//        }
+        Serial_debug(DEBUG_INFO, &cli_serial, "\r\nTemperatures:\r\n");
+        Serial_debug(DEBUG_INFO, &cli_serial, "Base:   [%02d] ", readBack.BaseBoardTemperature);
+        Serial_debug(DEBUG_INFO, &cli_serial, "Main:   [%02d] ", readBack.MainBoardTemperature);
+        Serial_debug(DEBUG_INFO, &cli_serial, "Mezz:   [%02d] ", readBack.MezzanineBoardTemperature);
+        Serial_debug(DEBUG_INFO, &cli_serial, "PWRBANK:[%02d] \r\n", readBack.PowerBankBoardTemperature);
+        Serial_debug(DEBUG_INFO, &cli_serial, "\r\nOthers:\r\n");
+        Serial_debug(DEBUG_INFO, &cli_serial, "Counter:     [%05d] ", readBack.counter);
+        Serial_debug(DEBUG_INFO, &cli_serial, "CurrentState:[%02d] ", readBack.CurrentState);
+        Serial_debug(DEBUG_INFO, &cli_serial, "Elapsed_time:[%08d] ", readBack.elapsed_time);
+        Serial_debug(DEBUG_INFO, &cli_serial, "Time:[%08lu] \r\n", readBack.CurrentTime);
+
+        Serial_debug(DEBUG_INFO, &cli_serial, "\r\nCell Voltages:");
+        Serial_debug(DEBUG_INFO, &cli_serial, "\r\n");
+
+        for(int c=0; c<NUMBER_OF_CELLS; c++){
+            Serial_debug(DEBUG_INFO, &cli_serial, "%2d:[%03d] ", c+1, readBack.cellVoltage[c]);
+            if( (c+1) % 6 == 0 ) {
+                Serial_debug(DEBUG_INFO, &cli_serial, "\r\n");
+            }
+        }
 
         Serial_debug(DEBUG_INFO, &cli_serial, "\r\ncan_log_next_free_address:[%8lu] \r\n", can_log_next_free_address);
-        Serial_debug(DEBUG_INFO, &cli_serial, "\r\ncan_log_last_read_address:[%8lu] \r\n", can_log_last_read_address);
-        Serial_debug(DEBUG_INFO, &cli_serial, "\r\ncan_log_start_address:    [%8lu] \r\n", can_log_start_address);
+        Serial_debug(DEBUG_INFO, &cli_serial, "can_log_last_read_address:[%8lu] \r\n", can_log_last_read_address);
+        Serial_debug(DEBUG_INFO, &cli_serial, "can_log_start_address:    [%8lu] \r\n", can_log_start_address);
 
         Serial_debug(DEBUG_INFO, &cli_serial, "\r\n=============================\r\n");
     }
 
 }
 
-//void log_can_init_hb(void)
-//{
-//    bool good_log;
-//
-//    // reset number of entries
-//    // reset position in memory to beginning of RAM portion ???
-//
-//    // If no entry found, set to initial values.
-//    can_log_start_address              = CAN_LOG_ADDRESS_START;
-//    can_log_next_free_address          = CAN_LOG_ADDRESS_START;
-//    can_log_address_has_wrapped_around = false;
-//    can_log_size                       = 0;
-//
-//    good_log = can_log_search_log();
-//    if ((!good_log) || (can_log_start_address == can_log_next_free_address)) {
-//        /* reset pointers and size
-//         * needed for log error
-//         */
-//        can_log_start_address              = CAN_LOG_ADDRESS_START;
-//        can_log_next_free_address          = CAN_LOG_ADDRESS_START;
-//        can_log_address_has_wrapped_around = false;
-//        can_log_size                       = 0;
-//
-//        /* for some reason, if we erase the sectors in opposite order we get a
-//         * problem,  first word in first write attempt in first can log sector
-//         * will no happen, it will continue to keep the value 0xff
-//         */
-//        // Erase log part of external flash.
-//        for (ext_flash_sector_t sector = LAST_LOG_SECTOR; sector >= FIRST_LOG_SECTOR; --sector) {
-//            ext_flash_erase_sector(ex_flash_info[sector].addr);
-//        }
-//    }
-//}
-//
 
 /* base on coOdGetObjSize() */
 void getObjData(
@@ -1248,3 +1044,215 @@ void getObjData(
 //
 //    return size_in_words;
 //}
+
+//void log_can_init_hb(void)
+//{
+//    bool good_log;
+//
+//    // reset number of entries
+//    // reset position in memory to beginning of RAM portion ???
+//
+//    // If no entry found, set to initial values.
+//    can_log_start_address              = CAN_LOG_ADDRESS_START;
+//    can_log_next_free_address          = CAN_LOG_ADDRESS_START;
+//    can_log_address_has_wrapped_around = false;
+//    can_log_size                       = 0;
+//
+//    good_log = can_log_search_log();
+//    if ((!good_log) || (can_log_start_address == can_log_next_free_address)) {
+//        /* reset pointers and size
+//         * needed for log error
+//         */
+//        can_log_start_address              = CAN_LOG_ADDRESS_START;
+//        can_log_next_free_address          = CAN_LOG_ADDRESS_START;
+//        can_log_address_has_wrapped_around = false;
+//        can_log_size                       = 0;
+//
+//        /* for some reason, if we erase the sectors in opposite order we get a
+//         * problem,  first word in first write attempt in first can log sector
+//         * will no happen, it will continue to keep the value 0xff
+//         */
+//        // Erase log part of external flash.
+//        for (ext_flash_sector_t sector = LAST_LOG_SECTOR; sector >= FIRST_LOG_SECTOR; --sector) {
+//            ext_flash_erase_sector(ex_flash_info[sector].addr);
+//        }
+//    }
+//}
+//
+
+//
+//bool can_log_search_log(void)
+//{
+//    bool noError = true; //TODO implement the checks for errors !
+//    uint16_t tmp;
+//    uint32_t addr = can_log_start_address;
+//    bool log_start_address_set = false;
+//    bool possible_wrap_around_detected = false;
+//
+//    /* search for first consecutive block of log entries
+//     * could at maximum be two blocks of consecutive log entries,
+//     * one in the end of the log that stretches over the log area and continues
+//     * at the beginning of log area -> one block in the end and one block in the
+//     * beginning
+//     * */
+//    do
+//    {
+//        /* read address - for magic number */
+//        ext_flash_read_buf(addr, &tmp, 1);
+//
+//        /* is it Magic Number */
+//        if(tmp == CAN_LOG_MAGIC)
+//        {
+//            /* save presumed start address of log
+//             * at this stage, presume no wrap around, we handle that later
+//             * */
+//            if(!log_start_address_set)
+//            {
+//                can_log_start_address = addr;
+//                log_start_address_set = true;
+//            }
+//
+//            /* read size of log entry */
+//            ext_flash_read_buf(addr + 2, &tmp, 1);  /* skip timestamp */
+//            addr += tmp;
+//            can_log_next_free_address = addr;
+//
+//            /* error if the last log entry stretches
+//             * over the end of the log area
+//             * */
+//            if(can_log_next_free_address > CAN_LOG_ADDRESS_END)
+//            {
+//                noError = false;
+//                return noError;
+//            }
+//        }
+//        else
+//        {
+//            /* try at next possible address */
+//            addr++;
+//        }
+//
+//        /* have we found the end of the first consecutive block of log entries
+//         * tmp != CAN_LOG_MAGIC - can_log_next_free_address does not contain
+//         *                        Magic Number, possibly found end of log
+//         *                        log could stretch over end of log area (wrap
+//         *                        around)
+//         * start_address_set - we have found at least one log entry
+//         * */
+//        if(tmp != CAN_LOG_MAGIC && log_start_address_set)
+//        {
+//            break;
+//        }
+//    } while(addr < CAN_LOG_ADDRESS_END); /* search up to the full log area */
+//
+//    /* we have found one consecutive block of log entries
+//     * does there exist one more?
+//     *
+//     * the log can start in the middle of the log area, wrap around the end
+//     * and continue from the beginning
+//     * */
+//    if(addr < CAN_LOG_ADDRESS_END)
+//    {
+//        if(tmp != CAN_LOG_MAGIC && log_start_address_set)
+//        {
+//            do
+//            {
+//                /* read address - for magic number */
+//                ext_flash_read_buf(addr, &tmp, 1);
+//
+//                /* is it Magic Number */
+//                if(tmp == CAN_LOG_MAGIC)
+//                {
+//                    /* save presumed start address of log */
+//                    if(!possible_wrap_around_detected)
+//                    {
+//                        /* the log starts here
+//                         * the log has wrapped around
+//                         * the log ends somewhere before this address
+//                         * */
+//                        can_log_start_address = addr;
+//                        possible_wrap_around_detected = true;
+//                    }
+//
+//                    /* read size of log entry */
+//                    ext_flash_read_buf(addr + 2, &tmp, 1);  /* skip timestamp */
+//                    addr += tmp;
+//
+//                    /* keep code commented out as reference of difference
+//                     *
+//                     * the real end of log appears before this block of
+//                     * consecutive log entries and updated earlier
+//                     * */
+////                    can_log_next_free_address = addr;
+//
+//                    /* error if the last log entry stretches
+//                     * over the end of the log area
+//                     * */
+//                    if(addr > CAN_LOG_ADDRESS_END)
+//                    {
+//                        noError = false;
+//                        return noError;
+//                    }
+//                }
+//                else
+//                {
+//                    /* try at next possible address */
+//                    addr++;
+//                }
+//
+//                /* have we found the end of the second consecutive blocks of log
+//                 * entries
+//                 * tmp != CAN_LOG_MAGIC - next possible log entry does not
+//                 *                        contain Magic Number, found end of
+//                 *                        second block of consecutive log
+//                 *                        entries, log stretches over end of log
+//                 *                        area (wrap around)
+//                 * */
+//                if(tmp != CAN_LOG_MAGIC)
+//                {
+//                    break;
+//                }
+//            } while(addr < CAN_LOG_ADDRESS_END);
+//        }
+//    }
+//
+//    /* we have found two consecutive block of log entries
+//     * does there exist one more? if so we have an error
+//     *
+//     * the log can start in the middle of the log area, wrap around the end
+//     * and continue from the beginning
+//     * */
+//    if(addr < CAN_LOG_ADDRESS_END)
+//    {
+//        if(possible_wrap_around_detected)
+//        {
+//            do
+//            {
+//                /* read address - for magic number */
+//                ext_flash_read_buf(addr, &tmp, 1);
+//
+//                /* is it Magic Number */
+//                if(tmp == CAN_LOG_MAGIC)
+//                {
+//                    /* we have found three consecutive blocks of log entries
+//                     * maximum is consecutive blocks of log entries
+//                     * the log can start in the middle of the log area,
+//                     * wrap around the end and continue from the beginning,
+//                     * meaning two consecutive blocks of log entries
+//                     * */
+//                    noError = false;
+//                    return noError;
+//                }
+//                else
+//                {
+//                    /* try at next possible address */
+//                    addr++;
+//                }
+//            } while(addr < CAN_LOG_ADDRESS_END);
+//        }
+//    }
+//
+//    return noError;
+//}
+//
+

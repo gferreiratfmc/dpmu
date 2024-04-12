@@ -155,6 +155,16 @@ void ext_flash_config(void);
  */
 void ext_flash_test(void);
 
+/**
+ * Verifies if the flash is ready after an erase
+ */
+bool ext_flash_ready(void);
+
+/**
+ * Asserts command to fully erase the flash memory
+ */
+void ext_command_flash_chip_erase(void);
+
 // Information base describing the external flash.
 extern const ext_flash_desc_t ex_flash_info[];
 

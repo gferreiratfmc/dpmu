@@ -216,7 +216,6 @@ void main(void)
     Serial_debug(DEBUG_INFO, &cli_serial, "Started\r\n");
 
 
-    log_can_log_reset();
 
     for (;;) {
 #include <debug_log.h>
