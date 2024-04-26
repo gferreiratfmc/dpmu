@@ -25,6 +25,13 @@ uint32_t i, iter;
 
 #define MEM_RW_ITER    0x1U
 
+                         /* number of segments * 7 bytes per segments - (1 segment = 1 message)  */
+#pragma DATA_ALIGN(message, 4)
+#pragma DATA_SECTION(message, "ramgs0");  // map the TX data to memory
+
+unsigned char message[TRANSFER_SIZE];
+
+
 volatile int dma_test_xfer_done;
 
 void INT_CPU1_EXT_MEM_ISR(void)

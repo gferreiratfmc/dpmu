@@ -1,9 +1,10 @@
 
 #include <ipc.h>
 #include <stdbool.h>
-
+#include <string.h>
 #include "emifc.h"
 #include "fwupdate.h"
+#include "serial.h"
 
 bool startCPU2FirmwareUpdateFlag = false;
 

@@ -11,7 +11,8 @@ EXE =
 endif
 
 generate_firmware: main.c cobl_crc.c
-	$(CC) $(WINOPT) -I. -o $@ $+
+	#$(CC) $(WINOPT) -I. -o $@ $+
+	$(CC)  -g -I. -o $@ $+
 	./$@$(EXE) --help
 
 all: generate_firmware

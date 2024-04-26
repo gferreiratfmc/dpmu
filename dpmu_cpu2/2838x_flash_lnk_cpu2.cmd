@@ -2,7 +2,7 @@
 MEMORY
 {
    /* BEGIN is used for the "boot to Flash" bootloader mode   */
-   BEGIN            : origin = 0x080000, length = 0x000002
+   BEGIN            : origin = 0x088000, length = 0x000002
    BOOT_RSVD        : origin = 0x000002, length = 0x0001A7     /* Part of M0, BOOT rom will use this for stack */
    RAMM0            : origin = 0x0001A9, length = 0x000257
    RAMM1            : origin = 0x000400, length = 0x0003F8     /* on-chip RAM block M1 */
@@ -36,11 +36,11 @@ MEMORY
 //   RAMGS15_RSVD     : origin = 0x01CFF8, length = 0x000008     /* Reserve and do not use for code as per the errata advisory "Memory: Prefetching Beyond Valid Memory" */
 
    /* Flash sectors */
-   FLASH0           : origin = 0x080002, length = 0x001FFE  /* on-chip Flash */
+   FLASH0           : origin = 0x080000, length = 0x002000  /* on-chip Flash */
    FLASH1           : origin = 0x082000, length = 0x002000  /* on-chip Flash */
    FLASH2           : origin = 0x084000, length = 0x002000  /* on-chip Flash */
    FLASH3           : origin = 0x086000, length = 0x002000  /* on-chip Flash */
-   FLASH4           : origin = 0x088000, length = 0x008000  /* on-chip Flash */
+   FLASH4           : origin = 0x088002, length = 0x008000 - 0x02  /* on-chip Flash */
    FLASH5           : origin = 0x090000, length = 0x008000  /* on-chip Flash */
    FLASH6           : origin = 0x098000, length = 0x008000  /* on-chip Flash */
    FLASH7           : origin = 0x0A0000, length = 0x008000  /* on-chip Flash */
@@ -68,14 +68,14 @@ SECTIONS
    sharedVars_cpu2toCpu1: > RAMGS3
 
    codestart           : > BEGIN, ALIGN(8)
-   .text               : >> FLASH1 | FLASH2 | FLASH3 | FLASH4 | FLASH5, ALIGN(8)
-   .cinit              : > FLASH3 | FLASH4, ALIGN(8)
-   .switch             : > FLASH2, ALIGN(8)
+   .text               : >> FLASH4 | FLASH5 | FLASH6 , ALIGN(8)
+   .cinit              : > FLASH4 | FLASH5, ALIGN(8)
+   .switch             : > FLASH4, ALIGN(8)
    .reset              : > RESET, TYPE = DSECT /* not used, */
    .stack              : > RAMLS7 //RAMM1
 
 #if defined(__TI_EABI__)
-   .init_array      : > FLASH1, ALIGN(8)
+   .init_array      : > FLASH5, ALIGN(8)
    .bss             : >> RAMLS5 | RAMLS6 | RAMLS7
    .bss:output      : >> RAMLS5 | RAMLS6 | RAMLS7
    .bss:cio         : >> RAMLS5 | RAMLS6 | RAMLS7
@@ -87,14 +87,14 @@ SECTIONS
 //   .data            : > RAMLS2
 //   .sysmem          : > RAMM1
    /* Initalized sections go in Flash */
-   .const           : > FLASH4 | FLASH4, ALIGN(8)
+   .const           : > FLASH5 | FLASH5, ALIGN(8)
 #else
-   .pinit           : > FLASH1, ALIGN(8)
+   .pinit           : > FLASH5, ALIGN(8)
    .ebss            : > RAMLS3
    .esysmem         : > RAMM1
    .cio             : > RAMLS3
    /* Initalized sections go in Flash */
-   .econst          : >> FLASH4 | FLASH5, ALIGN(8)
+   .econst          : >> FLASH5 | FLASH5, ALIGN(8)
 #endif
 
    ramgs0 : > RAMGS0, type=NOINIT
@@ -115,7 +115,7 @@ SECTIONS
 //   Difference_RegsFile : >RAMGS5, fill=0x3333
 
    #if defined(__TI_EABI__)
-       .TI.ramfunc : {} LOAD = FLASH3,
+       .TI.ramfunc : {} LOAD = FLASH5,
                         RUN = RAMLS0 | RAMLS1 | RAMLS2 |RAMLS3,
                         LOAD_START(RamfuncsLoadStart),
                         LOAD_SIZE(RamfuncsLoadSize),
@@ -125,7 +125,7 @@ SECTIONS
                         RUN_END(RamfuncsRunEnd),
                         ALIGN(8)
    #else
-       .TI.ramfunc : {} LOAD = FLASH3,
+       .TI.ramfunc : {} LOAD = FLASH5,
                         RUN = RAMLS0 | RAMLS1 | RAMLS2 |RAMLS3,
                         LOAD_START(_RamfuncsLoadStart),
                         LOAD_SIZE(_RamfuncsLoadSize),
@@ -135,7 +135,7 @@ SECTIONS
                         RUN_END(_RamfuncsRunEnd),
                         ALIGN(8)
    #endif
-   
+
     /* The following section definition are for DCSM dual core examples */
     ZONE1_RAM       : > RAMLS4
     UNSECURE_RAM    : > RAMLS6

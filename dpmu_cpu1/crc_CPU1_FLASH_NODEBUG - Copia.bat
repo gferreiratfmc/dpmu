@@ -34,14 +34,3 @@ rem CRC
 %GENERATOR% -i %TARGET%\%APPL%.lsbbin -j %TARGET%\%APPL%.msbbin -o %TARGET%\%APPL%.crc -D --od1018_1 793  --od1018_2 65617665
 rem if you do not know what 793 and 65617665 means check cobl_user.c
 pause
-
-
-cd %TARGET%\..
-dir %TARGET%
-
-
-cd "C:\Users\gferreira\OneDrive - Digicorner\git_dpmu_python\a055-can-updater\"
-
-python CANUpdaterEmotasOri.py 1 "C:\Users\gferreira\workspace_endurance_cllc\dpmu_cpu1\CPU1_FLASH_NODEBUG\dpmu_cpu1.crc"
-
-cd %TARGET%\..

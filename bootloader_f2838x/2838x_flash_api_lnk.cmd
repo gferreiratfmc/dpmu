@@ -36,7 +36,7 @@ MEMORY
    FLASH0           : origin = 0x080002, length = 0x001FFE  /* on-chip Flash */
    FLASH1           : origin = 0x082000, length = 0x002000  /* on-chip Flash */
 
-     CPU1TOCPU2RAM   : origin = 0x03A000, length = 0x000800
+   CPU1TOCPU2RAM   : origin = 0x03A000, length = 0x000800
    CPU2TOCPU1RAM   : origin = 0x03B000, length = 0x000800
    CPUTOCMRAM      : origin = 0x039000, length = 0x000800
    CMTOCPURAM      : origin = 0x038000, length = 0x000800

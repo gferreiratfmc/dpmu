@@ -13,9 +13,10 @@ set PROJECT_PATH=%LOC%
 
 set GENERATOR=%TOOLS_PATH%\generate_firmware.exe
 set OBJCOPY=%TOOLS_PATH%\mingw\objcopy
-set TARGET=%PROJECT_PATH%CPU1_FLASH_NODEBUG
-set APPL=dpmu_cpu1
+set TARGET=%PROJECT_PATH%CPU2_FLASH_NODEBUG
+set APPL=dpmu_cpu2
 
+set CONFIGBLOCK = 8
 rem check path
 %OBJCOPY% 
 %GENERATOR% -?
@@ -31,17 +32,17 @@ dir %TARGET%\*.hex %TARGET%\*.bin* %TARGET%\*.lsb %TARGET%\*.msb
 @echo ""
 
 rem CRC
-%GENERATOR% -i %TARGET%\%APPL%.lsbbin -j %TARGET%\%APPL%.msbbin -o %TARGET%\%APPL%.crc -D --od1018_1 793  --od1018_2 65617665
+%GENERATOR% -c 8 -i %TARGET%\%APPL%.lsbbin -j %TARGET%\%APPL%.msbbin -o %TARGET%\%APPL%.crc -D
 rem if you do not know what 793 and 65617665 means check cobl_user.c
 pause
-
 
 cd %TARGET%\..
 dir %TARGET%
 
+pause
 
 cd "C:\Users\gferreira\OneDrive - Digicorner\git_dpmu_python\a055-can-updater\"
 
-python CANUpdaterEmotasOri.py 1 "C:\Users\gferreira\workspace_endurance_cllc\dpmu_cpu1\CPU1_FLASH_NODEBUG\dpmu_cpu1.crc"
+python CANUpdaterEmotasOri.py 2 "C:\Users\gferreira\workspace_endurance_cllc\dpmu_cpu2\CPU2_FLASH_NODEBUG\dpmu_cpu2.crc"
 
 cd %TARGET%\..

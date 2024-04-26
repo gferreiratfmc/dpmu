@@ -24,6 +24,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "serial.h"
 
 /* header of project specific types
 ---------------------------------------------------------------------------*/
@@ -97,7 +98,10 @@ UNSIGNED8 cobl_command[16];
 
 /* local defined variables
 ---------------------------------------------------------------------------*/
+extern struct Serial cli_serial;
 
+uint16_t binaryImageBufferRead[IMAGE_BUFFER_SIZE];
+uint16_t binaryImageBuffer[IMAGE_BUFFER_SIZE];
 
 /***************************************************************************/
 /**
@@ -129,7 +133,8 @@ static FWImageStatus fwupdate_isCPU2ImageAvailable(){
 
 //    flash_api_init();
     /*Read checksum*/
-    memcpy(&data, (uint32_t*)FLASH_CPU2_CHECKSUM_ADDRESS, sizeof (data));
+    memcpy( &data, (uint32_t*)FLASH_CPU2_CHECKSUM_ADDRESS, sizeof(data) );
+    Serial_printf(&cli_serial, "\r\ndata from FLASH_CPU2_CHECKSUM_ADDRESS:[0x%08lu]\r\n", data);
 
    if (data!= 0xFFFFFFFF){
        return fw_available;
@@ -139,43 +144,111 @@ static FWImageStatus fwupdate_isCPU2ImageAvailable(){
 }
 
 #define CONFIG_DSP
-static uint32_t fwupdate_calculateChecksum(const unsigned char* bootImageAddress, uint32_t bootImageSize){
+static uint16_t fwupdate_calculateChecksum(const unsigned char* bootImageAddress, uint32_t bootImageSize){
 
-        uint32_t lcount = bootImageSize;
+        uint32_t lcount = 0;
+        unsigned char valueFromRAM;
         uint16_t u16Crc = 0;
         unsigned char u8Val;
+        int32_t remainingWords;
+        uint16_t wordsToTransfer;
 
-            while(lcount --)  {
-        #ifdef CONFIG_DSP
-                /* low part */
-                u8Val = *bootImageAddress & 0x00FFu;
+        uint32_t readAdrress;
 
-                u16Crc = (u16Crc << 8) ^ crcTable[ (unsigned char)(u16Crc >> 8) ^ u8Val];
+        EMIF1_Config emif;
 
-                /* high part */
-                u8Val = (*bootImageAddress++ >> 8) & 0x00FFu;
-        #else
-                u8Val = *bootImageAddress++;
-        #endif
-                u16Crc = (u16Crc << 8) ^ crcTable[ (unsigned char)(u16Crc >> 8) ^ u8Val];
+        uint32_t count = 0;
+
+        lcount = ( bootImageSize / (TRANSFER_SIZE/2) ) + 1;
+
+        remainingWords = bootImageSize;
+        wordsToTransfer = TRANSFER_SIZE/2;
+        readAdrress = (uint32_t)bootImageAddress;
+
+        Serial_printf(&cli_serial, "bootImageAddress:[0x%08p] bootImageSize:[%lu]\r\n",bootImageAddress, bootImageSize );
+
+        while( lcount-- )  {
+//        #ifdef CONFIG_DSP
+
+                if(  remainingWords <  TRANSFER_SIZE/2) {
+                     wordsToTransfer = remainingWords;
+                }
+
+                emif.address = readAdrress;
+                emif.cpuType = CPU_TYPE_ONE;
+                emif.data   = (uint16_t*)message;
+                emif.size   = wordsToTransfer;
+
+                emifc_cpu_read_memory(&emif);
+
+                for( int i = 0; i< wordsToTransfer; i++) {
+
+                    for( int j = 0; j < 2; j++) {
+                        count++;
+                        if( j == 0 ) {
+                            valueFromRAM = 0x00FF & message[i];
+                        } else {
+                            valueFromRAM = 0xFF00 & message[i];
+                            valueFromRAM = valueFromRAM >> 8;
+
+                        }
+                        u8Val = valueFromRAM & 0x00FFu;
+
+                        u16Crc = (u16Crc << 8) ^ crcTable[ (unsigned char)(u16Crc >> 8) ^ u8Val];
+
+//                        if( count < 1000 || count > 69000) {
+//                            Serial_printf(&cli_serial, "count:[%lu], readAdrress:[0x%08p], lcount:[%lu], i:[%d], valueFromRAM:[0x%02x], message[%d]:[0x%04x] u8val:[0x%02x] u16Crc:[0x%04X]\r\n",
+//                                              count, readAdrress, lcount, i, valueFromRAM, i, message[i], u8Val, u16Crc);
+//                        }
+
+                    }
+                }
+
+                readAdrress = readAdrress + (wordsToTransfer);
+
+                remainingWords = remainingWords - wordsToTransfer;
+
+//                Serial_printf(&cli_serial, "wordsToTransfer:[%u], remainingWords:[%ld]\r\n",wordsToTransfer, remainingWords);
+
+                if( remainingWords <= 0) {
+                    break;
+                }
+
+
+//        #else
+//                u8Val = *bootImageAddress++;
+//        #endif
+//                u16Crc = (u16Crc << 8) ^ crcTable[ (unsigned char)(u16Crc >> 8) ^ u8Val];
             }
-            return(u16Crc);
+
+        Serial_printf(&cli_serial, "CRC16 processed Bytes=%lu\r\n", count);
+        return(u16Crc);
 }
 
 
 
 FWImageStatus fwupdate_updateExtRamWithCPU2Binary(){
-    uint16_t binaryImageBuffer[IMAGE_BUFFER_SIZE];
-    uint32_t readAddress;
+
+    uint32_t readFromFlashAddressWords, writeToRamAddressWords;
+    uint32_t readFromFlashAddressBytes, writeToRamAddressBytes;
+
     uint32_t imageSizeFromMemory;
     uint16_t imageChecksum;
     uint16_t imageChecksumFromMemory;
     FWImageStatus applicationOK = fw_not_available;
+    int32_t remainingWords, wordsToTransfer;
+    uint32_t lcount = 0;
 
     EMIF1_Config emif = {.address = EXT_RAM_START_ADDRESS_CS2,
                          .cpuType = CPU_TYPE_ONE,
-                         .data   = binaryImageBuffer,
+                         .data   = (uint16_t*)binaryImageBuffer,
                          .size   = IMAGE_BUFFER_SIZE};
+
+    EMIF1_Config emifRead = {.address = EXT_RAM_START_ADDRESS_CS2,
+                             .cpuType = CPU_TYPE_ONE,
+                             .data   = (uint16_t*)binaryImageBufferRead ,
+                             .size   = IMAGE_BUFFER_SIZE};
+
 
     /*Get the application size from flash*/
     memcpy (&imageSizeFromMemory, (uint32_t*)FLASH_CPU2_CONFIG_BLOCK_ADDRESS, sizeof(imageSizeFromMemory));
@@ -183,27 +256,91 @@ FWImageStatus fwupdate_updateExtRamWithCPU2Binary(){
     /* Reset external RAM*/
     memset ((uint32_t*)EXT_RAM_START_ADDRESS_CS2, 0, EXT_RAM_SIZE_CS2 );
 
-    // Todo: Sync CPU1 and CPU2
 
     /*Check if binary is available in CPU1 Flash*/
-   if (fwupdate_isCPU2ImageAvailable()){
+    readFromFlashAddressWords = FLASH_CPU2_CONFIG_BLOCK_ADDRESS;
+    readFromFlashAddressBytes = FLASH_CPU2_CONFIG_BLOCK_ADDRESS;
+    writeToRamAddressWords = EXT_RAM_START_ADDRESS_CS2;
+    writeToRamAddressBytes = EXT_RAM_START_ADDRESS_CS2;
+    Serial_printf(&cli_serial, "File[%s] - function[%s] - line[%d]\r\n", __FILE__, __FUNCTION__, __LINE__);
+    if (fwupdate_isCPU2ImageAvailable()){
+        lcount = ( ( imageSizeFromMemory + FLASH_CPU2_CONFIG_BLOCK_SIZE_IN_WORDS ) / (IMAGE_BUFFER_SIZE) ) + 1;
+        remainingWords = imageSizeFromMemory + FLASH_CPU2_CONFIG_BLOCK_SIZE_IN_WORDS;
+        wordsToTransfer = IMAGE_BUFFER_SIZE;
 
-       for (uint32_t i = 0; i<imageSizeFromMemory; i+= 0x80){
+        Serial_printf(&cli_serial, "File[%s] - function[%s] - line[%d]\r\n", __FILE__, __FUNCTION__, __LINE__);
+        while( lcount-- ) {
 
-           /* Start with config block*/
-           readAddress = FLASH_CPU2_CONFIG_BLOCK_ADDRESS + i;
-           flash_api_read(readAddress, binaryImageBuffer,IMAGE_BUFFER_SIZE);
+            if(  remainingWords <  IMAGE_BUFFER_SIZE) {
+                 wordsToTransfer = remainingWords;
+            }
+            //Serial_printf(&cli_serial, "\r\n lcount:[%lu], wordsToTransfer:[%ld], remainingWords:[%ld]\r\n",lcount, wordsToTransfer, remainingWords);
+            //Serial_printf(&cli_serial, "File[%s] - function[%s] - line[%d]\r\n", __FILE__, __FUNCTION__, __LINE__);
+            memset( binaryImageBuffer, 0,  wordsToTransfer);
+            //Serial_printf(&cli_serial, "File[%s] - function[%s] - line[%d]\r\n", __FILE__, __FUNCTION__, __LINE__);
+            /* Start with config block*/
+            flash_api_read(readFromFlashAddressWords, (uint16_t*) binaryImageBuffer, wordsToTransfer);
 
-           emif.address = EXT_RAM_START_ADDRESS_CS2 + i ;
-           emifc_cpu_write_memory(&emif);
 
-       }
+            //Serial_printf(&cli_serial, "File[%s] - function[%s] - line[%d]\r\n", __FILE__, __FUNCTION__, __LINE__);
+
+//            for (uint16_t c = 0; c < wordsToTransfer; c++)
+//            {
+//                if (((readFromFlashAddressBytes + (c * 2)) % wordsToTransfer) == 0)
+//                {
+//                    Serial_printf(&cli_serial, "\r\n W[0x%08p]:", readFromFlashAddressBytes + (c * 2));
+//                }
+//                Serial_printf(&cli_serial, " 0x%04X", binaryImageBuffer[c]);
+//            }
+
+            memset(message, 0, wordsToTransfer);
+            memcpy(message, binaryImageBuffer, wordsToTransfer);
+            emif.address = writeToRamAddressWords;
+            emif.data = (uint16_t*) message;
+            emif.size = wordsToTransfer;
+            emif.cpuType = CPU_TYPE_ONE;
+
+            emifc_cpu_write_memory(&emif);
+
+            emifRead.address = writeToRamAddressWords;
+            emifRead.data = (uint16_t*) message;
+            emifRead.size = wordsToTransfer;
+            emifRead.cpuType = CPU_TYPE_ONE;
+            memset(binaryImageBufferRead, 0, wordsToTransfer);
+            emifc_cpu_read_memory(&emifRead);
+            memcpy(binaryImageBufferRead, message, wordsToTransfer);
+
+//            for (uint16_t c = 0; c < wordsToTransfer; c++)
+//            {
+//                if ((writeToRamAddressBytes + (c * 2)) % wordsToTransfer == 0)
+//                {
+//                    Serial_printf(&cli_serial, "\r\n R[0x%08p]:", writeToRamAddressBytes + (c * 2));
+//                }
+//                Serial_printf(&cli_serial, " 0x%04X", binaryImageBufferRead[c]);
+//            }
+
+            readFromFlashAddressWords = readFromFlashAddressWords + wordsToTransfer;
+            readFromFlashAddressBytes = readFromFlashAddressBytes + 2 * wordsToTransfer;
+            writeToRamAddressWords = writeToRamAddressWords + wordsToTransfer;
+            writeToRamAddressBytes = writeToRamAddressBytes + 2 * wordsToTransfer;
+
+            remainingWords = remainingWords - wordsToTransfer;
+
+            if (remainingWords <= 0)
+            {
+                break;
+            }
+
+        }
 
        /* Calculate the checksum of the image written to the external RAM*/
-       imageChecksum = fwupdate_calculateChecksum((unsigned char *)EXT_RAM_START_ADDRESS_CS2 + 0x08,imageSizeFromMemory);
+       imageChecksum = fwupdate_calculateChecksum((unsigned char *)EXT_RAM_START_ADDRESS_CS2 + 0x08, imageSizeFromMemory);
 
-       /*Read the checksum from memory*/
-       memcpy (&imageChecksumFromMemory, (uint32_t*)FLASH_CPU2_CHECKSUM_ADDRESS, sizeof(imageChecksumFromMemory));
+       Serial_printf(&cli_serial, "\r\n FW CPU2 Checksum fwupdate_calculateChecksum:[0x%04X] \r\n", imageChecksum );
+
+       /*Read the checksum from flash*/
+       memcpy (&imageChecksumFromMemory, (unsigned char *)(FLASH_CPU2_CONFIG_BLOCK_ADDRESS+0x02), sizeof(imageChecksumFromMemory));
+       Serial_printf(&cli_serial, "\r\n FW CPU2 Checksum imageChecksumFromMemory:[0x%04X] \r\n", imageChecksumFromMemory );
 
        if (imageChecksum == imageChecksumFromMemory){
            applicationOK = fw_ok;
@@ -211,11 +348,9 @@ FWImageStatus fwupdate_updateExtRamWithCPU2Binary(){
            applicationOK = fw_checksum_error;
        }
 
-   }
-   return applicationOK;
+    }
+
+    Serial_printf(&cli_serial, "File[%s] - function[%s] - line[%d]\r\n", __FILE__, __FUNCTION__, __LINE__);
+    return applicationOK;
 
 }
-
-
-
-/*********************************************************************/

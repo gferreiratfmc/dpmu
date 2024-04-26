@@ -32,7 +32,12 @@ typedef struct {
 #if defined(USE_WRONG_EXT_FLASH_SIZE)
 #define EXT_FLASH_START_ADDRESS_CS3 0x00300000U
 #define EXT_FLASH_SIZE_CS3 0x20000U
+
 #endif
+
+#define TRANSFER_SIZE (32*7)
+
+extern unsigned char message[TRANSFER_SIZE];
 
 //bool emifc_execute();
 void emifc_set_cpun_as_master(EMIF1_Config* emif1);

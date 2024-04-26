@@ -148,10 +148,9 @@ U8 i;
 		if (ret == COBL_RET_OK) {
 			PRINTF0("correct application in flash\n");
 #if COBL_DOMAIN_COUNT > 1
-			for(i = 0; i < COBL_DOMAIN_COUNT ; i++) {
+			for(i = 1; i < COBL_DOMAIN_COUNT ; i++) {
 				if (ret == COBL_RET_OK) {
 					ret = applCheckChecksum(i);
-					break;
 				}
 			}
 #endif

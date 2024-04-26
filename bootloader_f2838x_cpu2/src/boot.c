@@ -124,6 +124,7 @@ void boot_upgradeApplication()
     uint32_t writeSize;
     UpgradeState nextState = state;
 
+
     while(1){
         switch (state){
         case upgrade_state_start:
@@ -131,7 +132,6 @@ void boot_upgradeApplication()
             flashAddress = FLASH_APPL_START;
             sizeLeft     = memConfig.config->applicationSize;
             noErasePages = APPLICATION_IMAGE_SIZE/FLASH_ERASE_SIZE;
-
             emifc_configure_cpu2();
             nextState = upgrade_state_delete_primary;
             break;
@@ -144,7 +144,7 @@ void boot_upgradeApplication()
             if (noErasePages == 0){
                 nextState = upgrade_state_flash_primary;
             }
-//            PRINT("STATE ERASE\r\n");
+            PRINT("STATE ERASE\r\n");
             break;
         case upgrade_state_flash_primary:
 
@@ -159,7 +159,7 @@ void boot_upgradeApplication()
             else {
                 writeSize = 0;
                 nextState = upgrade_state_delete_secondary;
-                PRINT("STATE FLASH DONE\r\n");
+//                PRINT("STATE FLASH DONE\r\n");
             }
 
             if (writeSize > 0){
@@ -194,6 +194,7 @@ void boot_upgradeApplication()
         }
 
         if (nextState!=state){
+            PRINT("CPU 2 bootUpggrade - NEXT STATE:[%d]\r\n", nextState);
             state = nextState;
         }
         if (applicationUpgraded){
@@ -204,9 +205,16 @@ void boot_upgradeApplication()
 
 void boot_jumpToApplication()
 {
+
+//    pAppl = (void (*)(void))(FLASH_APPL_START); /* BEGIN section, call code_start  */
+//    pAppl();
+}
+
+void boot_jumpToApplicationAddr( uint32_t bootAddress )
+{
     void (*pAppl)(void);
 
-    pAppl = (void (*)(void))(FLASH_APPL_START);// + 0x08); /* BEGIN section, call code_start  */
+    pAppl = (void (*)(void))(bootAddress);
 
     pAppl();
 }

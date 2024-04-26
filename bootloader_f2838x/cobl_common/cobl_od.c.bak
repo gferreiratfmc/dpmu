@@ -51,7 +51,7 @@
 #define BOOT 0x424F4F54ul
 
 #ifndef COBL_DOMAIN_COUNT
-# define COBL_DOMAIN_COUNT 1u
+# define COBL_DOMAIN_COUNT 2u
 #endif /* COBL_DOMAIN_COUNT */
 
 /***************************************************************************/

@@ -64,6 +64,28 @@ static void check_cpu2_ind(void);
 void check_cpu2_dbg(void);
 void toogle_LED1(timer_t *tqe);
 
+void debugCPU2Flash()
+{
+    return;
+    static uint32_t i = 0;
+    static uint32_t cpu2FlashAddrInitial = 0x080000;
+    static uint32_t cpu2FlashAddr = 0x080000;
+    //uint32_t cpu2FlashAddr = 0x084000;
+    static uint16_t cpu2FlashData;
+    if ( i < (uint32_t)(32768) )
+    {
+        //cpu2FlashData = ext_flash_read_word(cpu2FlashAddr);
+        flash_api_read(cpu2FlashAddr, &cpu2FlashData, 1);
+        if ((i % 8) == 0)
+        {
+            Serial_debug(DEBUG_INFO, &cli_serial, "\r\n[0x%08p] ", cpu2FlashAddrInitial+(i*2));
+        }
+        Serial_debug(DEBUG_INFO, &cli_serial, "%04x ", cpu2FlashData);
+        cpu2FlashAddr = cpu2FlashAddr + 0x01;
+        i++;
+    }
+}
+
 /**
  * The startup function.
  */
@@ -88,14 +110,7 @@ void main(void)
 
     CPU1_Board_init();
 
-    //
-    // Boot CPU2 core
-    //
-#ifdef _FLASH
-    Device_bootCPU2(BOOTMODE_BOOT_TO_FLASH_SECTOR0);
-#else
-    Device_bootCPU2(BOOTMODE_BOOT_TO_M0RAM);    // NOT tested by HB
-#endif
+
     //
     // Clear any IPC flags if set already
     //
@@ -132,16 +147,28 @@ void main(void)
     Serial_printf(&cli_serial, "BOOTDEF-LOW   = 0x%lX\r\n", boot_def_low);
     Serial_printf(&cli_serial, "DPMU_CPU1 Firmware compilation timestamp= %s %s\r\n", __DATE__, __TIME__ );
 
+
+
+
     cli_ok();
+    Serial_printf(&cli_serial, "DPMU_CPU1 CLI OK\r\n" );
     ext_flash_config();
+    Serial_printf(&cli_serial, "DPMU_CPU1 ext_flash_config\r\n" );
     log_can_init();
+
 
     Serial_printf(&cli_serial, "IPC_PUMPREQUEST_REG %08X\r\n", IPC_PUMPREQUEST_REG);
 
+    //
+    // Boot CPU2 core
+    //
+    Serial_printf(&cli_serial, "DPMU_CPU1 Booting DPMU CPU2\r\n" );
+    Device_bootCPU2(BOOTMODE_BOOT_TO_FLASH_SECTOR0);
+    Serial_printf(&cli_serial, "DPMU_CPU1 DPMU CPU2 boot called\r\n" );
 
     /*** FW update of CPU2 ***/
     uint16_t cpu2BinaryStatus = fwupdate_updateExtRamWithCPU2Binary();
-
+    Serial_printf(&cli_serial, "File[%s] - function[%s] - line[%d]\r\n", __FILE__, __FUNCTION__, __LINE__);
     switch (cpu2BinaryStatus){
         case fw_not_available:
             Serial_printf(&cli_serial, "\r\n Cpu2 Firmware Not Available \r\n");
@@ -157,7 +184,10 @@ void main(void)
 
         case fw_ok:
             Serial_printf(&cli_serial, "\r\n Cpu2 Firmware Updated \r\n");
-
+            /* Flags to sync/signal cpu2 bootloader */
+            //    IPC_sync(IPC_CPU1_L_CPU2_R, IPC_FLAG11);
+            //    IPC_setFlagLtoR(IPC_CPU1_L_CPU2_R, IPC_FLAG11);
+            ipc_sync_comm(IPC_FLAG11, true);
         break;
 
         default:
@@ -165,11 +195,7 @@ void main(void)
     }
 
     // Release EMIF1, CPU2 might need it in its bootloader
-    //emifc_realease_cpun_as_master(CPU_TYPE_ONE);
-
-    /* Flags to sync/signal cpu2 bootloader */
-    //IPC_sync(IPC_CPU1_L_CPU2_R, IPC_FLAG11);
-    IPC_setFlagLtoR(IPC_CPU1_L_CPU2_R, IPC_FLAG11);
+    emifc_realease_cpun_as_master(CPU_TYPE_ONE);
 
     /* sharedVars_cpu1toCpu2
      * set CPU1 as master for source memory */
@@ -186,6 +212,8 @@ void main(void)
 
     watchdog_feed();
 
+
+
 //    IPC_sync(IPC_CPU1_L_CPU2_R, IPC_FLAG31);
 //    IPC_setFlagLtoR(IPC_CPU1_L_CPU2_R, IPC_FLAG31);
     /* flag to sync the cpu2 application
@@ -193,7 +221,7 @@ void main(void)
      * still being able to communicate with IOP
      * in case of CPU2 error
      * */
-    ipc_sync_comm(IPC_FLAG31, false);
+    ipc_sync_comm(IPC_FLAG31, true);
 
     GPIO_writePin(LED1, 0);
 
@@ -215,8 +243,6 @@ void main(void)
     Serial_debug(DEBUG_INFO, &cli_serial, "IPC_PUMPREQUEST_REG %08X\r\n", IPC_PUMPREQUEST_REG);
     Serial_debug(DEBUG_INFO, &cli_serial, "Started\r\n");
 
-
-
     for (;;) {
 #include <debug_log.h>
 //        debug_log_test();
@@ -235,8 +261,8 @@ void main(void)
         check_cpu2_dbg();
 
         /* check if there are new debug data to store */
-//        log_store_debug_log_to_ram();
-//        log_debug_read_from_ram( );
+        //log_store_debug_log_to_ram();
+        //log_debug_read_from_ram( );
         log_can_state_machine();
 
 
@@ -260,6 +286,8 @@ void main(void)
          * window functionality of the WD
          * */
         watchdog_feed();
+
+        debugCPU2Flash();
 
     }
 }

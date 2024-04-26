@@ -293,6 +293,8 @@ static U16 crcWithTable(
 		U32 u32Count /**< number of bytes */
 		)
 {
+	
+	U32 count = 0;
 U32 lcount = u32Count;
 U16 u16Crc = u16StartValue;
 U8 u8Val;
@@ -301,9 +303,15 @@ U8 u8Val;
 		u8Val = *pBuffer++;
 
 		u16Crc = (u16Crc << 8) ^ crcTable[ (U8)(u16Crc >> 8) ^ u8Val];
+
+		count++;
+		if( count < 1000 || count > 69000) {
+			printf( "count:[%u], lcount:[%u],  u8val:[0x%02X], u16Crc:[0x%04X]\r\n", count, lcount, u8Val, u16Crc);
+		}
 	}
 
     /* printf(" crc: 0x%04x\n",(int)u16Crc); */
+	printf("CRC16 processed Bytes=%u\r\n", count);
 
     return u16Crc;
 }

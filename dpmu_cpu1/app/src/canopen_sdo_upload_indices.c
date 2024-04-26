@@ -241,7 +241,6 @@ static inline uint8_t indices_I_ENERGY_CELL_SUMMARY(UNSIGNED8 subIndex)
 static inline uint8_t indices_I_TEMPERATURE(UNSIGNED8 subIndex)
 {
     uint8_t retVal = CO_FALSE;
-    int8_t value;
 
     switch (subIndex)
     {

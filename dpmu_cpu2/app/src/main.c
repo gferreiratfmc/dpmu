@@ -173,6 +173,7 @@ void main(void)
     //
     // Synchronize both the cores.
     //
+    //IPC_sync(IPC_CPU2_L_CPU1_R, IPC_FLAG11);
     IPC_sync(IPC_CPU2_L_CPU1_R, IPC_FLAG31);
 
     Board_init();

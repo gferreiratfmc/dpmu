@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include "debug.h"
+#include "cli_cpu2.h"
 
 
 #ifdef __TI_COMPILER_VERSION__
@@ -119,9 +120,9 @@ FlashRet_t flash_api_erase(uint32_t address){
     Fapi_StatusType fret;
 
     flash_api_init();
-
+    PRINT("\r\nFUNCITON:[%s] FILE:[%s] LINE:[%d] \r\n", __FUNCTION__, __FILE__, __LINE__ );
     status = flash_api_checkAddress(address);
-
+    PRINT("\r\nFUNCITON:[%s] FILE:[%s] LINE:[%d] \r\n", __FUNCTION__, __FILE__, __LINE__ );
     if (status!=FLASH_RET_OK){
         return status;
     }
@@ -129,11 +130,13 @@ FlashRet_t flash_api_erase(uint32_t address){
     EALLOW;
     fret = Fapi_issueAsyncCommandWithAddress(Fapi_EraseSector,
                    (uint32 *)address);
-
+    PRINT("\r\nFUNCITON:[%s] FILE:[%s] LINE:[%d] \r\n", __FUNCTION__, __FILE__, __LINE__ );
     // Wait until FSM is done with erase sector operation.
-    while (Fapi_checkFsmForReady() != Fapi_Status_FsmReady){}
+    while (Fapi_checkFsmForReady() != Fapi_Status_FsmReady){
+        PRINT("\r\nFUNCITON:[%s] FILE:[%s] LINE:[%d] \r\n", __FUNCTION__, __FILE__, __LINE__ );
+    }
     EDIS;
-
+    PRINT("\r\nFUNCITON:[%s] FILE:[%s] LINE:[%d] \r\n", __FUNCTION__, __FILE__, __LINE__ );
 
     if(fret != Fapi_Status_Success){
         return FLASH_RET_FLASH_ERROR;

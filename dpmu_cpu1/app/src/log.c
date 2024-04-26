@@ -30,11 +30,7 @@
 
 #define SIZE_OF_TIMESTAMP 4 /* in Bytes */
 
-#define TRANSFER_SIZE (32*7)                         /* number of segments * 7 bytes per segments - (1 segment = 1 message)  */
 #define MESSAGE_LENGTH (TRANSFER_SIZE * 5 - 2 - 1)  /* size of one transfer (several messages) * number of transfers */
-#pragma DATA_ALIGN(message, 4)
-#pragma DATA_SECTION(message, "ramgs0");  // map the TX data to memory
-unsigned char message[TRANSFER_SIZE];
 volatile static debug_log_t debug_log_copy;
 
 /* common struct to read logs from external memories */

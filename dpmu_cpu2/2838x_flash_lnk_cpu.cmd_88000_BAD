@@ -2,10 +2,9 @@
 MEMORY
 {
    /* BEGIN is used for the "boot to Flash" bootloader mode   */
-   CONFIG			: origin = 0x084000, length = 0x100
-   BEGIN            : origin = 0x084100, length = 0x000002
-   BOOT_RSVD        : origin = 0x000002, length = 0x0001AF     /* Part of M0, BOOT rom will use this for stack */
-   RAMM0            : origin = 0x0001B1, length = 0x00024F
+   BEGIN            : origin = 0x088000, length = 0x000002
+   BOOT_RSVD        : origin = 0x000002, length = 0x0001A7     /* Part of M0, BOOT rom will use this for stack */
+   RAMM0            : origin = 0x0001A9, length = 0x000257
    RAMM1            : origin = 0x000400, length = 0x0003F8     /* on-chip RAM block M1 */
 //   RAMM1_RSVD       : origin = 0x0007F8, length = 0x000008     /* Reserve and do not use for code as per the errata advisory "Memory: Prefetching Beyond Valid Memory" */
    RAMD0            : origin = 0x00C000, length = 0x000800
@@ -37,9 +36,11 @@ MEMORY
 //   RAMGS15_RSVD     : origin = 0x01CFF8, length = 0x000008     /* Reserve and do not use for code as per the errata advisory "Memory: Prefetching Beyond Valid Memory" */
 
    /* Flash sectors */
-   FLASH2           : origin = 0x084102, length = 0x002000 - 0x100 - 0x2  /* on-chip Flash */
+   FLASH0           : origin = 0x080000, length = 0x002000  /* on-chip Flash */
+   FLASH1           : origin = 0x082000, length = 0x002000  /* on-chip Flash */
+   FLASH2           : origin = 0x084000, length = 0x002000  /* on-chip Flash */
    FLASH3           : origin = 0x086000, length = 0x002000  /* on-chip Flash */
-   FLASH4           : origin = 0x088000, length = 0x008000  /* on-chip Flash */
+   FLASH4           : origin = 0x088002, length = 0x007FFE  /* on-chip Flash */
    FLASH5           : origin = 0x090000, length = 0x008000  /* on-chip Flash */
    FLASH6           : origin = 0x098000, length = 0x008000  /* on-chip Flash */
    FLASH7           : origin = 0x0A0000, length = 0x008000  /* on-chip Flash */
@@ -53,18 +54,11 @@ MEMORY
 
    CPU1TOCPU2RAM   : origin = 0x03A000, length = 0x000800
    CPU2TOCPU1RAM   : origin = 0x03B000, length = 0x000800
+
    CPUTOCMRAM      : origin = 0x039000, length = 0x000800
    CMTOCPURAM      : origin = 0x038000, length = 0x000800
 
-   CANA_MSG_RAM     : origin = 0x049000, length = 0x000800
-   CANB_MSG_RAM     : origin = 0x04B000, length = 0x000800
-
-//   FILE_SYSTEM      : origin = 0x300000, length = 0x004000
-
-   RESET            : origin = 0x3FFFC0, length = 0x000002
-
-   EMIF1_CS2n      : origin = 0x00100000, length = 0x00200000
-   EMIF1_CS3n      : origin = 0x00300000, length = 0x00080000
+   RESET           : origin = 0x3FFFC0, length = 0x000002
 }
 
 SECTIONS
@@ -73,30 +67,32 @@ SECTIONS
 
    sharedVars_cpu2toCpu1: > RAMGS3
 
-   bootOffsetCPU2: > RAMGS4
-
-
    codestart           : > BEGIN, ALIGN(8)
-   .text               : >> FLASH2 | FLASH3 | FLASH4 | FLASH5 | FLASH6, ALIGN(8)
-   .cinit              : > FLASH4 | FLASH5 | FLASH6, ALIGN(8)
-   .switch             : > FLASH3, ALIGN(8)
+   .text               : >> FLASH1 | FLASH2 | FLASH3 | FLASH4 | FLASH5, ALIGN(8)
+   .cinit              : > FLASH3 | FLASH4, ALIGN(8)
+   .switch             : > FLASH2, ALIGN(8)
    .reset              : > RESET, TYPE = DSECT /* not used, */
-   .stack              : > RAMLS5 | RAMLS6 | RAMLS7 //RAMM1
+   .stack              : > RAMLS7 //RAMM1
 
 #if defined(__TI_EABI__)
-   .init_array      : > FLASH3, ALIGN(8)
-   .bss             : >> RAMLS4 | RAMLS5 | RAMLS6 | RAMLS7
+   .init_array      : > FLASH1, ALIGN(8)
+   .bss             : >> RAMLS5 | RAMLS6 | RAMLS7
    .bss:output      : >> RAMLS5 | RAMLS6 | RAMLS7
    .bss:cio         : >> RAMLS5 | RAMLS6 | RAMLS7
-   .data            : >> RAMLS4 | RAMLS5 | RAMLS6 | RAMLS7
+   .data            : >> RAMLS5 | RAMLS6 | RAMLS7
    .sysmem          : > RAMLS5 | RAMLS6 | RAMLS7
+//   .bss             : > RAMLS3
+//   .bss:output      : > RAMLS3
+//   .bss:cio         : > RAMLS3
+//   .data            : > RAMLS2
+//   .sysmem          : > RAMM1
    /* Initalized sections go in Flash */
-   .const           : > FLASH5 | FLASH6, ALIGN(8)
+   .const           : > FLASH4 | FLASH4, ALIGN(8)
 #else
-   .pinit           : > FLASH5, ALIGN(8)
-   .ebss            : > RAMLS5
-   .esysmem         : > RAMLS5
-   .cio             : > RAMLS5
+   .pinit           : > FLASH1, ALIGN(8)
+   .ebss            : > RAMLS3
+   .esysmem         : > RAMM1
+   .cio             : > RAMLS3
    /* Initalized sections go in Flash */
    .econst          : >> FLASH4 | FLASH5, ALIGN(8)
 #endif
@@ -105,17 +101,12 @@ SECTIONS
    ramgs1 : > RAMGS1, type=NOINIT
    ramgs4 : > RAMGS4, type=NOINIT
 
-   command : > RAMM0, type=NOINIT
-   
    MSGRAM_CPU1_TO_CPU2 : > CPU1TOCPU2RAM, type=NOINIT
    MSGRAM_CPU2_TO_CPU1 : > CPU2TOCPU1RAM, type=NOINIT
    MSGRAM_CPU_TO_CM    : > CPUTOCMRAM, type=NOINIT
    MSGRAM_CM_TO_CPU    : > CMTOCPURAM, type=NOINIT
 
-   .em1_cs2         : > EMIF1_CS2n
-   .em1_cs3         : > EMIF1_CS3n
-
-   /* The following section definition are for SDFM examples */
+    /* The following section definition are for SDFM examples */
 //   Filter_RegsFile  : > RAMGS0
 //   Filter1_RegsFile : > RAMGS1, fill=0x1111
 //   Filter2_RegsFile : > RAMGS2, fill=0x2222
@@ -145,6 +136,10 @@ SECTIONS
                         ALIGN(8)
    #endif
 
+    /* The following section definition are for DCSM dual core examples */
+    ZONE1_RAM       : > RAMLS4
+    UNSECURE_RAM    : > RAMLS6
+    CSMKEY_RAM      : > RAMD0
 }
 
 /*

@@ -186,7 +186,7 @@ void emifc_configure_cpu2(){
     // Sync CPU1 and CPU2.
     //
 //    IPC_sync(IPC_CPU2_L_CPU1_R, IPC_FLAG11);
-    IPC_waitForFlag(IPC_CPU2_L_CPU1_R, IPC_FLAG11);
+//    IPC_waitForFlag(IPC_CPU2_L_CPU1_R, IPC_FLAG11);
 
     // Grab EMIF1 for CPU2.
     while(HWREGH(EMIF1CONFIG_BASE + MEMCFG_O_EMIF1MSEL) != EMIF_MASTER_CPU2_G){

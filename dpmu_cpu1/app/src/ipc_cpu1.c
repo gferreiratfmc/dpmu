@@ -9,14 +9,21 @@
 
 #include "cli_cpu1.h"
 #include "co_common.h"
+#include "device.h"
 #include "ipc.h"
 #include "main.h"
+#include "timer.h"
+
+#pragma RETAIN(bootOffsetCPU2)
+#pragma DATA_SECTION(bootOffsetCPU2, "bootOffsetCPU2")
+uint32_t bootOffsetCPU2 = 0;
 
 void ipc_sync_comm(uint32_t flag, bool canopen_comm)
 {
     int state = 0;
     int state_next = state;
     bool done = false;
+    uint32_t lastTimerTicks = 0;
 
     /* sync with CPU2, IPC_FLAG<flag>
      *
@@ -25,25 +32,46 @@ void ipc_sync_comm(uint32_t flag, bool canopen_comm)
      * */
     do {
         switch(state) {
-        case 0: IPC_setFlagLtoR(IPC_CPU1_L_CPU2_R, flag);
-                    state_next = 1;
-                break;
-        case 1: if(IPC_isFlagBusyRtoL(IPC_CPU1_L_CPU2_R, flag))
+        case 0:
+            IPC_setFlagLtoR(IPC_CPU1_L_CPU2_R, flag);
+            lastTimerTicks = timer_get_ticks();;
+            state_next = 1;
+            break;
+
+        case 1:
+            if(IPC_isFlagBusyRtoL(IPC_CPU1_L_CPU2_R, flag)) {
                     state_next = 2;
-                break;
+            }
+//            else {
+//                if( timer_get_ticks() - lastTimerTicks > 100) {
+//                    state_next = 10;
+//                }
+//            }
+            break;
         case 2: IPC_ackFlagRtoL(IPC_CPU1_L_CPU2_R, flag);
                     state_next = 3;
                 break;
         case 3: if(!IPC_isFlagBusyLtoR(IPC_CPU1_L_CPU2_R, flag))
                     state_next = 4;
                 break;
-        case 4: done = true;
-                break;
+        case 4:
+            done = true;
+            Serial_debug(DEBUG_INFO, &cli_serial, "ipc_sync_comm() bootOffSetCPU2:: [%lu]\r\n", bootOffsetCPU2 );
+            break;
+
+//        case 10:
+//            bootOffsetCPU2++;
+//            state_next = 0;
+//            Device_bootCPU2(BOOTMODE_BOOT_TO_FLASH_SECTOR4);
+//            break;
+
         }
 
-        if(state != state_next)
-            Serial_debug(DEBUG_INFO, &cli_serial, "ipc_sync_comm() state: %d  state_next: %d\r\n", state, state_next);
 
+
+        if(state != state_next) {
+            Serial_debug(DEBUG_INFO, &cli_serial, "ipc_sync_comm() state: %d  state_next: %d\r\n", state, state_next);
+        }
         state = state_next;
 
         /* keep communication:
@@ -63,6 +91,7 @@ void ipc_sync_comm(uint32_t flag, bool canopen_comm)
                 ;
         }
 
+        debugCPU2Flash();
     } while(!done);
 }
 
