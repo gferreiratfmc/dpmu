@@ -144,22 +144,19 @@ void boot_upgradeApplication()
             if (noErasePages == 0){
                 nextState = upgrade_state_flash_primary;
             }
-            PRINT("STATE ERASE\r\n");
             break;
         case upgrade_state_flash_primary:
 
             if (sizeLeft >  FLASH_ONE_CALL_SIZE/2){
                 writeSize = FLASH_ONE_CALL_SIZE/2;
-//                PRINT("STATE FLASH 1\r\n");
             }
             else if (sizeLeft > 0){
                 writeSize = sizeLeft;
-//                PRINT("STATE FLASH 2\r\n");
             }
             else {
                 writeSize = 0;
                 nextState = upgrade_state_delete_secondary;
-//                PRINT("STATE FLASH DONE\r\n");
+                PRINT("STATE FLASH DONE\r\n");
             }
 
             if (writeSize > 0){
@@ -172,7 +169,6 @@ void boot_upgradeApplication()
                 memConfig.emif->address += writeSize;
                 sizeLeft-=writeSize;
                 memset (memConfig.emif->data, 0, memConfig.emif->size);
-//                PRINT("STATE FLASH 4\r\n");
             }
 
             break;
@@ -208,6 +204,7 @@ void boot_jumpToApplication()
 
 //    pAppl = (void (*)(void))(FLASH_APPL_START); /* BEGIN section, call code_start  */
 //    pAppl();
+
 }
 
 void boot_jumpToApplicationAddr( uint32_t bootAddress )

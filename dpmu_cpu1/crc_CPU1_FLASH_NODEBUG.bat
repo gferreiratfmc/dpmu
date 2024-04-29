@@ -33,12 +33,12 @@ dir %TARGET%\*.hex %TARGET%\*.bin* %TARGET%\*.lsb %TARGET%\*.msb
 rem CRC
 %GENERATOR% -i %TARGET%\%APPL%.lsbbin -j %TARGET%\%APPL%.msbbin -o %TARGET%\%APPL%.crc -D --od1018_1 793  --od1018_2 65617665
 rem if you do not know what 793 and 65617665 means check cobl_user.c
-pause
 
 
 cd %TARGET%\..
 dir %TARGET%
 
+pause
 
 cd "C:\Users\gferreira\OneDrive - Digicorner\git_dpmu_python\a055-can-updater\"
 

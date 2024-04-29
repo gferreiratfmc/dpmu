@@ -332,10 +332,10 @@ int option_index;
 	}
 	
 	if (fEnhancedConfig != 0) {
-		printf("0x1018:1 : 0x%08lx\n", tmpConfig.od1018Vendor);
-		printf("0x1018:2 : 0x%08lx\n", tmpConfig.od1018Product);
-		printf("0x1018:3 : 0x%08lx\n", tmpConfig.od1018Version);
-		printf("swversion: 0x%08lx\n", tmpConfig.swVersion);
+		printf("0x1018:1 : 0x%08xu\n", tmpConfig.od1018Vendor);
+		printf("0x1018:2 : 0x%08xu\n", tmpConfig.od1018Product);
+		printf("0x1018:3 : 0x%08xu\n", tmpConfig.od1018Version);
+		printf("swversion: 0x%08xu\n", tmpConfig.swVersion);
 	}
 
 	printf("Output file: %s\n", ofileName);
@@ -410,8 +410,8 @@ configEnhanced_t * pConfigEStruct;
 	crcInitCalculation();
 
 	pConfigStruct->crc = crcCalculation(pBinary, CRC_START_VALUE, binarySize);	
-	printf("Length : 0x%08lx\n", pConfigStruct->sizeOfApplication); 
-	printf("CRC sum: 0x%04x\n", pConfigStruct->crc); 
+	printf("Length : 0x%08xu\n", pConfigStruct->sizeOfApplication); 
+	printf("CRC sum: 0x%04xu\n", pConfigStruct->crc); 
 
 	if (fEnhancedConfig != 0) {
 		pConfigEStruct = (void*)pConfig;

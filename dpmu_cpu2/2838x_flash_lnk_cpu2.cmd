@@ -106,13 +106,6 @@ SECTIONS
    MSGRAM_CPU_TO_CM    : > CPUTOCMRAM, type=NOINIT
    MSGRAM_CM_TO_CPU    : > CMTOCPURAM, type=NOINIT
 
-    /* The following section definition are for SDFM examples */
-//   Filter_RegsFile  : > RAMGS0
-//   Filter1_RegsFile : > RAMGS1, fill=0x1111
-//   Filter2_RegsFile : > RAMGS2, fill=0x2222
-//   Filter3_RegsFile : > RAMGS3, fill=0x3333
-//   Filter4_RegsFile : > RAMGS4, fill=0x4444
-//   Difference_RegsFile : >RAMGS5, fill=0x3333
 
    #if defined(__TI_EABI__)
        .TI.ramfunc : {} LOAD = FLASH5,

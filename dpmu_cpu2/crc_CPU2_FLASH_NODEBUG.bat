@@ -34,7 +34,7 @@ dir %TARGET%\*.hex %TARGET%\*.bin* %TARGET%\*.lsb %TARGET%\*.msb
 rem CRC
 %GENERATOR% -c 8 -i %TARGET%\%APPL%.lsbbin -j %TARGET%\%APPL%.msbbin -o %TARGET%\%APPL%.crc -D
 rem if you do not know what 793 and 65617665 means check cobl_user.c
-pause
+
 
 cd %TARGET%\..
 dir %TARGET%

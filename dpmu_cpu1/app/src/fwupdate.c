@@ -168,59 +168,42 @@ static uint16_t fwupdate_calculateChecksum(const unsigned char* bootImageAddress
         Serial_printf(&cli_serial, "bootImageAddress:[0x%08p] bootImageSize:[%lu]\r\n",bootImageAddress, bootImageSize );
 
         while( lcount-- )  {
-//        #ifdef CONFIG_DSP
-
-                if(  remainingWords <  TRANSFER_SIZE/2) {
-                     wordsToTransfer = remainingWords;
-                }
-
-                emif.address = readAdrress;
-                emif.cpuType = CPU_TYPE_ONE;
-                emif.data   = (uint16_t*)message;
-                emif.size   = wordsToTransfer;
-
-                emifc_cpu_read_memory(&emif);
-
-                for( int i = 0; i< wordsToTransfer; i++) {
-
-                    for( int j = 0; j < 2; j++) {
-                        count++;
-                        if( j == 0 ) {
-                            valueFromRAM = 0x00FF & message[i];
-                        } else {
-                            valueFromRAM = 0xFF00 & message[i];
-                            valueFromRAM = valueFromRAM >> 8;
-
-                        }
-                        u8Val = valueFromRAM & 0x00FFu;
-
-                        u16Crc = (u16Crc << 8) ^ crcTable[ (unsigned char)(u16Crc >> 8) ^ u8Val];
-
-//                        if( count < 1000 || count > 69000) {
-//                            Serial_printf(&cli_serial, "count:[%lu], readAdrress:[0x%08p], lcount:[%lu], i:[%d], valueFromRAM:[0x%02x], message[%d]:[0x%04x] u8val:[0x%02x] u16Crc:[0x%04X]\r\n",
-//                                              count, readAdrress, lcount, i, valueFromRAM, i, message[i], u8Val, u16Crc);
-//                        }
-
-                    }
-                }
-
-                readAdrress = readAdrress + (wordsToTransfer);
-
-                remainingWords = remainingWords - wordsToTransfer;
-
-//                Serial_printf(&cli_serial, "wordsToTransfer:[%u], remainingWords:[%ld]\r\n",wordsToTransfer, remainingWords);
-
-                if( remainingWords <= 0) {
-                    break;
-                }
-
-
-//        #else
-//                u8Val = *bootImageAddress++;
-//        #endif
-//                u16Crc = (u16Crc << 8) ^ crcTable[ (unsigned char)(u16Crc >> 8) ^ u8Val];
+            if(  remainingWords <  TRANSFER_SIZE/2) {
+                 wordsToTransfer = remainingWords;
             }
 
+            emif.address = readAdrress;
+            emif.cpuType = CPU_TYPE_ONE;
+            emif.data   = (uint16_t*)message;
+            emif.size   = wordsToTransfer;
+
+            emifc_cpu_read_memory(&emif);
+
+            for( int i = 0; i< wordsToTransfer; i++) {
+
+                for( int j = 0; j < 2; j++) {
+                    count++;
+                    if( j == 0 ) {
+                        valueFromRAM = 0x00FF & message[i];
+                    } else {
+                        valueFromRAM = 0xFF00 & message[i];
+                        valueFromRAM = valueFromRAM >> 8;
+
+                    }
+                    u8Val = valueFromRAM & 0x00FFu;
+
+                    u16Crc = (u16Crc << 8) ^ crcTable[ (unsigned char)(u16Crc >> 8) ^ u8Val];
+
+                }
+            }
+
+            readAdrress = readAdrress + (wordsToTransfer);
+            remainingWords = remainingWords - wordsToTransfer;
+
+            if( remainingWords <= 0) {
+                break;
+            }
+        }
         Serial_printf(&cli_serial, "CRC16 processed Bytes=%lu\r\n", count);
         return(u16Crc);
 }

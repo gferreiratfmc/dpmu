@@ -59,9 +59,9 @@ void main(void){
 
         if(crcCalculated == pConfig->crcSum ){
             PRINT("CRC OK\r\n");
-#ifdef _FLASH
+
             memcpy(&RamfuncsRunStart, &RamfuncsLoadStart, (uint32_t)&RamfuncsLoadSize);
-#endif
+
             /* initialize basic flash */
             Flash_initModule(FLASH0CTRL_BASE, FLASH0ECC_BASE, 3);
             Flash_claimPumpSemaphore(FLASH_CPU2_WRAPPER);
@@ -75,7 +75,6 @@ void main(void){
     // Release EMIF1
     emifc_realease_cpun_as_master(CPU_TYPE_TWO);
 
-//    PRINT("\r\nFUNCITON:[%s] FILE:[%s] LINE:[%d] \r\n", __FUNCTION__, __FILE__, __LINE__ );
 
     PRINT("BL CPU2 DONE\r\n");
     //boot_jumpToApplication();
@@ -83,9 +82,6 @@ void main(void){
     pAppl();
 
 
-
-//    PRINT( "Booting CPU2 with address offset bootOffsetCPU2: [%lu]\r\n", bootOffsetCPU2);
-//    boot_jumpToApplicationAddr( FLASH_APPL_START + bootOffsetCPU2 );
     while(1){
     }
 }

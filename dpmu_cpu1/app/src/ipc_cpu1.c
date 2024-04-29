@@ -23,7 +23,6 @@ void ipc_sync_comm(uint32_t flag, bool canopen_comm)
     int state = 0;
     int state_next = state;
     bool done = false;
-    uint32_t lastTimerTicks = 0;
 
     /* sync with CPU2, IPC_FLAG<flag>
      *
@@ -34,7 +33,6 @@ void ipc_sync_comm(uint32_t flag, bool canopen_comm)
         switch(state) {
         case 0:
             IPC_setFlagLtoR(IPC_CPU1_L_CPU2_R, flag);
-            lastTimerTicks = timer_get_ticks();;
             state_next = 1;
             break;
 
@@ -42,11 +40,6 @@ void ipc_sync_comm(uint32_t flag, bool canopen_comm)
             if(IPC_isFlagBusyRtoL(IPC_CPU1_L_CPU2_R, flag)) {
                     state_next = 2;
             }
-//            else {
-//                if( timer_get_ticks() - lastTimerTicks > 100) {
-//                    state_next = 10;
-//                }
-//            }
             break;
         case 2: IPC_ackFlagRtoL(IPC_CPU1_L_CPU2_R, flag);
                     state_next = 3;
@@ -56,14 +49,7 @@ void ipc_sync_comm(uint32_t flag, bool canopen_comm)
                 break;
         case 4:
             done = true;
-            Serial_debug(DEBUG_INFO, &cli_serial, "ipc_sync_comm() bootOffSetCPU2:: [%lu]\r\n", bootOffsetCPU2 );
             break;
-
-//        case 10:
-//            bootOffsetCPU2++;
-//            state_next = 0;
-//            Device_bootCPU2(BOOTMODE_BOOT_TO_FLASH_SECTOR4);
-//            break;
 
         }
 
@@ -85,13 +71,11 @@ void ipc_sync_comm(uint32_t flag, bool canopen_comm)
         /*TODO below while() can not be executed before startup_sequence() is done
          * Add a timer or is watchdog enough ?
          */
-        if(canopen_comm)
-        {
-            while (coCommTask() == CO_TRUE)
-                ;
+        if(canopen_comm) {
+            while (coCommTask() == CO_TRUE);
         }
 
-        debugCPU2Flash();
+        //debugCPU2Flash();
     } while(!done);
 }
 

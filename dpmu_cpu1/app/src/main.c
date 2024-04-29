@@ -91,9 +91,7 @@ void debugCPU2Flash()
  */
 void main(void)
 {
-/* kan eventuellt orsaka problem
- * Dock m�ste FLASH initieras p� samma s�tt som i denna
- */
+
     Device_init();
 
     /* configure and the start watchdog */
@@ -104,12 +102,10 @@ void main(void)
     co_init();
     coEventRegister_SDO_SERVER_DOMAIN_READ(log_read_domain);
 
-    //TODO change back to DEBUG_ERROR before launch (to many messages on UART)
 //    Serial_set_debug_level(DEBUG_ERROR);
     Serial_set_debug_level(DEBUG_INFO);
 
     CPU1_Board_init();
-
 
     //
     // Clear any IPC flags if set already
@@ -148,8 +144,6 @@ void main(void)
     Serial_printf(&cli_serial, "DPMU_CPU1 Firmware compilation timestamp= %s %s\r\n", __DATE__, __TIME__ );
 
 
-
-
     cli_ok();
     Serial_printf(&cli_serial, "DPMU_CPU1 CLI OK\r\n" );
     ext_flash_config();
@@ -168,7 +162,7 @@ void main(void)
 
     /*** FW update of CPU2 ***/
     uint16_t cpu2BinaryStatus = fwupdate_updateExtRamWithCPU2Binary();
-    Serial_printf(&cli_serial, "File[%s] - function[%s] - line[%d]\r\n", __FILE__, __FUNCTION__, __LINE__);
+//    Serial_printf(&cli_serial, "File[%s] - function[%s] - line[%d]\r\n", __FILE__, __FUNCTION__, __LINE__);
     switch (cpu2BinaryStatus){
         case fw_not_available:
             Serial_printf(&cli_serial, "\r\n Cpu2 Firmware Not Available \r\n");
@@ -185,8 +179,6 @@ void main(void)
         case fw_ok:
             Serial_printf(&cli_serial, "\r\n Cpu2 Firmware Updated \r\n");
             /* Flags to sync/signal cpu2 bootloader */
-            //    IPC_sync(IPC_CPU1_L_CPU2_R, IPC_FLAG11);
-            //    IPC_setFlagLtoR(IPC_CPU1_L_CPU2_R, IPC_FLAG11);
             ipc_sync_comm(IPC_FLAG11, true);
         break;
 
@@ -213,9 +205,6 @@ void main(void)
     watchdog_feed();
 
 
-
-//    IPC_sync(IPC_CPU1_L_CPU2_R, IPC_FLAG31);
-//    IPC_setFlagLtoR(IPC_CPU1_L_CPU2_R, IPC_FLAG31);
     /* flag to sync the cpu2 application
      *
      * still being able to communicate with IOP
@@ -245,7 +234,6 @@ void main(void)
 
     for (;;) {
 #include <debug_log.h>
-//        debug_log_test();
 
         cli_check_for_new_commands_from_UART();
 
@@ -268,7 +256,6 @@ void main(void)
 
         /* check every second */
         if(!(timer_get_ticks()%1000)) {
-            //readAlltemperatures();
             temperature_sensor_read_all_temperatures();
         }
 
@@ -286,8 +273,6 @@ void main(void)
          * window functionality of the WD
          * */
         watchdog_feed();
-
-        debugCPU2Flash();
 
     }
 }
