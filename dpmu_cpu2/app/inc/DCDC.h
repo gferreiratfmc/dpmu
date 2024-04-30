@@ -26,10 +26,13 @@
 
 #define MAXIMUM_INPUT_CURRENT 18.5
 #define MAXIMUM_BB_CURRENT 18.5
+#define REG_MIN_DC_BUS_VOLTAGE_RATIO 0.85
+#define MIN_OUTPUT_CURRENT_TO_REGULATE_VOLTAGE  0.5
 
 void DCDC_current_buck_loop_float( void );
 void DCDC_voltage_boost_loop_float( void );
 void DCDC_current_boost_loop_float( void );
+void DCDC_voltage_pure_boost_loop_float( void );
 bool calculate_boost_current(void);
 PiOutput_t Pi_ControllerBoostFloat(PI_Parameters_t PI, PiOutput_t PIout, float Ref, float ValueRead);
 PiOutput_t Pi_ControllerBuckFloat(PI_Parameters_t PI, PiOutput_t PIout, float Ref, float ValueRead  );

@@ -54,6 +54,8 @@ uint32_t SetDebugLogPeriod(void) {
             case RegulateInit:
             case Regulate:
             case RegulateStop:
+            case RegulateVoltage:
+            case RegulateVoltageInit:
                 debug_period_in_ms = LOG_PERIOD_REGULATE;
                 break;
             case StopEPWMs:
@@ -111,6 +113,8 @@ void UpdateDebugLog(void) {
             sharedVars_cpu2toCpu1.debug_log.RegulateAvgVbus = DCDC_VI.RegulateAvgVbus * 10;
             sharedVars_cpu2toCpu1.debug_log.RegulateAvgOutputCurrent = DCDC_VI.RegulateAvgOutputCurrent * 10;
             sharedVars_cpu2toCpu1.debug_log.RegulateIRef = DCDC_VI.I_Ref_Real * 100;
+            sharedVars_cpu2toCpu1.debug_log.ILoop_PiOutput = ILoop_PiOutput.Output*100;
+
 
             sharedVars_cpu2toCpu1.debug_log.CurrentState = StateVector.State_Current;    // CPU2 current state of main state machine
             sharedVars_cpu2toCpu1.debug_log.elapsed_time = elapsed_time;

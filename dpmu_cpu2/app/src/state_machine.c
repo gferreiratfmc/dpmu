@@ -301,6 +301,32 @@ void StateMachine(void)
         if( sensorVector[VStoreIdx].realValue < energy_bank_settings.min_voltage_applied_to_energy_bank ) {
             StateVector.State_Next = RegulateStop;
         }
+        if( DCDC_VI.avgVBus < REG_MIN_DC_BUS_VOLTAGE_RATIO * DCDC_VI.target_Voltage_At_DCBus ) {
+            if( sensorVector[ISen1fIdx].realValue >= MIN_OUTPUT_CURRENT_TO_REGULATE_VOLTAGE ) {
+                    StateVector.State_Next = RegulateVoltageInit;
+            }
+        }
+        break;
+
+    case RegulateVoltageInit:
+
+        DCDC_VI.I_Ref_Real = 0.0;
+        DCDC_current_boost_loop_float();
+        StateVector.State_Next = RegulateVoltage;
+        break;
+
+    case RegulateVoltage:
+        DCDC_voltage_boost_loop_float();
+        DCDC_current_boost_loop_float();
+        EnableOrDisblePWM(DCDC_VI.I_Ref_Real);
+        if( DCDC_VI.avgVStore < energy_bank_settings.min_voltage_applied_to_energy_bank ) {
+            StateVector.State_Next = RegulateStop;
+
+        }
+        if( sensorVector[VBusIdx].realValue > sharedVars_cpu1toCpu2.max_allowed_dc_bus_voltage ) {
+            HAL_StopPwmDCDC();
+            StateVector.State_Next = StopEPWMs;
+        }
         break;
 
     case RegulateStop:
@@ -309,7 +335,6 @@ void StateMachine(void)
         if( sensorVector[ISen2fIdx].realValue < 0.25 ) {
             StateVector.State_Next = StopEPWMs;
         }
-
         break;
 
     case Fault: /* deal with the Fault */

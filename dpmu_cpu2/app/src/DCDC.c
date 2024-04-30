@@ -104,12 +104,29 @@ void DCDC_current_buck_loop_float(void)
 
 void DCDC_voltage_boost_loop_float(void)
 {
-    /* TODO target_Voltage_At_DCBus updated inenergy_storage_update_settings */
     VLoop_PiOutput = Pi_ControllerBoostFloat(VLoopParamBoost,
                                              VLoop_PiOutput,
-                                             DCDC_VI.target_Voltage_At_DCBus,
+                                             DCDC_VI.target_Voltage_At_DCBus/2,
                                              sensorVector[VBusIdx].realValue);
     DCDC_VI.I_Ref_Real =  (VLoop_PiOutput.Output);
+}
+
+
+void DCDC_current_boost_loop_float(void)
+{
+
+    uint16_t dutyCycle;
+
+    ILoop_PiOutput = Pi_ControllerBoostFloat(ILoopParamBoost,
+                                             ILoop_PiOutput,
+                                             DCDC_VI.I_Ref_Real,
+                                             sensorVector[ISen2fIdx].realValue);
+
+    dutyCycle = BOOST_TIME_BASE_PERIOD - (BOOST_TIME_BASE_PERIOD * ILoop_PiOutput.Output);
+
+    HAL_PWM_setCounterCompareValue(BEG_1_2_BASE, EPWM_COUNTER_COMPARE_A, dutyCycle);
+
+    ILoop_PiOutput.dutyCycle = dutyCycle;
 }
 
 bool calculate_boost_current(void)
@@ -172,22 +189,7 @@ bool calculate_boost_current(void)
     return retValue;
 }
 
-void DCDC_current_boost_loop_float(void)
-{
 
-    uint16_t dutyCycle;
-
-    ILoop_PiOutput = Pi_ControllerBoostFloat(ILoopParamBoost,
-                                             ILoop_PiOutput,
-                                             DCDC_VI.I_Ref_Real,
-                                             sensorVector[ISen2fIdx].realValue);
-
-    dutyCycle = BOOST_TIME_BASE_PERIOD - (BOOST_TIME_BASE_PERIOD * ILoop_PiOutput.Output);
-
-    HAL_PWM_setCounterCompareValue(BEG_1_2_BASE, EPWM_COUNTER_COMPARE_A, dutyCycle);
-
-    ILoop_PiOutput.dutyCycle = dutyCycle;
-}
 
 
 PiOutput_t Pi_ControllerBuckFloat(PI_Parameters_t PI, PiOutput_t PIout,
@@ -293,8 +295,8 @@ void DCDCConverterInit(void)
     /*Init Voltage boost Loop PI parameters */
     VLoopParamBoost.Pgain = 0.8761f * 0.0050354f;         /* 100*3.3/2^16            */
     VLoopParamBoost.Igain = 57.55f * 0.00000050354f ;     /* 100*3.3/2^16 * 1/10000  */
-    VLoopParamBoost.UpperLimit = 5.0 ;
-    VLoopParamBoost.LowerLimit = 0.1 ;
+    VLoopParamBoost.UpperLimit = 5.0;
+    VLoopParamBoost.LowerLimit = 0.1;
 
     DCDC_VI.iIn_limit = 2.0; //TODO updated in dcbus_update_settings
 

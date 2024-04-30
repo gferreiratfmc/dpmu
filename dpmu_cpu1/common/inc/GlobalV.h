@@ -63,6 +63,7 @@ typedef struct debug_log
     int16_t RegulateAvgVStore;
     int16_t RegulateAvgVbus;
     int16_t RegulateIRef;
+    uint16_t ILoop_PiOutput;
     int16_t cellVoltage[NUMBER_OF_CELLS];
     int16_t CurrentState; // State of CPU2 state machine
     uint16_t counter;
