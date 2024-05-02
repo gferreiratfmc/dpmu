@@ -217,17 +217,13 @@ static inline uint8_t indices_I_ENERGY_CELL_SUMMARY(UNSIGNED8 subIndex)
         {
             value = convert_voltage_energy_cell_to_OD( sharedVars_cpu2toCpu1.soc_energy_cell[subIndex-3]);
             retVal = coOdPutObj_u8(I_ENERGY_CELL_SUMMARY, subIndex, value );
-            Serial_debug(
-                    DEBUG_INFO, &cli_serial,
-                    "S_STATE_OF_CHARGE_OF_ENERGY_CELL_%d: 0x%x\r\n",
-                    subIndex - S_MAX_VOLTAGE_ENERGY_CELL, value);
+//            Serial_debug( DEBUG_INFO, &cli_serial, "S_STATE_OF_CHARGE_OF_ENERGY_CELL_%d: 0x%x\r\n",
+//                    subIndex - S_MAX_VOLTAGE_ENERGY_CELL, value);
         } else if((subIndex >= S_STATE_OF_HEALTH_OF_ENERGY_CELL_01) && (subIndex <= S_STATE_OF_HEALTH_OF_ENERGY_CELL_30))
         {
             retVal = coOdGetObj_u8(I_ENERGY_CELL_SUMMARY, subIndex, &value);
-            Serial_debug(
-                    DEBUG_INFO, &cli_serial,
-                    "S_STATE_OF_HEALTH_OF_ENERGY_CELL_%d: 0x%x\r\n",
-                    subIndex - S_MAX_VOLTAGE_ENERGY_CELL, value);
+//            Serial_debug( DEBUG_INFO, &cli_serial, "S_STATE_OF_HEALTH_OF_ENERGY_CELL_%d: 0x%x\r\n",
+//                    subIndex - S_MAX_VOLTAGE_ENERGY_CELL, value);
         } else
         {
             Serial_debug(DEBUG_ERROR, &cli_serial, "UNKNOWN CAN OD SUBINDEX: 0x%x\r\n", subIndex);
@@ -427,7 +423,7 @@ static inline uint8_t indices_I_ENERGY_BANK_SUMMARY(UNSIGNED8 subIndex)
     case S_STATE_OF_CHARGE_OF_ENERGY_BANK:
         value = convert_energy_soc_energy_bank_to_OD( sharedVars_cpu2toCpu1.soc_energy_bank );
         retVal = coOdPutObj_u8(I_ENERGY_BANK_SUMMARY, S_STATE_OF_CHARGE_OF_ENERGY_BANK, value );
-         Serial_debug(DEBUG_INFO, &cli_serial, "S_STATE_OF_CHARGE_OF_ENERGY_BANK: 0x%x\r\n", value);
+        Serial_debug(DEBUG_INFO, &cli_serial, "S_STATE_OF_CHARGE_OF_ENERGY_BANK: 0x%x\r\n", value);
         break;
     case S_STATE_OF_HEALTH_OF_ENERGY_BANK:
         value = convert_soh_energy_bank_to_OD( sharedVars_cpu2toCpu1.soh_energy_bank );

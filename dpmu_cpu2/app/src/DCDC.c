@@ -106,7 +106,7 @@ void DCDC_voltage_boost_loop_float(void)
 {
     VLoop_PiOutput = Pi_ControllerBoostFloat(VLoopParamBoost,
                                              VLoop_PiOutput,
-                                             DCDC_VI.target_Voltage_At_DCBus/2,
+                                             DCDC_VI.target_Voltage_At_DCBus * REG_TARGET_DC_BUS_VOLTAGE_RATIO,
                                              sensorVector[VBusIdx].realValue);
     DCDC_VI.I_Ref_Real =  (VLoop_PiOutput.Output);
 }
@@ -295,7 +295,7 @@ void DCDCConverterInit(void)
     /*Init Voltage boost Loop PI parameters */
     VLoopParamBoost.Pgain = 0.8761f * 0.0050354f;         /* 100*3.3/2^16            */
     VLoopParamBoost.Igain = 57.55f * 0.00000050354f ;     /* 100*3.3/2^16 * 1/10000  */
-    VLoopParamBoost.UpperLimit = 5.0;
+    VLoopParamBoost.UpperLimit = 19.0;
     VLoopParamBoost.LowerLimit = 0.1;
 
     DCDC_VI.iIn_limit = 2.0; //TODO updated in dcbus_update_settings

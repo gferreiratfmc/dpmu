@@ -64,27 +64,6 @@ static void check_cpu2_ind(void);
 void check_cpu2_dbg(void);
 void toogle_LED1(timer_t *tqe);
 
-void debugCPU2Flash()
-{
-    return;
-    static uint32_t i = 0;
-    static uint32_t cpu2FlashAddrInitial = 0x080000;
-    static uint32_t cpu2FlashAddr = 0x080000;
-    //uint32_t cpu2FlashAddr = 0x084000;
-    static uint16_t cpu2FlashData;
-    if ( i < (uint32_t)(32768) )
-    {
-        //cpu2FlashData = ext_flash_read_word(cpu2FlashAddr);
-        flash_api_read(cpu2FlashAddr, &cpu2FlashData, 1);
-        if ((i % 8) == 0)
-        {
-            Serial_debug(DEBUG_INFO, &cli_serial, "\r\n[0x%08p] ", cpu2FlashAddrInitial+(i*2));
-        }
-        Serial_debug(DEBUG_INFO, &cli_serial, "%04x ", cpu2FlashData);
-        cpu2FlashAddr = cpu2FlashAddr + 0x01;
-        i++;
-    }
-}
 
 /**
  * The startup function.
@@ -102,8 +81,8 @@ void main(void)
     co_init();
     coEventRegister_SDO_SERVER_DOMAIN_READ(log_read_domain);
 
-//    Serial_set_debug_level(DEBUG_ERROR);
-    Serial_set_debug_level(DEBUG_INFO);
+    Serial_set_debug_level(DEBUG_ERROR);
+//    Serial_set_debug_level(DEBUG_INFO);
 
     CPU1_Board_init();
 
