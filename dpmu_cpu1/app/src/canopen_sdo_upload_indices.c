@@ -184,10 +184,11 @@ static inline uint8_t indices_I_DC_BUS_VOLTAGE(UNSIGNED8 subIndex)
 static inline uint8_t indices_I_ESS_CURRENT(void)
 {
     uint8_t retVal = CO_FALSE;
-    int8_t value;
+    int16_t value;
 
+    value = 0;
     value = convert_ess_current_to_OD(sharedVars_cpu2toCpu1.current_charging_current);
-    retVal = coOdPutObj_i8(I_ESS_CURRENT, 0, value );
+    retVal = coOdPutObj_i8(I_ESS_CURRENT, 0, (int8_t)value );
 
     Serial_debug(DEBUG_INFO, &cli_serial, "I_ESS_CURRENT: 0x%x\r\n", value);
 
