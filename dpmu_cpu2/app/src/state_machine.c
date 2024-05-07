@@ -16,7 +16,6 @@
 #include "balancing.h"
 #include "cli_cpu2.h"
 #include "CLLC.h"
-#include "cli_cpu2.h"
 #include "common.h"
 #include "DCDC.h"
 #include "debug_log.h"
@@ -59,7 +58,6 @@ void update_debug_log(void);
 
 void StateMachine(void)
 {
-    static bool first_CC_charge_stage_done = false;
     static bool cellVoltageOverThreshold = false;
     static float I_Ref_Real_Final = 0.0;
     static bool EPMWStarted = false;
@@ -164,41 +162,21 @@ void StateMachine(void)
 
     case ChargeInit: /* Initialize the buck state */
 
+        HAL_DcdcNormalModePwmSetting();
+        ILoop_PiOutput.Int_out = 0;
 
-        /* if needed, store the Voltage of energy bank and of each energy cell,
-         * do this before going into CC Charge for correct values
-         * do this before starting any related PWMs
-         * */
-//        if( save_voltages_before_first_cc_charge( &first_CC_charge_stage_done, cellVoltageVector,&energyBankVoltage ) )
-//        {
-            /* save_voltages_before_first_cc_charge() returns true if initial
-             * values have been stored
-             *
-             * save_voltages_before_first_cc_charge() returns true if we are not
-             * discharged enough to be able to do a new SoH calculation
-             *
-             * save_voltages_before_first_cc_charge() returns false if we are in
-             * a state there we can't jump directly to state Charge due to
-             * needed recalculation of SoH and for that we need to store new
-             * Voltage measurements before jumping to state Charge
-             */
-            HAL_DcdcNormalModePwmSetting();
-            ILoop_PiOutput.Int_out = 0;
+        I_Ref_Real_Final = 0.5 * (  DCDC_VI.target_Voltage_At_DCBus * DCDC_VI.iIn_limit / energy_bank_settings.max_voltage_applied_to_energy_bank );
 
-            I_Ref_Real_Final = 0.5 * (  DCDC_VI.target_Voltage_At_DCBus * DCDC_VI.iIn_limit / energy_bank_settings.max_voltage_applied_to_energy_bank );
+        if( I_Ref_Real_Final >  MAX_INDUCTOR_BUCK_CURRENT ) {
+            I_Ref_Real_Final = MAX_INDUCTOR_BUCK_CURRENT;
+        }
+        DCDC_VI.I_Ref_Real = I_Ref_Real_Final / 100.0;
 
-            if( I_Ref_Real_Final >  MAX_INDUCTOR_BUCK_CURRENT ) {
-                I_Ref_Real_Final = MAX_INDUCTOR_BUCK_CURRENT;
-            }
-            DCDC_VI.I_Ref_Real = I_Ref_Real_Final / 100.0;
+        HAL_PWM_setCounterCompareValue( BEG_1_2_BASE, EPWM_COUNTER_COMPARE_A, 0.5*EPWM_getTimeBasePeriod(BEG_1_2_BASE) );
+        EPMWStarted = false;
+        DCDC_VI.counter = 0;
 
-            //DCDC_current_buck_loop_float();
-            HAL_PWM_setCounterCompareValue( BEG_1_2_BASE, EPWM_COUNTER_COMPARE_A, 0.5*EPWM_getTimeBasePeriod(BEG_1_2_BASE) );
-            //HAL_StartPwmDCDC();
-            EPMWStarted = false;
-            DCDC_VI.counter = 0;
-            StateVector.State_Next = ChargeRamp;
-//        }
+        StateVector.State_Next = ChargeRamp;
 
         break;
 
@@ -214,6 +192,7 @@ void StateMachine(void)
                 DCDC_VI.I_Ref_Real = DCDC_VI.I_Ref_Real + ( I_Ref_Real_Final / 100.0 );
                 if( DCDC_VI.I_Ref_Real >= I_Ref_Real_Final ) {
                     DCDC_VI.I_Ref_Real = I_Ref_Real_Final;
+                    initCalcStateOfCharge();
                     StateVector.State_Next = Charge;
                 }
             }
@@ -237,9 +216,8 @@ void StateMachine(void)
             }
         }
 
-        if(!first_CC_charge_stage_done)
-            /* increment charge timer */
-            sharedVars_cpu2toCpu1.energy_bank.chargeTime++;
+        calcAccumlatedCharge();
+
         break;
 
     case ChargeStop:
@@ -247,6 +225,7 @@ void StateMachine(void)
             DCDC_current_buck_loop_float();
             if( sensorVector[ISen2fIdx].realValue < 0.25 ) {
                 StateVector.State_Next = StopEPWMs;
+                finallyCalcStateOfCharge();
             }
           break;
 
@@ -276,8 +255,6 @@ void StateMachine(void)
             HAL_StopPwmDCDC();
             StateVector.State_Next = Balancing;
         }
-
-
         break;
 
     case Balancing: // Balancing state supposed to run in parallel with Charge state.
@@ -326,7 +303,6 @@ void StateMachine(void)
         break;
 
     case RegulateVoltageInit:
-
         DCDC_VI.I_Ref_Real = 0.0;
         DCDC_current_boost_loop_float();
         StateVector.State_Next = RegulateVoltage;
@@ -354,8 +330,7 @@ void StateMachine(void)
         }
         break;
 
-    case Fault: /* deal with the Fault */
-
+    case Fault:
         HAL_StopPwmDCDC();
 
         switches_Qlb( SW_OFF );
@@ -381,11 +356,12 @@ void StateMachine(void)
         StateVector.State_Next = Idle;
         break;
         
-    case Idle: /* Idle do nothing */
+    case Idle:
         if( StatusContinousReadCellVoltages() == false) {
             EnableContinuousReadCellVoltages();
         }
         break;
+
     default:
         /* should never enter here */
         break;

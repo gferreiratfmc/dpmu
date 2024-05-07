@@ -171,14 +171,13 @@ void main(void)
     cpu2_status.num_short_circ = 0;
 
     //
-    // Synchronize both the cores.
-    //
-    IPC_sync(IPC_CPU2_L_CPU1_R, IPC_FLAG11);
+    // Synchronize both cores
+    // IPC_sync(IPC_CPU2_L_CPU1_R, IPC_FLAG11); // Needed when running CPU2 without bootloader
     IPC_sync(IPC_CPU2_L_CPU1_R, IPC_FLAG31);
 
     Board_init();
 
-    //PRINT( "DPMU_CPU2 Firmware compilation timestamp= %s %s\r\n", __DATE__, __TIME__ );
+    PRINT( "DPMU_CPU2 Firmware compilation timestamp= %s %s\r\n", __DATE__, __TIME__ );
 
     HAL_StopPwmDCDC();
     HAL_StopPwmInrushCurrentLimit();
@@ -223,6 +222,7 @@ void main(void)
         /******* Energy Bank *******/
         energy_storage_update_settings();
         energy_storage_check();
+
 
         UpdateDebugLog();
         //UpdateDebugLogFake();

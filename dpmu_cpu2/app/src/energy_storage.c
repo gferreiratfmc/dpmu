@@ -7,13 +7,59 @@
 
 #include <error_handling.h>
 #include <stdbool.h>
+#include <math.h>
 
+#include "cli_cpu2.h"
+#include "common.h"
 #include "energy_storage.h"
 #include "shared_variables.h"
+#include "sensors.h"
+#include "timer.h"
+
+
 
 energy_bank_t energy_bank_settings = {0};
 
+state_of_charge_t stateOfCharge;
+
 float cellVoltagesVector[30];
+
+
+void initCalcStateOfCharge( void ) {
+    stateOfCharge.inititalVoltage = DCDC_VI.avgVStore;
+    stateOfCharge.last_timer = 0;
+    stateOfCharge.totalChargeTime = 0;
+}
+
+void calcAccumlatedCharge( void ) {
+
+    static float last_measured_current, instant_current ;
+    uint32_t current_timer, elapsed_time;
+
+    if( stateOfCharge.last_timer == 0) {
+        stateOfCharge.last_timer = timer_get_ticks();
+        last_measured_current = fabsf( sensorVector[ISen2fIdx].realValue );
+        stateOfCharge.accumulatedCharge = 0;
+        return;
+    }
+
+    current_timer = timer_get_ticks();
+    elapsed_time = current_timer - stateOfCharge.last_timer;
+
+    if( elapsed_time >= 1000 ) {
+        instant_current =  fabsf( sensorVector[ISen2fIdx].realValue );
+        stateOfCharge.accumulatedCharge = stateOfCharge.accumulatedCharge + ( ( instant_current + last_measured_current ) / 2 );
+        stateOfCharge.totalChargeTime = stateOfCharge.totalChargeTime + ( elapsed_time / 1000 );
+        last_measured_current = instant_current ;
+    }
+}
+
+void finallyCalcStateOfCharge() {
+    stateOfCharge.finalVoltage = DCDC_VI.avgVStore;
+    stateOfCharge.totalCapacitance = stateOfCharge.accumulatedCharge / (stateOfCharge.finalVoltage - stateOfCharge.inititalVoltage);
+
+}
+
 
 void energy_storage_update_settings(void)
 {
@@ -82,6 +128,11 @@ void energy_storage_check(void)
     cellCount++;
     if(cellCount == NUMBER_OF_CELLS) {
         cellCount=0;
+    }
+
+    if( stateOfCharge.newSoCAvailable == true ) {
+        PRINT( "Last State Of Charge:[%8.2f]F\r\n", stateOfCharge.totalCapacitance );
+        stateOfCharge.newSoCAvailable = false;
     }
 
 }

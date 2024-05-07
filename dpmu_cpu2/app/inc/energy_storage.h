@@ -25,11 +25,25 @@ typedef struct energy_bank {
     float ESS_Current;                           /* max charging current */
 } energy_bank_t;
 
+typedef struct state_of_charge {
+    float inititalVoltage;
+    float finalVoltage;
+    float accumulatedCharge;
+    float totalCapacitance;
+    float totalChargeTime;
+    uint32_t last_timer;
+    bool newSoCAvailable;
+} state_of_charge_t;
+
 extern energy_bank_t energy_bank_settings;
+extern state_of_charge_t stateOfCharge;
 
 void energy_storage_update_settings(void);
 void energy_storage_check(void);
 
+void initCalcStateOfCharge(void);
+void calcAccumlatedCharge(void);
+void finallyCalcStateOfCharge(void);
 
 
 //static bool balancing(float cellvoltages[30]);
