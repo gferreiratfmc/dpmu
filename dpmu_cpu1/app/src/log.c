@@ -81,6 +81,8 @@ void log_read_domain(UNSIGNED16 index, UNSIGNED8 subindex, UNSIGNED32 domainBufS
 
     static uint32_t sumOfTransferedBytes = 0;
 
+    //Disable new logs while in transfer
+    sharedVars_cpu1toCpu2.debug_log_disable_flag = true;
 
     // Doublecheck that domainbufsize are not bigger than allocated buf size.
     if (domainBufSize > TRANSFER_SIZE ) {
@@ -152,10 +154,11 @@ void log_read_domain(UNSIGNED16 index, UNSIGNED8 subindex, UNSIGNED32 domainBufS
             sumOfTransferedBytes = 0;
         }
 
-
-        if( (can_log_next_free_address - can_log_last_read_address) == 0 ){
-            sharedVars_cpu1toCpu2.debug_log_disable_flag = false;
-        }
+        //Enable new logs after transfer
+        sharedVars_cpu1toCpu2.debug_log_disable_flag = false;
+//        if( (can_log_next_free_address - can_log_last_read_address) == 0 ){
+//            sharedVars_cpu1toCpu2.debug_log_disable_flag = false;
+//        }
     }
 
 //    Serial_debug(DEBUG_INFO, &cli_serial, "%08x  ", start_address);
@@ -292,7 +295,7 @@ uint8_t log_can_log_read(
                             message,            /**< pointer to domain */
                             sizeToTransfer  //2 * debug_log_size  /**< domain length */ /* '2x' we use 16 bit Words */
                          );
-        sharedVars_cpu1toCpu2.debug_log_disable_flag = true;
+        //sharedVars_cpu1toCpu2.debug_log_disable_flag = true;
         return RET_OK;
     } else {
         coOdDomainAddrSet(
