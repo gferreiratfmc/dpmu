@@ -9,6 +9,7 @@
 #define APP_SRC_CANOPEN_INDICES_C_
 
 #include <assert.h>
+#include <dpmu_type.h>
 #include <stdbool.h>
 #include <stdint.h>
 
@@ -17,7 +18,6 @@
 #include "co_odaccess.h"
 #include "common.h"
 #include "convert.h"
-#include "dpmu_type.h"
 #include "ext_flash.h"
 #include "gen_indices.h"
 #include "log.h"
@@ -628,6 +628,14 @@ static RET_T indices_I_DPMU_POWER_SOURCE_TYPE(void)
         sharedVars_cpu1toCpu2.having_battery = true;
     else
         sharedVars_cpu1toCpu2.having_battery = false;
+
+    sharedVars_cpu1toCpu2.dpmu_default_flag = dpmu_type_default();
+
+    if( sharedVars_cpu1toCpu2.dpmu_default_flag == true) {
+        Serial_debug( DEBUG_INFO, &cli_serial, "DPMU TYPE SET TO DEFAULT\r\n" );
+    } else {
+        Serial_debug( DEBUG_INFO, &cli_serial, "DPMU TYPE SET TO REDUNDANT\r\n" );
+    }
 
     return retVal;
 }

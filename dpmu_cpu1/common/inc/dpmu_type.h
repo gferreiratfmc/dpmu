@@ -34,5 +34,6 @@ bool dpmu_type_having_caps(void);
 bool dpmu_type_allowed_to_use_shared_bus(void);
 bool dpmu_type_allowed_to_use_load_bus(void);
 
+bool dpmu_type_default(void);
 
 #endif /* COMMON_INC_DPMU_TYPE_H_ */

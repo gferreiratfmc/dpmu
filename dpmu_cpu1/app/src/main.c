@@ -82,7 +82,7 @@ void main(void)
     coEventRegister_SDO_SERVER_DOMAIN_READ(log_read_domain);
 
     Serial_set_debug_level(DEBUG_ERROR);
-//    Serial_set_debug_level(DEBUG_INFO);
+    Serial_set_debug_level(DEBUG_INFO);
 
     CPU1_Board_init();
 
@@ -184,6 +184,11 @@ void main(void)
     watchdog_feed();
 
 
+    if( sharedVars_cpu1toCpu2.dpmu_default_flag == true ) {
+        Serial_printf(&cli_serial, "DPMU IS DEFAULT\r\n");
+    } else {
+        Serial_printf(&cli_serial, "DPMU IS REDUNDANT\r\n");
+    }
     /* flag to sync the cpu2 application
      *
      * still being able to communicate with IOP

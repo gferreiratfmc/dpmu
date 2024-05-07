@@ -31,7 +31,7 @@ uint32_t SetDebugLogPeriod(void) {
     } else {
         switch( StateVector.State_Current ) {
             case Initialize:
-            case SoftstartInit:
+            case SoftstartInitDefault:
             case Softstart:
                 debug_period_in_ms = LOG_PERIOD_INITIALIZE;
                 break;

@@ -5,6 +5,7 @@
  *      Author: Henrik Borg henrik.borg@ekpower.se hb
  */
 
+#include <dpmu_type.h>
 #include "stdbool.h"
 #include "stdint.h"
 
@@ -14,7 +15,6 @@
 #include "co_canopen.h"
 #include "common.h"
 #include "convert.h"
-#include "dpmu_type.h"
 #include "error_handling.h"
 #include "gen_indices.h"
 #include "log.h"

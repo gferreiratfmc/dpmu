@@ -8,6 +8,7 @@
 #ifndef COMMON_INC_SHARED_VARIABLES_H_
 #define COMMON_INC_SHARED_VARIABLES_H_
 
+#include <dpmu_type.h>
 #include "device.h"
 #include "GlobalV.h"
 
@@ -47,6 +48,9 @@ typedef struct sharedVars_cpu1toCpu2_t // commonCpu1ToCpu2
     bool having_battery;    /* true for Lithium Battery, false for Super Capacitors */
 
     bool debug_log_disable_flag;
+
+    bool dpmu_default_flag;
+
 } sharedVars_cpu1toCpu2_t;
 
 extern struct sharedVars_cpu1toCpu2_t sharedVars_cpu1toCpu2;

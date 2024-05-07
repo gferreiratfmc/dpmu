@@ -75,7 +75,13 @@ void StateMachine(void)
             if( CalibrateZeroVoltageOffsetOfSensors() ) {
                 test_update_of_error_codes = true;
                 HAL_DcdcNormalModePwmSetting();
-                StateVector.State_Next = SoftstartInit;
+
+                if( sharedVars_cpu1toCpu2.dpmu_default_flag == true ) {
+                    StateVector.State_Next = SoftstartInitDefault;
+                } else {
+                    StateVector.State_Next = SoftstartInitRedundant;
+                }
+
 
             }
         } else {
@@ -84,10 +90,21 @@ void StateMachine(void)
 
         break;
 
-    case SoftstartInit:
-
+    case SoftstartInitDefault:
         //Close output Switch
         switches_Qlb(SW_ON);
+        switches_Qsb(SW_ON);
+
+        // Initialize and start Inrush PWM
+        HAL_PWM_setCounterCompareValue(InrushCurrentLimit_BASE, EPWM_COUNTER_COMPARE_A, INRUSH_DUTY_CYLE_INCREMENT);
+        HAL_StartPwmInrushCurrentLimit();
+        CounterGroup.InrushCurrentLimiterCounter = 0;
+        StateVector.State_Next = Softstart;
+        break;
+
+    case SoftstartInitRedundant:
+        //Opens output Switch
+        switches_Qlb(SW_OFF);
         switches_Qsb(SW_ON);
 
         // Initialize and start Inrush PWM
@@ -341,9 +358,9 @@ void StateMachine(void)
 
         HAL_StopPwmDCDC();
 
-        switches_Qlb(    SW_OFF);
-        switches_Qsb(    SW_OFF);
-        switches_Qinb(   SW_OFF);
+        switches_Qlb( SW_OFF );
+        switches_Qsb( SW_OFF );
+        switches_Qinb( SW_OFF );
 
         CounterGroup.PrestateCounter = 0;
 
@@ -410,7 +427,7 @@ static uint8_t convert_current_state_to_OD(uint16_t state)
         retVal = Idle;
         break;
     case Initialize:         // 1
-    case SoftstartInit:          // 2
+    case SoftstartInitDefault:          // 2
     case Softstart:              // 3
         retVal = Initialize;
         break;

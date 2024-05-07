@@ -5,11 +5,11 @@
  *      Author: Henrik Borg henrik.borg@ekpower.se hb
  */
 
+#include <dpmu_type.h>
 #include <stdbool.h>
 #include <stdint.h>
 
 #include "co_canopen.h"
-#include "dpmu_type.h"
 #include "gen_indices.h"
 
 
@@ -151,5 +151,37 @@ bool dpmu_type_allowed_to_use_load_bus(void)
 
     return ret;
 }
+
+bool dpmu_type_default(void) {
+    bool ret = false;
+    uint8_t dpmu_type;
+
+    coOdGetObj_u8(I_DPMU_POWER_SOURCE_TYPE, 0, &dpmu_type);
+
+    switch( dpmu_type ) {
+
+        case DPMU_DEFAULT_CAP:
+        case DPMU_DEFAULT_CAP_W_REDUNTANT:
+        case DPMU_DEFAULT_CAP_W_SUPPLEMENTARY:
+        case DPMU_DEFAULT_CAP_W_REDUNDANT_SUPPLEMENTARY:
+        case DPMU_DEFAULT_BAT:
+        case DPMU_DEFAULT_BAT_W_REDUNTANT:
+        case DPMU_DEFAULT_BAT_W_SUPPLEMENTARY:
+        case DPMU_DEFAULT_BAT_W_REDUNDANT_SUPPLEMENTARY:
+            ret = true;
+            break;
+        case DPMU_REDUNDANT_BAT:
+        case DPMU_REDUNDANT_BAT_W_SUPPLEMENTARY:
+        case DPMU_REDUNDANT_CAP:
+        case DPMU_REDUNDANT_CAP_W_SUPPLEMENTARY:
+            ret = false;
+            break;
+        default:
+            ret = false;
+    }
+
+    return ret;
+}
+
 
 

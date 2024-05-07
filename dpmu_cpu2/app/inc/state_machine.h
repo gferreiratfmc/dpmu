@@ -28,8 +28,9 @@ enum Operating_state
 {
     Idle = 0,
     Initialize,             // 1
-    SoftstartInit,              // 2
-    Softstart,                  // 3
+    SoftstartInitDefault,              // 2
+    SoftstartInitRedundant = 201,
+    Softstart = 3,                  // 3
     TrickleChargeInit,          // 4
     TrickleChargeDelay,         // 5
     TrickleCharge,              // 6
