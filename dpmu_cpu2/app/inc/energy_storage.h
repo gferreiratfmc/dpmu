@@ -14,6 +14,8 @@
 #include "CLLC.h"
 #include "shared_variables.h"
 
+#define MAX_ENERGY_VOLTAGE_RATIO 0.8733
+
 typedef struct energy_bank {
     float max_voltage_applied_to_energy_bank;
     float constant_voltage_threshold;
@@ -25,18 +27,22 @@ typedef struct energy_bank {
     float ESS_Current;                           /* max charging current */
 } energy_bank_t;
 
-typedef struct state_of_charge {
+typedef struct energy_bank_condition {
+    float stateOfHealthPercent;
+    float stateOfChargePercent;
+    float capacitance;
     float inititalVoltage;
     float finalVoltage;
     float accumulatedCharge;
-    float totalCapacitance;
+    float initialCapacitance;
     float totalChargeTime;
     uint32_t last_timer;
-    bool newSoCAvailable;
-} state_of_charge_t;
+    uint8_t initializedSoCIndicator;
+} energy_bank_condition_t;
 
 extern energy_bank_t energy_bank_settings;
-extern state_of_charge_t stateOfCharge;
+extern energy_bank_condition_t energy_bank_condition;
+extern bool newSoCAvailable;
 
 void energy_storage_update_settings(void);
 void energy_storage_check(void);
@@ -44,7 +50,8 @@ void energy_storage_check(void);
 void initCalcStateOfCharge(void);
 void calcAccumlatedCharge(void);
 void finallyCalcStateOfCharge(void);
-
+void saveStatOfChargeToFlash(void);
+void retriveStateOfChargeFromFlash(void);
 
 //static bool balancing(float cellvoltages[30]);
 //static void SortCellVoltageIndex(float cellvoltages[], uint16_t Position);

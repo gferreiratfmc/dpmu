@@ -23,6 +23,19 @@
 // Real size of the external flash connected to EMIF1 CS3. This is 1M x 16 = 2MB.
 #define EXT_FLASH_SIZE              (2 * EXT_FLASH_SIZE_CS3)
 
+// Flash logging area
+#define CAN_LOG_ADDRESS_START   (0x8000 /*ext_flash_info[FIRST_LOG_SECTOR].addr*/ +  EXT_FLASH_START_ADDRESS_CS3)
+#define CAN_LOG_ADDRESS_END     (EXT_FLASH_START_ADDRESS_CS3 + EXT_FLASH_SIZE_CS3)
+
+// Application variables logging area
+#define APP_VARS_FLASH_SIZE 0x100
+#define APP_VARS_FLASH_ADDRESS_START   (CAN_LOG_ADDRESS_START - APP_VARS_FLASH_SIZE)
+#define APP_VAR_FLASH_ADDRESS_END     ( APP_VARS_FLASH_ADDRESS_START + (APP_VARS_FLASH_SIZE - 1) )
+
+
+
+
+
 typedef enum {
     EXT_FLASH_SA0 = 0,
     EXT_FLASH_SA1,

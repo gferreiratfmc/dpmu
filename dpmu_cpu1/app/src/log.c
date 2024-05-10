@@ -24,9 +24,6 @@
 #include "temperature_sensor.h"
 #include "timer.h"
 
-#define CAN_LOG_ADDRESS_START   (0x8000 /*ext_flash_info[FIRST_LOG_SECTOR].addr*/ +  EXT_FLASH_START_ADDRESS_CS3)
-#define CAN_LOG_ADDRESS_END     (EXT_FLASH_START_ADDRESS_CS3 + EXT_FLASH_SIZE_CS3)
-
 
 #define SIZE_OF_TIMESTAMP 4 /* in Bytes */
 

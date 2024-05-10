@@ -80,8 +80,8 @@ typedef struct sharedVars_cpu2toCpu1_t // commonCpu2ToCpu1
     uint16_t available_power_budget_dc_share;   /* from our SHARED bus */
 
     float    soc_energy_bank;                   /* last measured state of charge */
-    uint16_t soh_energy_bank;                   /* last calculated state of health */
-    uint16_t remaining_energy_to_min_soc_energy_bank;   /* usable energy */
+    float    soh_energy_bank;                   /* last calculated state of health */
+    float    remaining_energy_to_min_soc_energy_bank;   /* usable energy */
 
     float    soc_energy_cell[30];               /* last measured state of charge [Volt] */
 //    uint16_t soh_energy_cell[30];               /* last calculated state of health */

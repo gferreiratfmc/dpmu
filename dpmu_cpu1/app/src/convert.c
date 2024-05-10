@@ -421,5 +421,5 @@ float convert_charge_time_to_seconds(uint16_t charge_time)
 
 int8_t convert_dc_load_current_to_OD(float value)
 {
-    return (int8_t)value;
+    return (int8_t)(value * pow(2, 4));
 }
