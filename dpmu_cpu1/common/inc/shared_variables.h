@@ -51,6 +51,12 @@ typedef struct sharedVars_cpu1toCpu2_t // commonCpu1ToCpu2
 
     bool dpmu_default_flag;
 
+    bool QsbSwitchRequestState;
+    bool QinbSwitchRequestState;
+    bool QlbSwitchRequestState;
+    bool QinrushSwitchRequestState;
+
+
 } sharedVars_cpu1toCpu2_t;
 
 extern struct sharedVars_cpu1toCpu2_t sharedVars_cpu1toCpu2;

@@ -568,7 +568,6 @@ static RET_T indices_I_SWITCH_STATE(UNSIGNED8 subIndex)
     RET_T retVal = RET_OK;
     uint8_t state;
 
-    //Serial_debug(DEBUG_INFO, &cli_serial, "SWITCH  S 0x%0x  STATE ", subIndex);
 
     switch (subIndex)
     {
@@ -577,7 +576,9 @@ static RET_T indices_I_SWITCH_STATE(UNSIGNED8 subIndex)
         if (retVal == RET_OK)
         {
             /* send instruction to CPU2 */
-            cli_switches(IPC_SWITCHES_QIRS, state);
+//            cli_switches(IPC_SWITCHES_QIRS, state);
+            sharedVars_cpu1toCpu2.QinrushSwitchRequestState = state;
+            IPC_setFlagLtoR(IPC_CPU1_L_CPU2_R, IPC_SWITCHES_QIRS);
         }
         break;
     case S_SW_QLB_STATE:
@@ -585,15 +586,19 @@ static RET_T indices_I_SWITCH_STATE(UNSIGNED8 subIndex)
         if (retVal == RET_OK)
         {
             /* send instruction to CPU2 */
-            cli_switches(IPC_SWITCHES_QLB, state);
-        }
+//            cli_switches(IPC_SWITCHES_QLB, state);
+            sharedVars_cpu1toCpu2.QlbSwitchRequestState = state;
+            IPC_setFlagLtoR(IPC_CPU1_L_CPU2_R, IPC_SWITCHES_QLB);
+}
         break;
     case S_SW_QSB_STATE:
         retVal = coOdGetObj_u8(I_SWITCH_STATE, S_SW_QSB_STATE, &state);
         if (retVal == RET_OK)
         {
             /* send instruction to CPU2 */
-            cli_switches(IPC_SWITCHES_QSB, state);
+            //cli_switches(IPC_SWITCHES_QSB, state);
+            sharedVars_cpu1toCpu2.QsbSwitchRequestState = state;
+            IPC_setFlagLtoR(IPC_CPU1_L_CPU2_R, IPC_SWITCHES_QSB);
         }
         break;
     case S_SW_QINB_STATE:
@@ -601,7 +606,10 @@ static RET_T indices_I_SWITCH_STATE(UNSIGNED8 subIndex)
         if (retVal == RET_OK)
         {
             /* send instruction to CPU2 */
-            cli_switches(IPC_SWITCHES_QINB, state);
+//            cli_switches(IPC_SWITCHES_QINB, state);
+            sharedVars_cpu1toCpu2.QinbSwitchRequestState = state;
+            IPC_setFlagLtoR(IPC_CPU1_L_CPU2_R, IPC_SWITCHES_QINB);
+
         }
         break;
     default:
@@ -610,6 +618,7 @@ static RET_T indices_I_SWITCH_STATE(UNSIGNED8 subIndex)
         break;
     }
 
+    Serial_debug(DEBUG_INFO, &cli_serial, "CANOPEN DOWNLOAD SWITCH  S 0x%0x  STATE ", subIndex);
     Serial_debug(DEBUG_INFO, &cli_serial, "STATE %s for switch %d\r\n", (state ? "ON": "OFF"), subIndex);
 
     return retVal;

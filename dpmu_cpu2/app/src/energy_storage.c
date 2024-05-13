@@ -79,16 +79,7 @@ void finallyCalcStateOfCharge() {
 
     }
 
-    if( sharedVars_cpu1toCpu2.max_voltage_applied_to_energy_bank >= 0.0 ) {
-        energy_bank_condition.stateOfChargePercent =100.0 *
-            powf( ( energy_bank_condition.finalVoltage /
-                    ( sharedVars_cpu1toCpu2.max_voltage_applied_to_energy_bank * MAX_ENERGY_VOLTAGE_RATIO )
-                  ), 2 );
-    } else {
 
-        energy_bank_condition.stateOfChargePercent = 0.0;
-
-    }
 
     energy_bank_condition.initializedSoCIndicator = 0xAA;
     saveStatOfChargeToFlash();
@@ -155,13 +146,24 @@ void energy_storage_check(void) {
         cellCount=0;
     }
 
+    if( sharedVars_cpu1toCpu2.max_voltage_applied_to_energy_bank > 0.0 ) {
+        energy_bank_condition.stateOfChargePercent = 100.0 * powf( ( DCDC_VI.avgVStore /
+                    ( sharedVars_cpu1toCpu2.max_voltage_applied_to_energy_bank * MAX_ENERGY_VOLTAGE_RATIO ) ), 2 );
+    } else {
 
+        energy_bank_condition.stateOfChargePercent = 0.0;
+
+    }
 
     sharedVars_cpu2toCpu1.soc_energy_bank = energy_bank_condition.stateOfChargePercent;
 
-    if( timer_get_ticks() - last_time >= 5000 ) {
+    if( timer_get_ticks() - last_time >= 7500 ) {
         last_time = timer_get_ticks();
         PRINT( "stateOfChargePercent:[%8.2f]%%\r\n", energy_bank_condition.stateOfChargePercent );
+        PRINT( "remaining_energy_to_min_soc_energy_bank:[%8.2f]J\r\n", sharedVars_cpu2toCpu1.remaining_energy_to_min_soc_energy_bank );
+        PRINT( "energy_bank_condition.capacitance:[%8.2f]F\r\n", energy_bank_condition.capacitance);
+        PRINT( "sharedVars_cpu1toCpu2.min_voltage_applied_to_energy_bank:[%8.2f]V\r\n", sharedVars_cpu1toCpu2.min_voltage_applied_to_energy_bank);
+
     }
 
     retriveStateOfChargeFromFlash();

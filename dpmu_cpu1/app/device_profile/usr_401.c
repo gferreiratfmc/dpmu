@@ -120,10 +120,10 @@ void byte_out_printfInd(
 
 void switches_set_state(UNSIGNED8 outVal)
 {
-    cli_switches(IPC_SWITCHES_QIRS, (outVal & (1 << SWITCHES_QIRS) ? SW_ON : SW_OFF));
-    cli_switches(IPC_SWITCHES_QINB, (outVal & (1 << SWITCHES_QINB) ? SW_ON : SW_OFF));
-    cli_switches(IPC_SWITCHES_QLB,  (outVal & (1 << SWITCHES_QLB)  ? SW_ON : SW_OFF));
-    cli_switches(IPC_SWITCHES_QSB,  (outVal & (1 << SWITCHES_QSB)  ? SW_ON : SW_OFF));
+//    cli_switches(IPC_SWITCHES_QIRS, (outVal & (1 << SWITCHES_QIRS) ? SW_ON : SW_OFF));
+//    cli_switches(IPC_SWITCHES_QINB, (outVal & (1 << SWITCHES_QINB) ? SW_ON : SW_OFF));
+//    cli_switches(IPC_SWITCHES_QLB,  (outVal & (1 << SWITCHES_QLB)  ? SW_ON : SW_OFF));
+//    cli_switches(IPC_SWITCHES_QSB,  (outVal & (1 << SWITCHES_QSB)  ? SW_ON : SW_OFF));
 }
 
 void byte_out_piInd(

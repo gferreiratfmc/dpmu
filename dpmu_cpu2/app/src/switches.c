@@ -10,10 +10,10 @@
 #include "stdbool.h"
 
 /* local */
+#include "cli_cpu2.h"
 #include "device.h"
 #include "state_machine.h"
 #include "switches.h"
-
 
 /*** 26.15.1.5.3 Duty Cycle Range Limitation
  *
@@ -36,6 +36,7 @@ void switches_Qlb(uint8_t state)
 
 void switches_Qsb(uint8_t state)
 {//GLOAD_3
+    PRINT("FILE:%s LINE:%d FUNCTION:%s\r\n", __FILE__, __LINE__, __FUNCTION__);
     if(SW_ON == state)
         TurnOnGload_3();
     else

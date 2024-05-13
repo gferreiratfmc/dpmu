@@ -308,6 +308,10 @@ uint16_t convert_energy_soc_energy_bank_to_OD(float value)
     return (uint16_t)value;
 }
 
+uint16_t convert_remaining_energy_to_min_soc_energy_bank_to_OD(float remaining_SoC){
+    return (uint16_t)remaining_SoC;
+}
+
 /* see SPC70057501
  * Table 6 p.34
  * Appendix A

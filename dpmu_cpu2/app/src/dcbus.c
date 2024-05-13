@@ -74,7 +74,6 @@ void dcbus_check(void)
         sharedVars_cpu2toCpu1.error_code &= ~(1UL << ERROR_INPUT_POWER_TO_HIGH);
     }
     sharedVars_cpu2toCpu1.voltage_at_dc_bus = DCDC_VI.avgVBus;
-    sharedVars_cpu2toCpu1.soc_energy_bank = DCDC_VI.avgVStore;
     sharedVars_cpu2toCpu1.power_from_dc_input = DCDC_VI.avgVBus * sensorVector[IF_1fIdx].realValue;
     sharedVars_cpu2toCpu1.current_charging_current = sensorVector[ISen2fIdx].realValue;
     sharedVars_cpu2toCpu1.current_load_current = sensorVector[ISen1fIdx].realValue;

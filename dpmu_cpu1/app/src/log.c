@@ -524,7 +524,6 @@ void log_store_can_log(uint16_t size, unsigned char *pnt)
     ext_flash_write_buf(can_log_write_address, (uint16_t *)message, size_in_words);
     debug_log_last_writen_address = can_log_write_address;
 
-    Serial_debug(DEBUG_INFO, &cli_serial, "can_log_next_free_address %lx  can_log_size %08lx  size %x\r\n", can_log_next_free_address, can_log_size, size);
 }
 
 

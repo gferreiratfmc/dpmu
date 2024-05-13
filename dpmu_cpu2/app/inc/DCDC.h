@@ -26,7 +26,7 @@
 
 #define MAXIMUM_INPUT_CURRENT 18.5
 #define MAXIMUM_BB_CURRENT 18.5
-#define REG_MIN_DC_BUS_VOLTAGE_RATIO 0.85
+#define REG_MIN_DC_BUS_VOLTAGE_RATIO 0.95
 #define REG_TARGET_DC_BUS_VOLTAGE_RATIO 0.95
 #define MIN_OUTPUT_CURRENT_TO_REGULATE_VOLTAGE  0.5
 
@@ -66,4 +66,10 @@ extern volatile bool eFuseInputCurrentOcurred;
 extern volatile bool eFuseBuckBoostOcurred;
 
 extern uint16_t trickleChargeRangeState;
+//
+//extern uint32_t INT_BEG_1_2Counter;
+//extern uint32_t INT_BEG_1_2CounterSW;
+//extern uint32_t INT_BEG_1_2CounterHW;
+extern uint32_t INT_GLOAD_4_3Counter;
+
 #endif /* APP_INC_DCDC_H_ */

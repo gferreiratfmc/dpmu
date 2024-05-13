@@ -117,6 +117,7 @@ void StateMachine(void)
         if( DoneWithInrush() ) {
             EnableEFuseBBToStopDCDC_EPWM();
             switches_Qinb(SW_ON);
+            switches_Qsb(SW_ON);
             //Stop In-rush PWM
             HAL_PWM_setCounterCompareValue(InrushCurrentLimit_BASE, EPWM_COUNTER_COMPARE_A, 1);
             HAL_StopPwmInrushCurrentLimit();
