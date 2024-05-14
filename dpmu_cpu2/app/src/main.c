@@ -181,11 +181,10 @@ void main(void)
     IPC_sync(IPC_CPU2_L_CPU1_R, IPC_FLAG31);
 
     Board_init();
-
-    PRINT( "DPMU_CPU2 Firmware compilation timestamp= %s %s\r\n", __DATE__, __TIME__ );
-
     HAL_StopPwmDCDC();
     HAL_StopPwmInrushCurrentLimit();
+
+    PRINT( "DPMU_CPU2 Firmware compilation timestamp= %s %s\r\n", __DATE__, __TIME__ );
 
     StateMachineInit();
     DCDCConverterInit();

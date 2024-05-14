@@ -298,14 +298,28 @@ uint8_t convert_soh_energy_bank_to_OD(float value)
  */
 float convert_energy_soc_energy_bank_from_OD(uint16_t value)
 {
-    return (float)value;
+    return (float)value * pow(2, -1);
 }
-uint16_t convert_energy_soc_energy_bank_to_OD(float value)
+
+uint8_t convert_energy_soc_energy_bank_to_OD(float value)
+{
+
+    if( value < 0.0 ) {
+        return 0;
+    }
+    return (uint8_t)(value * pow(2, 1));
+}
+
+uint16_t convert_safety_threshold_soc_energy_bank_to_OD(float value)
 {
     if( value < 0.0 ) {
         return 0;
     }
     return (uint16_t)value;
+}
+float convert_safety_threshold_soc_energy_bank_from_OD(uint16_t value)
+{
+    return (float)value;
 }
 
 uint16_t convert_remaining_energy_to_min_soc_energy_bank_to_OD(float remaining_SoC){

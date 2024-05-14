@@ -979,8 +979,9 @@ RET_T retval;
 
 						intFlag = 1;
 						CO_DEBUG1("401: detected any change at digin port %d\n", port); 
-						Serial_debug(DEBUG_NONE, &cli_serial, "401: detected any change at digin port %d\r\n", port);
-		
+						Serial_debug(DEBUG_NONE, &cli_serial, "401: detected any change at digin port %u\r\n", port);
+						Serial_debug(DEBUG_NONE, &cli_serial, "401: currentValue[%d] newValue[%u] tmp[%d]\r\n", currentValue, newValue, tmp);
+
 					} else {
 
 						/* if not any change, look for low-high only */

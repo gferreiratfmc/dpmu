@@ -415,7 +415,7 @@ static inline uint8_t indices_I_ENERGY_BANK_SUMMARY(UNSIGNED8 subIndex)
 //        Serial_debug(DEBUG_INFO, &cli_serial, "S_MIN_ALLOWED_STATE_OF_CHARGE_OF_ENERGY_BANK: 0x%x\r\n", value);
         break;
     case S_SAFETY_THRESHOLD_STATE_OF_CHARGE:
-        value16 = convert_energy_soc_energy_bank_to_OD( sharedVars_cpu1toCpu2.safety_threshold_state_of_charge );
+        value16 = convert_safety_threshold_soc_energy_bank_to_OD( sharedVars_cpu1toCpu2.safety_threshold_state_of_charge );
         retVal = coOdPutObj_u16(I_ENERGY_BANK_SUMMARY, S_SAFETY_THRESHOLD_STATE_OF_CHARGE, value16 );
 //        Serial_debug(DEBUG_INFO, &cli_serial, "S_SAFETY_THRESHOLD_STATE_OF_CHARGE: xx%x\r\n", value16);
         break;
@@ -430,10 +430,10 @@ static inline uint8_t indices_I_ENERGY_BANK_SUMMARY(UNSIGNED8 subIndex)
 //        Serial_debug(DEBUG_INFO, &cli_serial, "S_STATE_OF_HEALTH_OF_ENERGY_BANK: 0x%x\r\n", value);
         break;
     case S_REMAINING_ENERGY_TO_MIN_SOC_AT_ENERGY_BANK:
-        Serial_debug(DEBUG_INFO, &cli_serial, "sharedVars_cpu2toCpu1.remaining_energy_to_min_soc_energy_bank : 0x%x\r\n", sharedVars_cpu2toCpu1.remaining_energy_to_min_soc_energy_bank );
+//        Serial_debug(DEBUG_INFO, &cli_serial, "sharedVars_cpu2toCpu1.remaining_energy_to_min_soc_energy_bank : 0x%x\r\n", sharedVars_cpu2toCpu1.remaining_energy_to_min_soc_energy_bank );
         value16 = convert_remaining_energy_to_min_soc_energy_bank_to_OD( sharedVars_cpu2toCpu1.remaining_energy_to_min_soc_energy_bank );
         retVal = coOdPutObj_u16(I_ENERGY_BANK_SUMMARY, S_REMAINING_ENERGY_TO_MIN_SOC_AT_ENERGY_BANK, value16);
-        Serial_debug(DEBUG_INFO, &cli_serial, "S_REMAINING_ENERGY_TO_MIN_SOC_AT_ENERGY_BANK: 0x%x\r\n", value16);
+//        Serial_debug(DEBUG_INFO, &cli_serial, "S_REMAINING_ENERGY_TO_MIN_SOC_AT_ENERGY_BANK: 0x%x\r\n", value16);
         break;
     case S_PRECONDITIONAL_THRESHOLD:
         value = convert_voltage_energy_bank_to_OD( sharedVars_cpu1toCpu2.preconditional_threshold );

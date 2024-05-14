@@ -20,17 +20,23 @@
 
 energy_bank_t energy_bank_settings = {0};
 
-energy_bank_condition_t energy_bank_condition;
-energy_bank_condition_t savedStateOfCharge = { .initializedSoCIndicator = 0xFF };
+energy_bank_condition_t energy_bank_condition = { 0 };
+energy_bank_condition_t new_energy_bank_condition = { 0 };
+energy_bank_condition_t savedStateOfCharge = { .initializedSoCIndicator = 0xAA, .capacitance = 15, .initialCapacitance = 15, .stateOfHealthPercent=100.0 };
 
-bool newSoCAvailable;
+uint32_t last_timer;
+bool chargingFlag = false;
+
+bool newEnergyBankConditionAvailable;
 
 float cellVoltagesVector[30];
 
 void initCalcStateOfCharge( void ) {
-    energy_bank_condition.inititalVoltage = DCDC_VI.avgVStore;
-    energy_bank_condition.last_timer = 0;
-    energy_bank_condition.totalChargeTime = 0;
+    new_energy_bank_condition.inititalVoltage = DCDC_VI.avgVStore;
+    new_energy_bank_condition.last_timer = 0;
+    new_energy_bank_condition.totalChargeTime = 0;
+    last_timer = 0;
+
 }
 
 void calcAccumlatedCharge( void ) {
@@ -38,21 +44,28 @@ void calcAccumlatedCharge( void ) {
     static float last_measured_current, instant_current ;
     uint32_t current_timer, elapsed_time;
 
-    if( energy_bank_condition.last_timer == 0) {
-        energy_bank_condition.last_timer = timer_get_ticks();
+    if( last_timer == 0) {
+        last_timer = timer_get_ticks();
         last_measured_current = fabsf( sensorVector[ISen2fIdx].realValue );
-        energy_bank_condition.accumulatedCharge = 0;
+        new_energy_bank_condition.accumulatedCharge = 0;
         return;
     }
 
     current_timer = timer_get_ticks();
-    elapsed_time = current_timer - energy_bank_condition.last_timer;
+    elapsed_time = current_timer - last_timer;
 
     if( elapsed_time >= 1000 ) {
         instant_current =  fabsf( sensorVector[ISen2fIdx].realValue );
-        energy_bank_condition.accumulatedCharge = energy_bank_condition.accumulatedCharge + ( ( instant_current + last_measured_current ) / 2 );
-        energy_bank_condition.totalChargeTime = energy_bank_condition.totalChargeTime + ( elapsed_time / 1000 );
+        new_energy_bank_condition.accumulatedCharge = new_energy_bank_condition.accumulatedCharge + ( ( instant_current + last_measured_current ) / 2 );
+        new_energy_bank_condition.totalChargeTime = new_energy_bank_condition.totalChargeTime + ( elapsed_time / 1000 );
         last_measured_current = instant_current ;
+        PRINT("\r\n===> accumulatedCharge:[%8.2f], totalChargeTime:[%8.2f], last_measured_current:[%8.2f], instant_current:[%8.2f], elapsed_time:[%lu]\r\n\r\n",
+              new_energy_bank_condition.accumulatedCharge,
+              new_energy_bank_condition.totalChargeTime,
+              last_measured_current,
+              instant_current,
+              elapsed_time);
+        last_timer = current_timer;
     }
 }
 
@@ -60,36 +73,49 @@ void finallyCalcStateOfCharge() {
 
     float newCapacitance = 0.0;
 
-    energy_bank_condition.finalVoltage = DCDC_VI.avgVStore;
+    new_energy_bank_condition.finalVoltage = DCDC_VI.avgVStore;
 
-    newCapacitance = energy_bank_condition.accumulatedCharge / (energy_bank_condition.finalVoltage - energy_bank_condition.inititalVoltage);
+    if( new_energy_bank_condition.totalChargeTime < MINIMUM_CHARGING_TIME_IN_SECS ) {
+        PRINT("Charging time lower then 60s\r\n");
+        return;
+    }
 
+    newCapacitance = new_energy_bank_condition.accumulatedCharge / (new_energy_bank_condition.finalVoltage - new_energy_bank_condition.inititalVoltage);
+
+    PRINT("newCapacitance:[%8.2f]\r\n", newCapacitance);
     retriveStateOfChargeFromFlash();
 
     if( energy_bank_condition.initializedSoCIndicator == 0xFF ) {
 
-        energy_bank_condition.stateOfHealthPercent= 100.0;
-        energy_bank_condition.initialCapacitance = newCapacitance;
-        energy_bank_condition.capacitance = newCapacitance;
+        new_energy_bank_condition.stateOfHealthPercent= 100.0;
+        new_energy_bank_condition.initialCapacitance = newCapacitance;
+        new_energy_bank_condition.capacitance = newCapacitance;
+        new_energy_bank_condition.initializedSoCIndicator = 0xAA;
+
+        saveStatOfChargeToFlash(&new_energy_bank_condition);
 
     } else {
 
+        if( newCapacitance >= energy_bank_condition.initialCapacitance ) {
+            newCapacitance = energy_bank_condition.initialCapacitance;
+        }
         energy_bank_condition.stateOfHealthPercent = 100.0 * ( newCapacitance / energy_bank_condition.initialCapacitance );
         energy_bank_condition.capacitance = newCapacitance;
-
+        saveStatOfChargeToFlash(&energy_bank_condition);
     }
 
-
-
-    energy_bank_condition.initializedSoCIndicator = 0xAA;
-    saveStatOfChargeToFlash();
-    newSoCAvailable = true;
+    newEnergyBankConditionAvailable = true;
 
 }
 
 
-void saveStatOfChargeToFlash(void) {
-    memcpy( &savedStateOfCharge, &energy_bank_condition, sizeof(energy_bank_condition_t) );
+void saveStatOfChargeToFlash(energy_bank_condition_t  *p_energy_bank_condition) {
+    memcpy( &savedStateOfCharge, p_energy_bank_condition, sizeof(energy_bank_condition_t) );
+    PRINT("saveStatOfChargeToFlash\r\n");
+    PRINT("energy_bank_condition.stateOfHealthPercent[%8.2f]", p_energy_bank_condition->stateOfHealthPercent);
+    PRINT("new_energy_bank_condition.initialCapacitance[%8.2f]", p_energy_bank_condition->initialCapacitance );
+    PRINT("new_energy_bank_condition.capacitance[%8.2f]",p_energy_bank_condition->capacitance);
+    PRINT("new_energy_bank_condition.initializedSoCIndicator[%d]",p_energy_bank_condition->initializedSoCIndicator);
 
 }
 
@@ -157,23 +183,24 @@ void energy_storage_check(void) {
 
     sharedVars_cpu2toCpu1.soc_energy_bank = energy_bank_condition.stateOfChargePercent;
 
-    if( timer_get_ticks() - last_time >= 7500 ) {
-        last_time = timer_get_ticks();
-        PRINT( "stateOfChargePercent:[%8.2f]%%\r\n", energy_bank_condition.stateOfChargePercent );
-        PRINT( "remaining_energy_to_min_soc_energy_bank:[%8.2f]J\r\n", sharedVars_cpu2toCpu1.remaining_energy_to_min_soc_energy_bank );
-        PRINT( "energy_bank_condition.capacitance:[%8.2f]F\r\n", energy_bank_condition.capacitance);
-        PRINT( "sharedVars_cpu1toCpu2.min_voltage_applied_to_energy_bank:[%8.2f]V\r\n", sharedVars_cpu1toCpu2.min_voltage_applied_to_energy_bank);
-
-    }
+//    if( timer_get_ticks() - last_time >= 7500 ) {
+//        last_time = timer_get_ticks();
+//        PRINT( "stateOfChargePercent:[%8.2f]%% ", energy_bank_condition.stateOfChargePercent );
+//        PRINT( "remaining_energy_to_min_soc_energy_bank:[%8.2f]J ", sharedVars_cpu2toCpu1.remaining_energy_to_min_soc_energy_bank );
+//        PRINT( "energy_bank_condition.capacitance:[%8.2f]F ", energy_bank_condition.capacitance);
+//    }
 
     retriveStateOfChargeFromFlash();
 
-    if( newSoCAvailable == true ) {
+    if( newEnergyBankConditionAvailable == true ) {
+
+        retriveStateOfChargeFromFlash();
 
         sharedVars_cpu2toCpu1.soh_energy_bank = energy_bank_condition.stateOfHealthPercent;
+
         PRINT( "stateOfHealthPercent:[%8.2f]%%\r\n", energy_bank_condition.stateOfHealthPercent );
 
-        newSoCAvailable = false;
+        newEnergyBankConditionAvailable = false;
 
     }
 

@@ -15,6 +15,7 @@
 #include "shared_variables.h"
 
 #define MAX_ENERGY_VOLTAGE_RATIO 0.8733
+#define MINIMUM_CHARGING_TIME_IN_SECS 60.0
 
 typedef struct energy_bank {
     float max_voltage_applied_to_energy_bank;
@@ -42,7 +43,7 @@ typedef struct energy_bank_condition {
 
 extern energy_bank_t energy_bank_settings;
 extern energy_bank_condition_t energy_bank_condition;
-extern bool newSoCAvailable;
+extern bool newEnergyBankConditionAvailable;
 
 void energy_storage_update_settings(void);
 void energy_storage_check(void);
@@ -50,7 +51,7 @@ void energy_storage_check(void);
 void initCalcStateOfCharge(void);
 void calcAccumlatedCharge(void);
 void finallyCalcStateOfCharge(void);
-void saveStatOfChargeToFlash(void);
+void saveStatOfChargeToFlash(energy_bank_condition_t  *p_energy_bank_condition);
 void retriveStateOfChargeFromFlash(void);
 
 //static bool balancing(float cellvoltages[30]);

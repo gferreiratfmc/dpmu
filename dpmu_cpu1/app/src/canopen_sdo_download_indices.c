@@ -507,7 +507,7 @@ static RET_T indices_I_ENERGY_BANK_SUMMARY(UNSIGNED8 subIndex)
         break;
     case S_SAFETY_THRESHOLD_STATE_OF_CHARGE:
         retVal = coOdGetObj_u16(I_ENERGY_BANK_SUMMARY, S_SAFETY_THRESHOLD_STATE_OF_CHARGE, &value16);
-        value_converted = convert_energy_soc_energy_bank_from_OD(value16);
+        value_converted = convert_safety_threshold_soc_energy_bank_from_OD(value16);
         if( value_converted > 0.0 &&  value_converted <= MAX_VOLTAGE_ENERGY_BANK) {
             sharedVars_cpu1toCpu2.safety_threshold_state_of_charge = value_converted;
             Serial_debug(DEBUG_INFO, &cli_serial, "S_SAFETY_THRESHOLD_STATE_OF_CHARGE: 0x%x\r\n", value);
