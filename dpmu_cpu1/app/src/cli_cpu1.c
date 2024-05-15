@@ -1122,7 +1122,8 @@ bool cli_switches(uint32_t switchs, bool state)
     // Copy sub-command to message buffer.
     strncpy(ipc_cli_msg, (char*)&state, 1);
 
-    IPC_waitForAck(IPC_CPU1_L_CPU2_R, IPC_FLAG_MESSAGE_CPU1_TO_CPU2);
+
+    //IPC_waitForAck(IPC_CPU1_L_CPU2_R, IPC_FLAG_MESSAGE_CPU1_TO_CPU2);
 
     // Send a sub-command to CPU2.
     if (IPC_sendCommand(IPC_CPU1_L_CPU2_R, IPC_FLAG_MESSAGE_CPU1_TO_CPU2, false, switchs, (uint32_t)&ipc_cli_msg, 1)) {

@@ -51,25 +51,28 @@ static void check_incoming_commands(void)
     uint32_t data;
     uint8_t  state;
 
-    if( IPC_isFlagBusyRtoL(IPC_CPU1_L_CPU2_R, IPC_SWITCHES_QINB) ){
-        switches_Qinb( sharedVars_cpu1toCpu2.QinbSwitchRequestState );
-        IPC_ackFlagRtoL(IPC_CPU1_L_CPU2_R, IPC_SWITCHES_QINB);
-    }
-
-    if( IPC_isFlagBusyRtoL(IPC_CPU1_L_CPU2_R, IPC_SWITCHES_QLB)){
-        switches_Qlb( sharedVars_cpu1toCpu2.QlbSwitchRequestState );
-        IPC_ackFlagRtoL(IPC_CPU1_L_CPU2_R, IPC_SWITCHES_QLB);
-    }
-
-    if( IPC_isFlagBusyRtoL(IPC_CPU1_L_CPU2_R, IPC_SWITCHES_QSB)){
-        switches_Qsb( sharedVars_cpu1toCpu2.QsbSwitchRequestState );
-        IPC_ackFlagRtoL(IPC_CPU1_L_CPU2_R, IPC_SWITCHES_QSB);
-    }
-
-    if( IPC_isFlagBusyRtoL(IPC_CPU1_L_CPU2_R, IPC_SWITCHES_QIRS)){
-        //switches_Qinrush( sharedVars_cpu1toCpu2.QlbSwitchRequestState );
-        IPC_ackFlagRtoL(IPC_CPU1_L_CPU2_R, IPC_SWITCHES_QIRS);
-    }
+//    if( IPC_isFlagBusyRtoL(IPC_CPU1_L_CPU2_R, IPC_SWITCHES_QINB) ){
+//        PRINT("===========> Setting QINB:%d\r\n", sharedVars_cpu1toCpu2.QinbSwitchRequestState);
+//        switches_Qinb( sharedVars_cpu1toCpu2.QinbSwitchRequestState );
+//        IPC_ackFlagRtoL(IPC_CPU1_L_CPU2_R, IPC_SWITCHES_QINB);
+//    }
+//
+//    if( IPC_isFlagBusyRtoL(IPC_CPU1_L_CPU2_R, IPC_SWITCHES_QLB)){
+//        PRINT("===========> Setting QLB:%d\r\n", sharedVars_cpu1toCpu2.QlbSwitchRequestState);
+//        switches_Qlb( sharedVars_cpu1toCpu2.QlbSwitchRequestState );
+//        IPC_ackFlagRtoL(IPC_CPU1_L_CPU2_R, IPC_SWITCHES_QLB);
+//    }
+//
+//    if( IPC_isFlagBusyRtoL(IPC_CPU1_L_CPU2_R, IPC_SWITCHES_QSB)){
+//        PRINT("===========> Setting QSB:%d\r\n", sharedVars_cpu1toCpu2.QsbSwitchRequestState);
+//        switches_Qsb( sharedVars_cpu1toCpu2.QsbSwitchRequestState );
+//        IPC_ackFlagRtoL(IPC_CPU1_L_CPU2_R, IPC_SWITCHES_QSB);
+//    }
+//
+//    if( IPC_isFlagBusyRtoL(IPC_CPU1_L_CPU2_R, IPC_SWITCHES_QIRS)){
+//        //switches_Qinrush( sharedVars_cpu1toCpu2.QlbSwitchRequestState );
+//        IPC_ackFlagRtoL(IPC_CPU1_L_CPU2_R, IPC_SWITCHES_QIRS);
+//    }
 
 
     if (IPC_readCommand(IPC_CPU2_L_CPU1_R, IPC_FLAG_MESSAGE_CPU1_TO_CPU2, false, &command, &addr, &data) != false) {
@@ -85,6 +88,21 @@ static void check_incoming_commands(void)
 
         case IPC_GET_TICKS:
             IPC_sendResponse(IPC_CPU2_L_CPU1_R, timer_get_ticks());
+            break;
+        case IPC_SWITCHES_QIRS:
+            //switches_Qinrush(state); /* run inrush current limiter */
+            break;
+
+        case IPC_SWITCHES_QLB:
+            switches_Qlb(state);
+            break;
+
+        case IPC_SWITCHES_QSB:
+            switches_Qsb(state);
+            break;
+
+        case IPC_SWITCHES_QINB:
+            switches_Qinb(state);
             break;
 
         default:
