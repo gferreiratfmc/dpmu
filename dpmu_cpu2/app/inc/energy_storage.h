@@ -16,6 +16,12 @@
 
 #define MAX_ENERGY_VOLTAGE_RATIO 0.8733
 #define MINIMUM_CHARGING_TIME_IN_SECS 60.0
+#define NUMBER_OF_AVG_CHARGING_CURRENT_COUNT 10
+
+enum sohStates { sohCalcWait = 0,
+                 sohCalcInit,
+                 sohCalcCapacitance,
+                 sohCalcEnd };
 
 typedef struct energy_bank {
     float max_voltage_applied_to_energy_bank;
@@ -28,18 +34,6 @@ typedef struct energy_bank {
     float ESS_Current;                           /* max charging current */
 } energy_bank_t;
 
-typedef struct energy_bank_condition {
-    float stateOfHealthPercent;
-    float stateOfChargePercent;
-    float capacitance;
-    float inititalVoltage;
-    float finalVoltage;
-    float accumulatedCharge;
-    float initialCapacitance;
-    float totalChargeTime;
-    uint32_t last_timer;
-    uint8_t initializedSoCIndicator;
-} energy_bank_condition_t;
 
 extern energy_bank_t energy_bank_settings;
 extern energy_bank_condition_t energy_bank_condition;
@@ -48,13 +42,11 @@ extern bool newEnergyBankConditionAvailable;
 void energy_storage_update_settings(void);
 void energy_storage_check(void);
 
-void initCalcStateOfCharge(void);
+void startCalcStateOfCharge(void);
 void calcAccumlatedCharge(void);
 void finallyCalcStateOfCharge(void);
-void saveStatOfChargeToFlash(energy_bank_condition_t  *p_energy_bank_condition);
-void retriveStateOfChargeFromFlash(void);
+void saveStateOfChargeToFlash(energy_bank_condition_t  *p_energy_bank_condition);
+bool retriveStateOfChargeFromFlash(void);
 
-//static bool balancing(float cellvoltages[30]);
-//static void SortCellVoltageIndex(float cellvoltages[], uint16_t Position);
 
 #endif /* APP_INC_ENERGY_STORAGE_H_ */

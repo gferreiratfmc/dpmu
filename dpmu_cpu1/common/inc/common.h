@@ -33,8 +33,8 @@
 #define IPC_FLAG_MESSAGE_CPU1_TO_CPU2        IPC_FLAG0  // this is the normal IPC flag used between CPU1 and CPU2
 #define IPC_FLAG_CLI                         IPC_FLAG1  // this IPC flag is used for tests issued via CLI
 #define IPC_CPU1_REQUIERS_EMERGECY_SHUT_DOWN IPC_FLAG2  // request from CPU1 or IOP for emergency shutdown
-
     /* CPU2 -> CPU1 */
+#define IPC_FLAG_MESSAGE_CPU2_TO_CPU1        IPC_FLAG7  // this is the normal IPC flag used between CPU1 and CPU2
 #define IPC_NEW_CONSTANT_CURRENT_CHARGE_DONE IPC_FLAG8  // signal to CPU1 it is time to calculate SoH
 #define IPC_NEW_ENERGY_CELLS_VOLTAGE         IPC_FLAG9  // signal to CPU1 it is time to calculate SoC
 #define IPC_IOP_REQUEST_CHANGE_OF_STATE      IPC_FLAG10 // Request from CPU1 or IOP to change state in state machine, controlling algorithm
@@ -106,6 +106,8 @@ typedef enum
     IPC_SWITCHES_QIRS_DONE, // Update state of switch In-Rush circuitry
 
     /* CPU2 -> CPU1 */
+    IPC_REQUEST_READ_SOH_FROM_EXT_FLASH,
+    IPC_REQUEST_WRITE_SOH_TO_EXT_FLASH
 
 } mid_cli_ipc;              // 'mid' stands for Message Id
 

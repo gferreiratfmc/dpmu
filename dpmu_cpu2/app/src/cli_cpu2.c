@@ -32,6 +32,7 @@ cpu2_status_t cpu2_status;
 #pragma DATA_SECTION(ipc_debug_msg, "MSGRAM_CPU2_TO_CPU1")
 char ipc_debug_msg[MAX_CPU2_DBG_LEN + 1];
 
+
 static void cli_switch_matrix(char *buf);
 static void cli_switch_matrix_cont(char *buf);
 static void cli_measure_zero_current_matrix_switch(char *buf);

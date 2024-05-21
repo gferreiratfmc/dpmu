@@ -12,6 +12,20 @@
 #include "device.h"
 #include "GlobalV.h"
 
+typedef struct energy_bank_condition {
+    float stateOfHealthPercent;
+    float stateOfChargePercent;
+    float capacitance;
+    float inititalVoltage;
+    float finalVoltage;
+    float accumulatedCharge;
+    float initialCapacitance;
+    float totalChargeTime;
+    uint32_t last_timer;
+    uint8_t initializedSoCIndicator;
+} energy_bank_condition_t;
+
+
 typedef struct sharedVars_cpu1toCpu2_t // commonCpu1ToCpu2
 {
     uint8_t iop_operation_request_state;        /* First section in the group */
@@ -56,10 +70,10 @@ typedef struct sharedVars_cpu1toCpu2_t // commonCpu1ToCpu2
     bool QlbSwitchRequestState;
     bool QinrushSwitchRequestState;
 
-
 } sharedVars_cpu1toCpu2_t;
 
 extern struct sharedVars_cpu1toCpu2_t sharedVars_cpu1toCpu2;
+extern energy_bank_condition_t energy_bank_condition_from_flash;
 
 /* for calculating SoH */
 typedef struct shared_energy_bank
@@ -102,7 +116,10 @@ typedef struct sharedVars_cpu2toCpu1_t // commonCpu2ToCpu1
     shared_energy_bank_t energy_bank;
 } sharedVars_cpu2toCpu1_t;
 
+
+
 extern struct sharedVars_cpu2toCpu1_t sharedVars_cpu2toCpu1;
+
 
 
 #endif /* COMMON_INC_SHARED_VARIABLES_H_ */

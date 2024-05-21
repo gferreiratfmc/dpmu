@@ -193,7 +193,6 @@ void StateMachine(void)
                 DCDC_VI.I_Ref_Real = DCDC_VI.I_Ref_Real + ( I_Ref_Real_Final / 100.0 );
                 if( DCDC_VI.I_Ref_Real >= I_Ref_Real_Final ) {
                     DCDC_VI.I_Ref_Real = I_Ref_Real_Final;
-                    initCalcStateOfCharge();
                     StateVector.State_Next = Charge;
                 }
             }
@@ -306,6 +305,8 @@ void StateMachine(void)
     case RegulateVoltageInit:
         DCDC_VI.I_Ref_Real = 0.0;
         DCDC_current_boost_loop_float();
+        switches_Qinb( SW_OFF );
+        DPMUInitialized = false;
         StateVector.State_Next = RegulateVoltage;
         break;
 

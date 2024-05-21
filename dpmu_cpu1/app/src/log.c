@@ -160,11 +160,11 @@ void log_read_domain(UNSIGNED16 index, UNSIGNED8 subindex, UNSIGNED32 domainBufS
 
 //    Serial_debug(DEBUG_INFO, &cli_serial, "%08x  ", start_address);
 //    Serial_debug(DEBUG_INFO, &cli_serial, "%04x  ", domainBufSize);
-    for(int i = 0; i < domainBufSize; i++)
-    {
-        Serial_debug(DEBUG_INFO, &cli_serial, "%04x ", message[i]);
-    }
-    Serial_debug(DEBUG_INFO, &cli_serial, "\r\n");
+//    for(int i = 0; i < domainBufSize; i++)
+//    {
+//        Serial_debug(DEBUG_INFO, &cli_serial, "%04x ", message[i]);
+//    }
+//    Serial_debug(DEBUG_INFO, &cli_serial, "\r\n");
 }
 
 uint8_t log_debug_log_read(

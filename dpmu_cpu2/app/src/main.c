@@ -130,7 +130,7 @@ static void handle_top_half_interrupts(void)
     if (efuse_top_half_flag == true) {
         cpu2_status.num_short_circ += 1;
         // Send a short-circuit indication message to CPU1.
-        IPC_sendCommand(IPC_CPU2_L_CPU1_R, IPC_FLAG_MESSAGE_CPU1_TO_CPU2, false, IPC_SHORT_CIRCUIT, 0, 0);
+        IPC_sendCommand(IPC_CPU2_L_CPU1_R, IPC_FLAG_MESSAGE_CPU2_TO_CPU1, false, IPC_SHORT_CIRCUIT, 0, 0);
         efuse_top_half_flag = false;
     }
 
@@ -195,7 +195,7 @@ void main(void)
 
     //
     // Synchronize both cores
-    // IPC_sync(IPC_CPU2_L_CPU1_R, IPC_FLAG11); // Needed when running CPU2 without bootloader
+    //IPC_sync(IPC_CPU2_L_CPU1_R, IPC_FLAG11); // Needed only when running CPU2 without bootloader
     IPC_sync(IPC_CPU2_L_CPU1_R, IPC_FLAG31);
 
     Board_init();
