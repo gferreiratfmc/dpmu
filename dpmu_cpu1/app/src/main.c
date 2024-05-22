@@ -266,59 +266,67 @@ void main(void)
  */
 static void check_cpu2_ind(void)
 {
-    uint32_t cmd;
-    uint32_t addr;
-    uint32_t data;
+    static uint32_t cmd;
+    static uint32_t addr;
+    static uint32_t data;
+    static uint32_t cmd16;
 
     ext_flash_desc_t *app_vars_ext_flash_desc;
     uint16_t buff[64];
     energy_bank_condition_t energy_bank_condition;
 
+    cmd = 0xFFFFFFFF;
 
     if (IPC_readCommand(IPC_CPU1_L_CPU2_R, IPC_FLAG_MESSAGE_CPU2_TO_CPU1, false, &cmd, &addr, &data) != false) {
+
+        cmd16 = (uint16_t)(0x0000FFFF & cmd);
+        if( cmd16 != IPC_REQUEST_READ_SOH_FROM_EXT_FLASH) {
+            Serial_printf(&cli_serial, "\r\n*** IPC_FLAG_MESSAGE_CPU2_TO_CPU1 CMD16 [0x%08p] ***\r\n\r\n->", cmd);
+        }
         switch (cmd) {
-        case IPC_SHORT_CIRCUIT:
-            Serial_printf(&cli_serial, "\r\n*** SHORT CIRCUIT #%lu ***\r\n\r\n->", cpu2_status.num_short_circ);
-            // TODO: set corresponding CANOpen object, and possibly log in external flash
-            break;
+            case IPC_SHORT_CIRCUIT:
+                Serial_printf(&cli_serial, "\r\n*** SHORT CIRCUIT #%lu ***\r\n\r\n->", cpu2_status.num_short_circ);
+                // TODO: set corresponding CANOpen object, and possibly log in external flash
+                break;
 
-        case IPC_REQUEST_READ_SOH_FROM_EXT_FLASH:
+            case IPC_REQUEST_READ_SOH_FROM_EXT_FLASH:
 
 
-            memset( buff, 0, 64 );
+                memset( buff, 0, 64 );
 
-            ext_flash_read_buf(APP_VARS_EXT_FLASH_ADDRESS_START, buff, data);
+                ext_flash_read_buf(APP_VARS_EXT_FLASH_ADDRESS_START, buff, data);
 
-            memcpy( &energy_bank_condition, buff, sizeof(energy_bank_condition_t) );
-            memcpy( (void *)addr, buff, data );
-//            Serial_debug(DEBUG_INFO, &cli_serial, "\r\n====>Read back bufffrom flash\r\n");
-//            Serial_debug(DEBUG_INFO, &cli_serial, "READ FROM FLASH energy_bank_condition.stateOfHealthPercent[%8.2f]\r\n", energy_bank_condition.stateOfHealthPercent);
-//            Serial_debug(DEBUG_INFO, &cli_serial, "READ FROM FLASH new_energy_bank_condition.initialCapacitance[%8.2f]]\r\n", energy_bank_condition.initialCapacitance );
-//            Serial_debug(DEBUG_INFO, &cli_serial, "READ FROM FLASH new_energy_bank_condition.capacitance[%8.2f]]\r\n", energy_bank_condition.capacitance);
-//            Serial_debug(DEBUG_INFO, &cli_serial, "READ FROM FLASH new_energy_bank_condition.initializedSoCIndicator[%d]\r\n ", energy_bank_condition.initializedSoCIndicator);
+                memcpy( &energy_bank_condition, buff, sizeof(energy_bank_condition_t) );
+                memcpy( (void *)addr, buff, data );
+    //            Serial_debug(DEBUG_INFO, &cli_serial, "\r\n====>Read back bufffrom flash\r\n");
+    //            Serial_debug(DEBUG_INFO, &cli_serial, "READ FROM FLASH energy_bank_condition.stateOfHealthPercent[%8.2f]\r\n", energy_bank_condition.stateOfHealthPercent);
+    //            Serial_debug(DEBUG_INFO, &cli_serial, "READ FROM FLASH new_energy_bank_condition.initialCapacitance[%8.2f]]\r\n", energy_bank_condition.initialCapacitance );
+    //            Serial_debug(DEBUG_INFO, &cli_serial, "READ FROM FLASH new_energy_bank_condition.capacitance[%8.2f]]\r\n", energy_bank_condition.capacitance);
+    //            Serial_debug(DEBUG_INFO, &cli_serial, "READ FROM FLASH new_energy_bank_condition.initializedSoCIndicator[%d]\r\n ", energy_bank_condition.initializedSoCIndicator);
 
-            break;
+                break;
 
-        case IPC_REQUEST_WRITE_SOH_TO_EXT_FLASH:
-//            Serial_printf(&cli_serial, "\r\n====>APP_VARS_EXT_FLASH_ADDRESS_START:[%lu]\r\n", APP_VARS_EXT_FLASH_ADDRESS_START);
-//            app_vars_ext_flash_desc = (ext_flash_desc_t *)ext_flash_sector_from_address(APP_VARS_EXT_FLASH_ADDRESS_START);
-//            Serial_printf(&cli_serial, "\r\n====>app_vars_ext_flash_desc->sector:[%lu]\r\n", app_vars_ext_flash_desc->sector);
+            case IPC_REQUEST_WRITE_SOH_TO_EXT_FLASH:
 
-            //Copy received message from CPU2
-            memcpy( buff, (void *)addr, data);
-            memcpy( &energy_bank_condition, buff, sizeof(energy_bank_condition_t) );
-            Serial_debug(DEBUG_INFO, &cli_serial, "CPU1 energy_bank_condition.stateOfHealthPercent[%8.2f]\r\n", energy_bank_condition.stateOfHealthPercent);
-            Serial_debug(DEBUG_INFO, &cli_serial, "CPU1 new_energy_bank_condition.initialCapacitance[%8.2f]]\r\n", energy_bank_condition.initialCapacitance );
-            Serial_debug(DEBUG_INFO, &cli_serial, "CPU1 new_energy_bank_condition.capacitance[%8.2f]]\r\n", energy_bank_condition.capacitance);
-            Serial_debug(DEBUG_INFO, &cli_serial, "CPU1 new_energy_bank_condition.initializedSoCIndicator[%d]\r\n ", energy_bank_condition.initializedSoCIndicator);
+                Serial_printf(&cli_serial, "\r\n====>APP_VARS_EXT_FLASH_ADDRESS_START:[%lu]\r\n", APP_VARS_EXT_FLASH_ADDRESS_START);
+                app_vars_ext_flash_desc = (ext_flash_desc_t *)ext_flash_sector_from_address(APP_VARS_EXT_FLASH_ADDRESS_START);
+                Serial_printf(&cli_serial, "\r\n====>app_vars_ext_flash_desc->sector:[%lu]\r\n", app_vars_ext_flash_desc->sector);
 
-            app_vars_ext_flash_desc = (ext_flash_desc_t *)ext_flash_sector_from_address(APP_VARS_EXT_FLASH_ADDRESS_START);
-            ext_flash_erase_sector(app_vars_ext_flash_desc->sector);
-            ext_flash_write_buf(APP_VARS_EXT_FLASH_ADDRESS_START, buff, data);
+                //Copy received message from CPU2
+                memcpy( buff, (void *)addr, data);
+                memcpy( &energy_bank_condition, buff, sizeof(energy_bank_condition_t) );
+                Serial_debug(DEBUG_INFO, &cli_serial, "CPU1 energy_bank_condition.stateOfHealthPercent[%8.2f]\r\n", energy_bank_condition.stateOfHealthPercent);
+                Serial_debug(DEBUG_INFO, &cli_serial, "CPU1 new_energy_bank_condition.initialCapacitance[%8.2f]]\r\n", energy_bank_condition.initialCapacitance );
+                Serial_debug(DEBUG_INFO, &cli_serial, "CPU1 new_energy_bank_condition.capacitance[%8.2f]]\r\n", energy_bank_condition.capacitance);
+                Serial_debug(DEBUG_INFO, &cli_serial, "CPU1 new_energy_bank_condition.initializedSoCIndicator[%d]\r\n ", energy_bank_condition.initializedSoCIndicator);
 
-            break;
-        default:
-            break;
+                app_vars_ext_flash_desc = (ext_flash_desc_t *)ext_flash_sector_from_address(APP_VARS_EXT_FLASH_ADDRESS_START);
+                ext_flash_erase_sector(app_vars_ext_flash_desc->sector);
+                ext_flash_write_buf(APP_VARS_EXT_FLASH_ADDRESS_START, buff, data);
+
+                break;
+            default:
+                break;
         }
 
         // Acknowledge the flag.

@@ -21,7 +21,10 @@
 enum sohStates { sohCalcWait = 0,
                  sohCalcInit,
                  sohCalcCapacitance,
-                 sohCalcEnd };
+                 sohCalcEnd,
+                 verifySoHFromFlash,
+                 saveNewEnergyConditionToFlash,
+                 saveEnergyConditionToFlash};
 
 typedef struct energy_bank {
     float max_voltage_applied_to_energy_bank;
@@ -44,9 +47,9 @@ void energy_storage_check(void);
 
 void startCalcStateOfCharge(void);
 void calcAccumlatedCharge(void);
-void finallyCalcStateOfCharge(void);
-void saveStateOfChargeToFlash(energy_bank_condition_t  *p_energy_bank_condition);
-bool retriveStateOfChargeFromFlash(void);
+bool finallyCalcStateOfCharge(void);
+bool saveStateOfChargeToFlash(energy_bank_condition_t  *p_energy_bank_condition);
+bool retriveStateOfChargeFromFlash(energy_bank_condition_t *p_energy_bank_condition);
 
 
 #endif /* APP_INC_ENERGY_STORAGE_H_ */

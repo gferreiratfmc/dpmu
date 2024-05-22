@@ -16,13 +16,8 @@ typedef struct energy_bank_condition {
     float stateOfHealthPercent;
     float stateOfChargePercent;
     float capacitance;
-    float inititalVoltage;
-    float finalVoltage;
-    float accumulatedCharge;
     float initialCapacitance;
-    float totalChargeTime;
-    uint32_t last_timer;
-    uint8_t initializedSoCIndicator;
+    uint16_t initializedSoCIndicator;
 } energy_bank_condition_t;
 
 
@@ -120,6 +115,6 @@ typedef struct sharedVars_cpu2toCpu1_t // commonCpu2ToCpu1
 
 extern struct sharedVars_cpu2toCpu1_t sharedVars_cpu2toCpu1;
 
-
+extern char ipc_soh_msg[128];
 
 #endif /* COMMON_INC_SHARED_VARIABLES_H_ */

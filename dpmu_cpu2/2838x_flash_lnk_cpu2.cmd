@@ -68,18 +68,18 @@ SECTIONS
    sharedVars_cpu2toCpu1: > RAMGS3
 
    codestart           : > BEGIN, ALIGN(8)
-   .text               : >> FLASH4 | FLASH5 | FLASH6 , ALIGN(8)
-   .cinit              : > FLASH4 | FLASH5, ALIGN(8)
+   .text               : >> FLASH4 | FLASH5 | FLASH6 | FLASH7 , ALIGN(8)
+   .cinit              : > FLASH4 | FLASH5 | FLASH6, ALIGN(8)
    .switch             : > FLASH4, ALIGN(8)
    .reset              : > RESET, TYPE = DSECT /* not used, */
-   .stack              : > RAMLS7 //RAMM1
+   .stack              : > RAMLS6 | RAMLS7 //RAMM1
 
 #if defined(__TI_EABI__)
-   .init_array      : > FLASH5, ALIGN(8)
-   .bss             : >> RAMLS5 | RAMLS6 | RAMLS7
+   .init_array      : > FLASH3, ALIGN(8)
+   .bss             : >> RAMLS4 | RAMLS5 | RAMLS6 | RAMLS7
    .bss:output      : >> RAMLS5 | RAMLS6 | RAMLS7
    .bss:cio         : >> RAMLS5 | RAMLS6 | RAMLS7
-   .data            : >> RAMLS5 | RAMLS6 | RAMLS7
+   .data            : >> RAMLS4 | RAMLS5 | RAMLS6 | RAMLS7
    .sysmem          : > RAMLS5 | RAMLS6 | RAMLS7
 //   .bss             : > RAMLS3
 //   .bss:output      : > RAMLS3
@@ -87,7 +87,7 @@ SECTIONS
 //   .data            : > RAMLS2
 //   .sysmem          : > RAMM1
    /* Initalized sections go in Flash */
-   .const           : > FLASH5 | FLASH5, ALIGN(8)
+   .const           : > FLASH5 | FLASH6, ALIGN(8)
 #else
    .pinit           : > FLASH5, ALIGN(8)
    .ebss            : > RAMLS3
@@ -108,7 +108,7 @@ SECTIONS
 
 
    #if defined(__TI_EABI__)
-       .TI.ramfunc : {} LOAD = FLASH5,
+       .TI.ramfunc : {} LOAD = FLASH4,
                         RUN = RAMLS0 | RAMLS1 | RAMLS2 |RAMLS3,
                         LOAD_START(RamfuncsLoadStart),
                         LOAD_SIZE(RamfuncsLoadSize),
@@ -118,7 +118,7 @@ SECTIONS
                         RUN_END(RamfuncsRunEnd),
                         ALIGN(8)
    #else
-       .TI.ramfunc : {} LOAD = FLASH5,
+       .TI.ramfunc : {} LOAD = FLASH4,
                         RUN = RAMLS0 | RAMLS1 | RAMLS2 |RAMLS3,
                         LOAD_START(_RamfuncsLoadStart),
                         LOAD_SIZE(_RamfuncsLoadSize),

@@ -17,3 +17,7 @@ energy_bank_condition_t energy_bank_condition_from_flash;
 #pragma RETAIN(sharedVars_cpu2toCpu1)
 #pragma DATA_SECTION(sharedVars_cpu2toCpu1, "sharedVars_cpu2toCpu1")
 sharedVars_cpu2toCpu1_t sharedVars_cpu2toCpu1 = {0};
+
+
+#pragma DATA_SECTION(ipc_soh_msg, "MSGRAM_CPU2_TO_CPU1")
+char ipc_soh_msg[128];

@@ -15,6 +15,7 @@
 #include "common.h"
 #include "cli_cpu2.h"
 #include "CLLC.h"
+#include "energy_storage.h"
 #include "hal.h"
 #include "sensors.h"
 #include "switch_matrix.h"
@@ -37,6 +38,7 @@ static void cli_switch_matrix(char *buf);
 static void cli_switch_matrix_cont(char *buf);
 static void cli_measure_zero_current_matrix_switch(char *buf);
 static void cli_measure_cell_current(char *buf);
+static void cli_save_soh(char *buf);
 
 void count_number_of_arguments(const char *buf);
 
@@ -81,6 +83,7 @@ void check_incoming_cli_commands(void)
                 PRINT("swmatcont [turns] continually iterate over energy cells in external energy storage (0 -> infinity)\r\n");
                 PRINT("measZeroI [turns] measure zero current offset for matrix switch (0 -> infinity)\r\n");
                 PRINT("measCellI [turns] measure cell current (0 -> infinity)\r\n");
+                PRINT("soh tests write/read SOH to/from external flash\r\n");
             } else if (strcmp(subcmd, "sc") == 0) {
                 efuse_top_half_flag = 1;
             } else if (strcmp(subcmd, "gs") == 0) {
@@ -93,6 +96,8 @@ void check_incoming_cli_commands(void)
                 cli_measure_zero_current_matrix_switch(subcmd);
             } else if (strcmp(subcmd, "swmatcont") >= 0) {
                 cli_measure_cell_current(subcmd);
+            } else if (strcmp(subcmd, "soh") >= 0) {
+                cli_save_soh(subcmd);
             } else {
                 PRINT(" ERROR - Unknown sub-command\r\n");
             }
@@ -334,6 +339,37 @@ void cli_measure_cell_current(char *buf)
         PRINT("CLLC_VI.IDAB3_RAW %04d  \r\n", CLLC_VI.IDAB3_RAW);
     }
     PRINT("\r\nTurns done: %d\r\n", turns);
+}
+
+void cli_save_soh(char *buffer){
+
+    energy_bank_condition_t write_energy_bank_condition, read_energy_bank_condition;
+
+    for(int i=0;i<10;i++) {
+        PRINT("\r\n========== TEST SOH W/R EXTERNAL FLASH:[%d]\r\n",i);
+
+        write_energy_bank_condition.stateOfHealthPercent= 100.0 * 10*i;
+        write_energy_bank_condition.initialCapacitance = 15.0 + i;
+        write_energy_bank_condition.capacitance = 14.0 + 2*i;
+        write_energy_bank_condition.initializedSoCIndicator = 0xAAA0 + i;
+
+        PRINT("WRITING SOH TO FLASH\r\n");
+        PRINT("stateOfHealthPercent [%8.2f]\r\n",write_energy_bank_condition.stateOfHealthPercent);
+        PRINT("initialCapacitance:[%8.2f]\r\n",write_energy_bank_condition.initialCapacitance );
+        PRINT("capacitance[%8.2f]\r\n",write_energy_bank_condition.capacitance );
+        PRINT("initializedSoCIndicator[%04X]\r\n",write_energy_bank_condition.initializedSoCIndicator );
+
+        while ( saveStateOfChargeToFlash(&write_energy_bank_condition) != true);
+
+        PRINT("\r\n\r\nREADING SOH FROM FLASH\r\n");
+
+        while( retriveStateOfChargeFromFlash(&read_energy_bank_condition) != true );
+
+        PRINT("stateOfHealthPercent [%8.2f]\r\n",read_energy_bank_condition.stateOfHealthPercent);
+        PRINT("initialCapacitance:[%8.2f]\r\n",read_energy_bank_condition.initialCapacitance );
+        PRINT("capacitance[%8.2f]\r\n",read_energy_bank_condition.capacitance );
+        PRINT("initializedSoCIndicator[%04X]\r\n",read_energy_bank_condition.initializedSoCIndicator );
+    }
 }
 
 void count_number_of_arguments(const char *buf)
