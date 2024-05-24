@@ -398,6 +398,7 @@ gpio26.gpioPin.$assign = "GPIO146";
 i2c1.bitCount               = "I2C_BITCOUNT_8";
 i2c1.useInterrupts          = false;
 i2c1.$name                  = "I2C_BUS";
+i2c1.bitRate                = 100000;
 i2c1.i2c.$assign            = "I2CA";
 i2c1.i2c.i2c_sdaPin.$assign = "GPIO0";
 i2c1.i2c.i2c_sclPin.$assign = "GPIO1";

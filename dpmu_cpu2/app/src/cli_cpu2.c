@@ -343,32 +343,22 @@ void cli_measure_cell_current(char *buf)
 
 void cli_save_soh(char *buffer){
 
-    energy_bank_condition_t write_energy_bank_condition, read_energy_bank_condition;
+    float initialCapacitance;
+    float currentCapacitance;
 
     for(int i=0;i<10;i++) {
-        PRINT("\r\n========== TEST SOH W/R EXTERNAL FLASH:[%d]\r\n",i);
+        PRINT("\r\n========== TEST CAPACITANCES W/R EXTERNAL FLASH:[%d]\r\n",i);
 
-        write_energy_bank_condition.stateOfHealthPercent= 100.0 * 10*i;
-        write_energy_bank_condition.initialCapacitance = 15.0 + i;
-        write_energy_bank_condition.capacitance = 14.0 + 2*i;
-        write_energy_bank_condition.initializedSoCIndicator = 0xAAA0 + i;
 
-        PRINT("WRITING SOH TO FLASH\r\n");
-        PRINT("stateOfHealthPercent [%8.2f]\r\n",write_energy_bank_condition.stateOfHealthPercent);
-        PRINT("initialCapacitance:[%8.2f]\r\n",write_energy_bank_condition.initialCapacitance );
-        PRINT("capacitance[%8.2f]\r\n",write_energy_bank_condition.capacitance );
-        PRINT("initializedSoCIndicator[%04X]\r\n",write_energy_bank_condition.initializedSoCIndicator );
+        initialCapacitance = i*10.0;
+        currentCapacitance = i*9.5;
+        PRINT("=== Write initialCapacitance:[%8.2f]\r\n", initialCapacitance );
+        PRINT("=== Write currentCapacitance:[%8.2f]\r\n", currentCapacitance );
+        startSaveCapacitance = true;
+        while( requestCPU1ToSaveCapacitancesToFlash( initialCapacitance, currentCapacitance) != true);
 
-        while ( saveStateOfChargeToFlash(&write_energy_bank_condition) != true);
-
-        PRINT("\r\n\r\nREADING SOH FROM FLASH\r\n");
-
-        while( retriveStateOfChargeFromFlash(&read_energy_bank_condition) != true );
-
-        PRINT("stateOfHealthPercent [%8.2f]\r\n",read_energy_bank_condition.stateOfHealthPercent);
-        PRINT("initialCapacitance:[%8.2f]\r\n",read_energy_bank_condition.initialCapacitance );
-        PRINT("capacitance[%8.2f]\r\n",read_energy_bank_condition.capacitance );
-        PRINT("initializedSoCIndicator[%04X]\r\n",read_energy_bank_condition.initializedSoCIndicator );
+        DEVICE_DELAY_US( 10000 );
+        PRINT("=== Read initialCapacitance:[%8.2f]\r\n", sharedVars_cpu1toCpu2.initialCapacitance );
     }
 }
 

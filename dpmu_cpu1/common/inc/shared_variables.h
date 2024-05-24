@@ -12,13 +12,6 @@
 #include "device.h"
 #include "GlobalV.h"
 
-typedef struct energy_bank_condition {
-    float stateOfHealthPercent;
-    float stateOfChargePercent;
-    float capacitance;
-    float initialCapacitance;
-    uint16_t initializedSoCIndicator;
-} energy_bank_condition_t;
 
 
 typedef struct sharedVars_cpu1toCpu2_t // commonCpu1ToCpu2
@@ -65,10 +58,13 @@ typedef struct sharedVars_cpu1toCpu2_t // commonCpu1ToCpu2
     bool QlbSwitchRequestState;
     bool QinrushSwitchRequestState;
 
+    float initialCapacitance;
+    float currentCapacitance;
+    bool newCapacitanceSaved;
+
 } sharedVars_cpu1toCpu2_t;
 
 extern struct sharedVars_cpu1toCpu2_t sharedVars_cpu1toCpu2;
-extern energy_bank_condition_t energy_bank_condition_from_flash;
 
 /* for calculating SoH */
 typedef struct shared_energy_bank
@@ -93,6 +89,11 @@ typedef struct sharedVars_cpu2toCpu1_t // commonCpu2ToCpu1
     uint16_t power_from_dc_input;               /* last calculated */
 
     uint16_t available_power_budget_dc_share;   /* from our SHARED bus */
+
+
+    bool newCapacitanceAvailable;
+    float initialCapacitance;
+    float currentCapacitance;
 
     float    soc_energy_bank;                   /* last measured state of charge */
     float    soh_energy_bank;                   /* last calculated state of health */

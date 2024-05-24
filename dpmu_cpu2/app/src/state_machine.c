@@ -216,7 +216,7 @@ void StateMachine(void)
             }
         }
 
-        calcAccumlatedCharge();
+//        calcAccumlatedCharge();
 
         break;
 
@@ -225,7 +225,7 @@ void StateMachine(void)
             DCDC_current_buck_loop_float();
             if( sensorVector[ISen2fIdx].realValue < 0.25 ) {
                 StateVector.State_Next = StopEPWMs;
-                finallyCalcStateOfCharge();
+//                finallyCalcStateOfCharge();
             }
           break;
 

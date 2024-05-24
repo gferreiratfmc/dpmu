@@ -15,7 +15,7 @@
 #include "shared_variables.h"
 
 #define MAX_ENERGY_VOLTAGE_RATIO 0.8733
-#define MINIMUM_CHARGING_TIME_IN_SECS 60.0
+#define MINIMUM_CHARGING_TIME_IN_MILISECS 60000
 #define NUMBER_OF_AVG_CHARGING_CURRENT_COUNT 10
 
 enum sohStates { sohCalcWait = 0,
@@ -24,7 +24,7 @@ enum sohStates { sohCalcWait = 0,
                  sohCalcEnd,
                  verifySoHFromFlash,
                  saveNewEnergyConditionToFlash,
-                 saveEnergyConditionToFlash};
+                 saveCurrentEnergyConditionToFlash};
 
 typedef struct energy_bank {
     float max_voltage_applied_to_energy_bank;
@@ -37,19 +37,15 @@ typedef struct energy_bank {
     float ESS_Current;                           /* max charging current */
 } energy_bank_t;
 
+extern bool startSaveCapacitance;
 
 extern energy_bank_t energy_bank_settings;
-extern energy_bank_condition_t energy_bank_condition;
-extern bool newEnergyBankConditionAvailable;
 
 void energy_storage_update_settings(void);
 void energy_storage_check(void);
 
-void startCalcStateOfCharge(void);
 void calcAccumlatedCharge(void);
-bool finallyCalcStateOfCharge(void);
-bool saveStateOfChargeToFlash(energy_bank_condition_t  *p_energy_bank_condition);
-bool retriveStateOfChargeFromFlash(energy_bank_condition_t *p_energy_bank_condition);
+bool requestCPU1ToSaveCapacitancesToFlash(float  initialCapacitance, float currentCapacitance);
 
 
 #endif /* APP_INC_ENERGY_STORAGE_H_ */
