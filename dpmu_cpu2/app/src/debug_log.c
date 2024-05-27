@@ -56,6 +56,7 @@ uint32_t SetDebugLogPeriod(void) {
             case RegulateStop:
             case RegulateVoltage:
             case RegulateVoltageInit:
+            case RegulateVoltageStop:
                 debug_period_in_ms = LOG_PERIOD_REGULATE;
                 break;
             case StopEPWMs:

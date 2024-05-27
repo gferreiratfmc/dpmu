@@ -225,7 +225,6 @@ void StateMachine(void)
             DCDC_current_buck_loop_float();
             if( sensorVector[ISen2fIdx].realValue < 0.25 ) {
                 StateVector.State_Next = StopEPWMs;
-//                finallyCalcStateOfCharge();
             }
           break;
 
@@ -302,11 +301,18 @@ void StateMachine(void)
         }
         break;
 
+    case RegulateStop:
+        DCDC_VI.I_Ref_Real = 0.0;
+        DCDC_current_boost_loop_float();
+        if( sensorVector[ISen2fIdx].realValue < 0.25 ) {
+            StateVector.State_Next = StopEPWMs;
+        }
+        break;
+
     case RegulateVoltageInit:
         DCDC_VI.I_Ref_Real = 0.0;
         DCDC_current_boost_loop_float();
         switches_Qinb( SW_OFF );
-        DPMUInitialized = false;
         StateVector.State_Next = RegulateVoltage;
         break;
 
@@ -315,21 +321,17 @@ void StateMachine(void)
         DCDC_current_boost_loop_float();
         EnableOrDisblePWM(DCDC_VI.I_Ref_Real);
         if( DCDC_VI.avgVStore < energy_bank_settings.min_voltage_applied_to_energy_bank ) {
-            StateVector.State_Next = RegulateStop;
+            StateVector.State_Next = RegulateVoltageStop;
 
         }
-        if( sensorVector[VBusIdx].realValue > sharedVars_cpu1toCpu2.max_allowed_dc_bus_voltage ) {
-            HAL_StopPwmDCDC();
-            StateVector.State_Next = StopEPWMs;
+        if(  DCDC_VI.avgVBus > sharedVars_cpu1toCpu2.max_allowed_dc_bus_voltage ) {
+            StateVector.State_Next = RegulateVoltageStop;
         }
         break;
 
-    case RegulateStop:
-        DCDC_VI.I_Ref_Real = 0.0;
-        DCDC_current_boost_loop_float();
-        if( sensorVector[ISen2fIdx].realValue < 0.25 ) {
-            StateVector.State_Next = StopEPWMs;
-        }
+    case RegulateVoltageStop:
+        DPMUInitialized = false;
+        StateVector.State_Next = RegulateStop;
         break;
 
     case Fault:
@@ -522,6 +524,10 @@ void CheckCommandFromIOP(void)
                         case RegulateInit:
                         case Regulate:
                             StateVector.State_Next = RegulateStop;
+                            break;
+                        case RegulateVoltageInit:
+                        case RegulateVoltage:
+                            StateVector.State_Next = RegulateVoltageStop;
                             break;
                         case TrickleCharge:
                         case TrickleChargeDelay:
