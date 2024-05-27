@@ -31,7 +31,8 @@
 
 #define TRACK_STATE_BUFFER_SIZE 12
 
-bool DPMUInitialized = false;
+bool DPMUInitializedFlag = false;
+bool DPMUSwitchesStatesOK = false;
 extern bool updateCPU2FirmwareFlag;
 
 uint16_t trackingStates[TRACK_STATE_BUFFER_SIZE];
@@ -46,9 +47,9 @@ extern float cellVoltagesVector[30];     /* used for first charge - SoH */
 float energyBankVoltage;    /* used for first charge - SoH */
 bool cellVoltageOverThreshold;
 
-static uint8_t convert_current_state_to_OD(uint16_t state);
 
 void CheckCommandFromIOP(void);
+void DefineDPMUSafeState(void);
 int DoneWithInrush(void);
 void TrackStatesForDEBUG(void);
 void EnableOrDisblePWM();
@@ -69,18 +70,20 @@ void StateMachine(void)
     switch (StateVector.State_Current)
     {
     case Initialize: /* Initial state, initialization of the parameters*/
-        if( !DPMUInitialized) {
+        if( !DPMUInitializedFlag) {
             if( CalibrateZeroVoltageOffsetOfSensors() ) {
                 test_update_of_error_codes = true;
                 HAL_DcdcNormalModePwmSetting();
+
+                switches_Qinb( SW_OFF );
+                switches_Qlb( SW_OFF );
+                switches_Qsb( SW_OFF );
 
                 if( sharedVars_cpu1toCpu2.dpmu_default_flag == true ) {
                     StateVector.State_Next = SoftstartInitDefault;
                 } else {
                     StateVector.State_Next = SoftstartInitRedundant;
                 }
-
-
             }
         } else {
             StateVector.State_Next = StateVector.State_Before;
@@ -121,7 +124,7 @@ void StateMachine(void)
             //Stop In-rush PWM
             HAL_PWM_setCounterCompareValue(InrushCurrentLimit_BASE, EPWM_COUNTER_COMPARE_A, 1);
             HAL_StopPwmInrushCurrentLimit();
-            DPMUInitialized = true;
+            DPMUInitializedFlag = true;
             EnableContinuousReadCellVoltages();
             StateVector.State_Next = Idle;
         }
@@ -330,7 +333,7 @@ void StateMachine(void)
         break;
 
     case RegulateVoltageStop:
-        DPMUInitialized = false;
+        DPMUInitializedFlag = false;
         StateVector.State_Next = RegulateStop;
         break;
 
@@ -345,7 +348,7 @@ void StateMachine(void)
 
         test_update_of_error_codes = false;
 
-        DPMUInitialized = false;
+        DPMUInitializedFlag = false;
 
         StateVector.State_Next = StopEPWMs;
 
@@ -376,6 +379,10 @@ void StateMachine(void)
     /*** commands from CPU1/IOP ***/
     /* check if IOP request for  a change of state */
     CheckCommandFromIOP();
+
+    if( !DPMUSwitchesStatesOK ) {
+        DefineDPMUSafeState();
+    }
     //TrackStatesForDEBUG();
     /* print next state then state changes */
     if(StateVector.State_Current  != StateVector.State_Next) {
@@ -392,57 +399,60 @@ void StateMachine(void)
     sharedVars_cpu2toCpu1.current_state = StateVector.State_Current;
 
     CounterGroup.StateMachineCounter++;
-
-
 }
 
-static uint8_t convert_current_state_to_OD(uint16_t state)
-{
-    uint16_t retVal;
 
-    switch(state)
-    {
-    case Idle:
-    case StopEPWMs:
-        retVal = Idle;
-        break;
-    case Initialize:         // 1
-    case SoftstartInitDefault:          // 2
-    case Softstart:              // 3
-        retVal = Initialize;
-        break;
-    case TrickleChargeInit:      // 4
-    case TrickleChargeDelay:     // 5
-    case TrickleCharge:          // 6
-    case ChargeRamp:
-    case ChargeStop:
-    case ChargeInit:             // 7
-    case Charge:                 // 8
-    case ChargeConstantVoltage:  // 9
-    case BalancingInit:          // 10
-    case Balancing:              // 11
-        retVal = Charge;
-        break;
-    case RegulateInit:           // 12
-    case Regulate:               // 13
-    case RegulateStop:               // 13
-        retVal = Regulate;
-        break;
-    case Fault:                  // 14
-    case FaultDelay:             // 15
-        retVal = Fault;
-        break;
-    case Keep:                   // 16
-        retVal = Keep;
-        break;
-    default:
-        break;
+void VerifyDPMUSwitchesOK(void) {
+
+    if( sharedVars_cpu1toCpu2.dpmu_default_flag == true ) {
+        if( ( GPIO_readPin(Qinb) == SW_ON ) &&
+            ( GPIO_readPin(Qlb) == SW_ON ) &&
+            ( GPIO_readPin(Qsb) == SW_ON ) ) {
+            DPMUSwitchesStatesOK = true;
+        } else {
+            DPMUSwitchesStatesOK = false;
+        }
+    } else {
+        if( ( GPIO_readPin(Qinb) == SW_ON ) &&
+            ( GPIO_readPin(Qlb) == SW_OFF ) &&
+            ( GPIO_readPin(Qsb) == SW_ON ) ) {
+            DPMUSwitchesStatesOK = true;
+        } else {
+            DPMUSwitchesStatesOK = false;
+        }
     }
-
-    return retVal & 0xff;
 }
 
+void DefineDPMUSafeState( void ) {
 
+    switch( StateVector.State_Current ) {
+        case Idle:
+            DPMUInitializedFlag = false;
+            break;
+        case TrickleChargeInit:
+        case TrickleChargeDelay:
+        case TrickleCharge:
+        case ChargeInit:
+        case ChargeRamp:
+        case Charge:
+            DPMUInitializedFlag = false;
+            StateVector.State_Next = ChargeStop;
+            break;
+
+        case RegulateInit:
+        case Regulate:
+            DPMUInitializedFlag = false;
+            StateVector.State_Next = RegulateStop;
+            break;
+
+        default:
+            break;
+    }
+}
+
+bool DPMUInitialized() {
+    return DPMUInitializedFlag;
+}
 
 int DoneWithInrush(void)
 {
@@ -499,6 +509,7 @@ void StateMachineInit(void)
 
 void CheckCommandFromIOP(void)
 {
+
     /*** commands from CPU1/IOP ***/
     /* check if IOP request for  a change of state */
     if (IPC_isFlagBusyRtoL(IPC_CPU1_L_CPU2_R, IPC_IOP_REQUEST_CHANGE_OF_STATE))
@@ -508,7 +519,7 @@ void CheckCommandFromIOP(void)
             IPC_ackFlagRtoL(IPC_CPU1_L_CPU2_R, IPC_IOP_REQUEST_CHANGE_OF_STATE);
             return;
         }
-        if ( !DPMUInitialized ) {
+        if ( !DPMUInitializedFlag ) {
             if( StateVector.State_Next != Initialize ) {
                 StateVector.State_Next = Idle;
             }
@@ -564,6 +575,8 @@ void CheckCommandFromIOP(void)
         StateVector.State_Next = Fault;
         IPC_ackFlagRtoL(IPC_CPU1_L_CPU2_R, IPC_CPU1_REQUIERS_EMERGECY_SHUT_DOWN);
     }
+
+    VerifyDPMUSwitchesOK();
 }
 
 inline void EnableEFuseBBToStopDCDC_EPWM()
@@ -741,4 +754,51 @@ void CheckMainStateMachineIsRunning()
 //            }
 //        }
 //    }
+//}
+
+
+//static uint8_t convert_current_state_to_OD(uint16_t state)
+//{
+//    uint16_t retVal;
+//
+//    switch(state)
+//    {
+//    case Idle:
+//    case StopEPWMs:
+//        retVal = Idle;
+//        break;
+//    case Initialize:         // 1
+//    case SoftstartInitDefault:          // 2
+//    case Softstart:              // 3
+//        retVal = Initialize;
+//        break;
+//    case TrickleChargeInit:      // 4
+//    case TrickleChargeDelay:     // 5
+//    case TrickleCharge:          // 6
+//    case ChargeRamp:
+//    case ChargeStop:
+//    case ChargeInit:             // 7
+//    case Charge:                 // 8
+//    case ChargeConstantVoltage:  // 9
+//    case BalancingInit:          // 10
+//    case Balancing:              // 11
+//        retVal = Charge;
+//        break;
+//    case RegulateInit:           // 12
+//    case Regulate:               // 13
+//    case RegulateStop:               // 13
+//        retVal = Regulate;
+//        break;
+//    case Fault:                  // 14
+//    case FaultDelay:             // 15
+//        retVal = Fault;
+//        break;
+//    case Keep:                   // 16
+//        retVal = Keep;
+//        break;
+//    default:
+//        break;
+//    }
+//
+//    return retVal & 0xff;
 //}

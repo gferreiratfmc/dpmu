@@ -94,15 +94,21 @@ static void check_incoming_commands(void)
             break;
 
         case IPC_SWITCHES_QLB:
-            switches_Qlb(state);
+            if( DPMUInitialized() )  {
+                switches_Qlb(state);
+            }
             break;
 
         case IPC_SWITCHES_QSB:
-            switches_Qsb(state);
+            if( DPMUInitialized() )  {
+                switches_Qsb(state);
+            }
             break;
 
         case IPC_SWITCHES_QINB:
-            switches_Qinb(state);
+            if( DPMUInitialized() )  {
+                switches_Qinb(state);
+            }
             break;
 
         default:
@@ -236,6 +242,7 @@ void main(void)
         timerq_tick();
 
         /******* check/update for new values sent from IOP *******/
+        VerifyDPMUSwitchesOK();
 
         /******* DC Bus ************/
         dcbus_update_settings();

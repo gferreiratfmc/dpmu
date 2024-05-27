@@ -20,7 +20,9 @@
 #include "co.h"
 #include "co_canopen.h"
 #include "common.h"
+#include "co_p401.h"
 //#include "DMAset.h"
+#include "debug_log.h"
 #include "emifc.h"
 #include "error_handling.h"
 #include "ext_flash.h"
@@ -74,7 +76,7 @@ void main(void)
     Device_init();
 
     /* configure and the start watchdog */
-    //watchdog_init();
+    watchdog_init();
 
     /* initiate CANopen stack */
     /* also starts the heart-beat */
@@ -183,7 +185,6 @@ void main(void)
 
     watchdog_feed();
 
-
     if( sharedVars_cpu1toCpu2.dpmu_default_flag == true ) {
         Serial_printf(&cli_serial, "DPMU IS DEFAULT\r\n");
     } else {
@@ -208,22 +209,19 @@ void main(void)
     timer_init(&async_timer_toogle_LED1, duration, "Test timer", toogle_LED1, NULL, true);
     timer_start(&async_timer_toogle_LED1);
 
-    //startup_sequence();
 
     /* load default values stored in external FLASH */
-//    coCanOpenStackInit(CO_EVENT_STORE_T pLoadFunction);
 
     Serial_debug(DEBUG_INFO, &cli_serial, "IPC_PUMPREQUEST_REG %08X\r\n", IPC_PUMPREQUEST_REG);
     Serial_debug(DEBUG_INFO, &cli_serial, "Started\r\n");
 
     for (;;) {
-#include <debug_log.h>
+
 
         cli_check_for_new_commands_from_UART();
 
         while (coCommTask() == CO_TRUE);
 
-#include "co_p401.h"
         co401Task();
 
         // Check for messages from CPU2.

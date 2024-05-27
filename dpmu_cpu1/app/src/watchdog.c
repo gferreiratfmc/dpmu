@@ -13,7 +13,7 @@
 void watchdog_init(void)
 {
 #ifdef USE_WATCHDOG
-    /* configure and the start watchdog */
+    /* configure and start the watchdog */
     SysCtl_enableWatchdogReset();
     SysCtl_resetWatchdog();
 

@@ -84,5 +84,7 @@ void StateMachine(void);
 void CalculateAvgVStore();
 void CalculateAvgVBus();
 void CheckMainStateMachineIsRunning();
+void VerifyDPMUSwitchesOK(void);
+bool DPMUInitialized();
 
 #endif /* APP_INC_STATE_MACHINE_H_ */

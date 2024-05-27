@@ -13,6 +13,7 @@
 #include "ipc.h"
 #include "main.h"
 #include "timer.h"
+#include "watchdog.h"
 
 #pragma RETAIN(bootOffsetCPU2)
 #pragma DATA_SECTION(bootOffsetCPU2, "bootOffsetCPU2")
@@ -53,8 +54,6 @@ void ipc_sync_comm(uint32_t flag, bool canopen_comm)
 
         }
 
-
-
         if(state != state_next) {
             Serial_debug(DEBUG_INFO, &cli_serial, "ipc_sync_comm() state: %d  state_next: %d\r\n", state, state_next);
         }
@@ -74,6 +73,8 @@ void ipc_sync_comm(uint32_t flag, bool canopen_comm)
         if(canopen_comm) {
             while (coCommTask() == CO_TRUE);
         }
+
+        watchdog_feed();
 
         //debugCPU2Flash();
     } while(!done);
