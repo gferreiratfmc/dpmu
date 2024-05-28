@@ -23,6 +23,7 @@
 #include "co_p401.h"
 //#include "DMAset.h"
 #include "debug_log.h"
+#include "initialization_app.h"
 #include "emifc.h"
 #include "error_handling.h"
 #include "ext_flash.h"
@@ -65,6 +66,7 @@ static void CPU1_Board_init();
 static void check_cpu2_ind(void);
 void check_cpu2_dbg(void);
 void toogle_LED1(timer_t *tqe);
+
 
 
 /**

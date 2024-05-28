@@ -14,6 +14,7 @@
 
 
 
+
 typedef struct sharedVars_cpu1toCpu2_t // commonCpu1ToCpu2
 {
     uint8_t iop_operation_request_state;        /* First section in the group */
@@ -61,6 +62,8 @@ typedef struct sharedVars_cpu1toCpu2_t // commonCpu1ToCpu2
     float initialCapacitance;
     float currentCapacitance;
     bool newCapacitanceSaved;
+    bool DPMUAppInfoInitializedFlag;
+
 
 } sharedVars_cpu1toCpu2_t;
 

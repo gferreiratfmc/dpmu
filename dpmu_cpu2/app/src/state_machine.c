@@ -70,7 +70,7 @@ void StateMachine(void)
     switch (StateVector.State_Current)
     {
     case Initialize: /* Initial state, initialization of the parameters*/
-        if( !DPMUInitializedFlag) {
+        if( !DPMUInitializedFlag && (sharedVars_cpu1toCpu2.DPMUAppInfoInitializedFlag == true) ) {
             if( CalibrateZeroVoltageOffsetOfSensors() ) {
                 test_update_of_error_codes = true;
                 HAL_DcdcNormalModePwmSetting();
@@ -660,7 +660,6 @@ void CheckMainStateMachineIsRunning()
         stateMachineLastCount = CounterGroup.StateMachineCounter;
     }
 }
-
 
 /* CPU1 can start the inrush current limiter,
  * but not stop it
