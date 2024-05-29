@@ -337,7 +337,7 @@ uint8_t log_can_log_read(
 
 void log_can_log_reset(void)
 {
-    canLogState.State_Next = EraseFlash;
+    canLogState.State_Next = StartEraseFlash;
 }
 
 /* store debug log in external RAM
@@ -530,6 +530,9 @@ void log_store_can_log(uint16_t size, unsigned char *pnt)
 void log_can_state_machine(void) {
 
     static uint32_t timeStart;
+    static uint32_t sectorToErase;
+    static uint32_t finalSectorToErase;
+    const ext_flash_desc_t *flashDesc;
 
     switch( canLogState.State_Current ) {
 
@@ -537,22 +540,40 @@ void log_can_state_machine(void) {
             log_store_debug_log_to_flash();
             log_debug_read_from_flash();
             break;
-        case EraseFlash:
+        case StartEraseFlash:
             // Call command do erase entire flash_chip_erase
             Serial_debug(DEBUG_INFO, &cli_serial, "External Flash erase start\r\n");
             timeStart = timer_get_ticks();
-            ext_command_flash_chip_erase();
-            canLogState.State_Next = WaitingEraseDone;
             sharedVars_cpu1toCpu2.debug_log_disable_flag = true;
+            //ext_command_flash_chip_erase();
+            flashDesc = ext_flash_sector_from_address( APP_VARS_EXT_FLASH_ADDRESS_START );
+            Serial_debug(DEBUG_INFO, &cli_serial, "APP VARS sector:[0x%08p] address:[0x%08p]\r\n", flashDesc->sector, APP_VARS_EXT_FLASH_ADDRESS_START);
+            flashDesc = ext_flash_sector_from_address( CAN_LOG_ADDRESS_START );
+            sectorToErase = flashDesc->sector;
+            Serial_debug(DEBUG_INFO, &cli_serial, "CAN_LOG_ADDRESS_START sector:[0x%08p] address:[0x%08p]\r\n", flashDesc->sector, CAN_LOG_ADDRESS_START);
+            flashDesc = ext_flash_sector_from_address( CAN_LOG_ADDRESS_END );
+            finalSectorToErase = flashDesc->sector;
+            Serial_debug(DEBUG_INFO, &cli_serial, "CAN_LOG_ADDRESS_START sector:[0x%08p] address:[0x%08p]\r\n", flashDesc->sector, CAN_LOG_ADDRESS_END );
+            canLogState.State_Next = EraseCANLogFlashSector;
             break;
+
+        case EraseCANLogFlashSector:
+            ext_flash_erase_sector(sectorToErase);
+            Serial_debug(DEBUG_INFO, &cli_serial, "Erasing sector:[0x%08p]\r\n", sectorToErase);
+            sectorToErase++;
+            canLogState.State_Next = WaitingEraseDone;
 
         case WaitingEraseDone:
             if( ext_flash_ready() ) {
+                if( sectorToErase > finalSectorToErase ) {
+                    log_can_init();
+                    Serial_debug(DEBUG_INFO, &cli_serial, "External Flash erase stop. Time:[%lu]\r\n", timer_get_ticks() - timeStart);
+                    sharedVars_cpu1toCpu2.debug_log_disable_flag = false;
+                    canLogState.State_Next = Logging;
+                } else {
+                    canLogState.State_Next = EraseCANLogFlashSector;
+                }
 
-                log_can_init();
-                Serial_debug(DEBUG_INFO, &cli_serial, "External Flash erase stop. Time:[%lu]\r\n", timer_get_ticks() - timeStart);
-                sharedVars_cpu1toCpu2.debug_log_disable_flag = false;
-                canLogState.State_Next = Logging;
             }
             break;
 

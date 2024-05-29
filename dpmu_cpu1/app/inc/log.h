@@ -19,7 +19,8 @@
 
 typedef enum  {
     Logging = 0,
-    EraseFlash,
+    StartEraseFlash,
+    EraseCANLogFlashSector,
     WaitingEraseDone
 } states_can_log_e;
 
