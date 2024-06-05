@@ -75,7 +75,7 @@ void toogle_LED1(timer_t *tqe);
 void main(void)
 {
 
-    /*  Testing Merge in GIT */
+    /*  Testing branch ballancing in GIT */
 
     Device_init();
 
