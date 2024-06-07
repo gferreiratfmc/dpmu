@@ -254,6 +254,30 @@ void ext_flash_chip_erase(void)
 /**
  * ext_flash_erase_sector - Erase addressed Flash sector
  */
+void ext_flash_erase_sector_by_descriptor(ext_flash_desc_t *sector_desc)
+{
+
+    uint32_t sector_offset;
+
+    sector_offset = sector_desc->addr - EXT_FLASH_START_ADDRESS_CS3;
+
+    set_a19(0);
+
+    FLASH_SEQ(0x555, 0xAA);
+    FLASH_SEQ(0x2AA, 0x55);
+    FLASH_SEQ(0x555, 0x80);
+    FLASH_SEQ(0x555, 0xAA);
+    FLASH_SEQ(0x2AA, 0x55);
+    FLASH_SEQ(sector_offset, 0x30);
+
+    DEVICE_DELAY_US(EXT_FLASH_BUSY_DELAY); // Wait for Ready/Busy# signal to become valid
+
+    while (GPIO_readPin(EXT_FLASH_READY) == 0) {
+        // Wait for Flash to complete command
+    }
+}
+
+
 void ext_flash_erase_sector(uint32_t sa)
 {
     uint32_t sector_offset = sa & 0xf8000;

@@ -11,7 +11,11 @@
 
 bool DPMUAppInfoInitialized[IDX_DPMU_VAR_COUNT] = { false };
 
-void checkDPMUAppInfoInitializeVars(uint16_t DPMUappVarIdx ) {
+// Called from SDO_Download_Indices.
+// Sets a flag for each variable initialized.
+// After all variables are set informs CPU2
+// The parameter informs the index of the variable
+void checkDPMUAppInfoInitializeVars(DPMU_Initialization_Vars_t DPMUappVarIdx ) {
     uint16_t idx = 0;
     if( DPMUappVarIdx < IDX_DPMU_VAR_COUNT ) {
         DPMUAppInfoInitialized[DPMUappVarIdx] = true;

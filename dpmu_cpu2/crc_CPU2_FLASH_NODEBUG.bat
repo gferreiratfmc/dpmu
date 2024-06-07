@@ -22,22 +22,22 @@ rem check path
 %GENERATOR% -?
 
 rem generate binary
-%OBJCOPY% -I ihex -O binary --gap-fill=0xFF %TARGET%\%APPL%.lsb %TARGET%\%APPL%.lsbbin
-%OBJCOPY% -I ihex -O binary --gap-fill=0xFF %TARGET%\%APPL%.msb %TARGET%\%APPL%.msbbin
+%OBJCOPY% -I ihex -O binary --gap-fill=0xFF "%TARGET%\%APPL%.lsb" "%TARGET%\%APPL%.lsbbin"
+%OBJCOPY% -I ihex -O binary --gap-fill=0xFF "%TARGET%\%APPL%.msb" "%TARGET%\%APPL%.msbbin"
 
 rem check for double files and new created one
-dir %TARGET%\*.hex %TARGET%\*.bin* %TARGET%\*.lsb %TARGET%\*.msb 
+dir "%TARGET%\*.hex" "%TARGET%\*.bin*" "%TARGET%\*.lsb" "%TARGET%\*.msb"
 
 @echo ""
 @echo ""
 
 rem CRC
-%GENERATOR% -c 8 -i %TARGET%\%APPL%.lsbbin -j %TARGET%\%APPL%.msbbin -o %TARGET%\%APPL%.crc -D
+%GENERATOR% -c 8 -i "%TARGET%\%APPL%.lsbbin" -j "%TARGET%\%APPL%.msbbin" -o "%TARGET%\%APPL%.crc" -D
 rem if you do not know what 793 and 65617665 means check cobl_user.c
 
 
-cd %TARGET%\..
-dir %TARGET%
+cd "%TARGET%\.."
+dir "%TARGET%"
 
 pause
 
@@ -45,9 +45,11 @@ taskkill /IM python.exe /F
 
 cd "C:\Users\gferreira\OneDrive - Digicorner\git_dpmu_python\a055-can-updater\"
 
-python CANUpdaterEmotasOri.py 2 "C:\Users\gferreira\workspace_endurance_cllc\dpmu_cpu2\CPU2_FLASH_NODEBUG\dpmu_cpu2.crc"
+python CANUpdaterEmotasOri.py 2 "C:\Users\gferreira\OneDrive - Digicorner\git_endurance\dpmu\dpmu_cpu2\CPU2_FLASH_NODEBUG\dpmu_cpu2.crc"
+
+pause
 
 cd "C:\Users\gferreira\OneDrive - Digicorner\git_dpmu_python\a055-dpmu-python-can"
 start "python.exe" "dpmu_canopenLowVoltage2.py"
 
-cd %TARGET%\..
+cd "%TARGET%\.."

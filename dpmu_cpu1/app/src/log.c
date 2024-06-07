@@ -340,6 +340,11 @@ void log_can_log_reset(void)
     canLogState.State_Next = StartEraseFlash;
 }
 
+void log_erase_entire_flash(void)
+{
+    canLogState.State_Next = StartEraseEntireFlash;
+}
+
 /* store debug log in external RAM
  *
  * assumptions: all log entries are equal in size
@@ -527,12 +532,11 @@ void log_store_can_log(uint16_t size, unsigned char *pnt)
 }
 
 
-void log_can_state_machine(void) {
 
+void log_can_state_machine(void) {
     static uint32_t timeStart;
-    static uint32_t sectorToErase;
-    static uint32_t finalSectorToErase;
-    const ext_flash_desc_t *flashDesc;
+    static const ext_flash_desc_t *flashDescStart, *flashDescEnd;
+    static ext_flash_desc_t flashDescToErase;
 
     switch( canLogState.State_Current ) {
 
@@ -541,31 +545,44 @@ void log_can_state_machine(void) {
             log_debug_read_from_flash();
             break;
         case StartEraseFlash:
-            // Call command do erase entire flash_chip_erase
-            Serial_debug(DEBUG_INFO, &cli_serial, "External Flash erase start\r\n");
+            // Call command do erase can log ext flash
+            Serial_debug(DEBUG_INFO, &cli_serial, "CAN LOG Flash erase start\r\n");
             timeStart = timer_get_ticks();
             sharedVars_cpu1toCpu2.debug_log_disable_flag = true;
-            //ext_command_flash_chip_erase();
-            flashDesc = ext_flash_sector_from_address( APP_VARS_EXT_FLASH_ADDRESS_START );
-            Serial_debug(DEBUG_INFO, &cli_serial, "APP VARS sector:[0x%08p] address:[0x%08p]\r\n", flashDesc->sector, APP_VARS_EXT_FLASH_ADDRESS_START);
-            flashDesc = ext_flash_sector_from_address( CAN_LOG_ADDRESS_START );
-            sectorToErase = flashDesc->sector;
-            Serial_debug(DEBUG_INFO, &cli_serial, "CAN_LOG_ADDRESS_START sector:[0x%08p] address:[0x%08p]\r\n", flashDesc->sector, CAN_LOG_ADDRESS_START);
-            flashDesc = ext_flash_sector_from_address( CAN_LOG_ADDRESS_END );
-            finalSectorToErase = flashDesc->sector;
-            Serial_debug(DEBUG_INFO, &cli_serial, "CAN_LOG_ADDRESS_START sector:[0x%08p] address:[0x%08p]\r\n", flashDesc->sector, CAN_LOG_ADDRESS_END );
+
+            flashDescStart = ext_flash_sector_from_address( CAN_LOG_ADDRESS_START );
+            Serial_debug(DEBUG_INFO, &cli_serial, "CAN_LOG_ADDRESS_START sector:[0x%02X] address:[0x%08p] flash_offset:[0x%08p]\r\n",
+                         flashDescStart->sector, flashDescStart->addr + EXT_FLASH_START_ADDRESS_CS3, flashDescStart->addr );
+
+            memcpy( &flashDescToErase, flashDescStart, sizeof(ext_flash_desc_t) );
+            // Calculate the address which is required to erase the flash.
+            flashDescToErase.addr = flashDescToErase.addr + EXT_FLASH_START_ADDRESS_CS3;
+
+
+            flashDescEnd = ext_flash_sector_from_address( CAN_LOG_ADDRESS_END );
+            Serial_debug(DEBUG_INFO, &cli_serial, "CAN_LOG_ADDRESS_END sector:[0x%02X] address:[0x%08p] flash_offset:[0x%08p]\r\n",
+                         flashDescEnd->sector, flashDescEnd->addr + EXT_FLASH_START_ADDRESS_CS3, flashDescEnd->addr );
+
             canLogState.State_Next = EraseCANLogFlashSector;
             break;
 
         case EraseCANLogFlashSector:
-            ext_flash_erase_sector(sectorToErase);
-            Serial_debug(DEBUG_INFO, &cli_serial, "Erasing sector:[0x%08p]\r\n", sectorToErase);
-            sectorToErase++;
+
+            Serial_debug(DEBUG_INFO, &cli_serial, "ERASING CAN_LOG_ADDRESS sector:[0x%02X] address:[0x%08p] flash_offset:[0x%08p]\r\n",
+                         flashDescToErase.sector, flashDescToErase.addr, (flashDescToErase.addr - EXT_FLASH_START_ADDRESS_CS3) );
+
+            ext_flash_erase_sector_by_descriptor( &flashDescToErase );
+
+            flashDescToErase.sector++;
+
+            look_up_start_address_of_sector( &flashDescToErase );
+
+
             canLogState.State_Next = WaitingEraseDone;
 
         case WaitingEraseDone:
             if( ext_flash_ready() ) {
-                if( sectorToErase > finalSectorToErase ) {
+                if( flashDescToErase.sector > flashDescEnd->sector ) {
                     log_can_init();
                     Serial_debug(DEBUG_INFO, &cli_serial, "External Flash erase stop. Time:[%lu]\r\n", timer_get_ticks() - timeStart);
                     sharedVars_cpu1toCpu2.debug_log_disable_flag = false;
@@ -573,7 +590,27 @@ void log_can_state_machine(void) {
                 } else {
                     canLogState.State_Next = EraseCANLogFlashSector;
                 }
+            }
+            break;
 
+
+        case StartEraseEntireFlash:
+            // Call command do erase entire flash_chip_erase
+            Serial_debug(DEBUG_INFO, &cli_serial, "Entire Flash erase start\r\n");
+            timeStart = timer_get_ticks();
+            sharedVars_cpu1toCpu2.debug_log_disable_flag = true;
+
+            ext_command_flash_chip_erase();
+            canLogState.State_Next = WaitingEntireEraseDone;
+
+            break;
+
+        case WaitingEntireEraseDone:
+            if( ext_flash_ready() ) {
+                log_can_init();
+                Serial_debug(DEBUG_INFO, &cli_serial, "External Flash erase stop. Time:[%lu]\r\n", timer_get_ticks() - timeStart);
+                sharedVars_cpu1toCpu2.debug_log_disable_flag = false;
+                canLogState.State_Next = Logging;
             }
             break;
 
@@ -782,9 +819,9 @@ void log_debug_read_from_flash() {
             }
         }
 
-        Serial_debug(DEBUG_INFO, &cli_serial, "\r\ncan_log_next_free_address:[%8lu] \r\n", can_log_next_free_address);
-        Serial_debug(DEBUG_INFO, &cli_serial, "can_log_last_read_address:[%8lu] \r\n", can_log_last_read_address);
-        Serial_debug(DEBUG_INFO, &cli_serial, "can_log_start_address:    [%8lu] \r\n", can_log_start_address);
+        Serial_debug(DEBUG_INFO, &cli_serial, "\r\ncan_log_next_free_address:[0x%08p] \r\n", can_log_next_free_address);
+        Serial_debug(DEBUG_INFO, &cli_serial, "can_log_last_read_address:[0x%08p] \r\n", can_log_last_read_address);
+        Serial_debug(DEBUG_INFO, &cli_serial, "can_log_start_address:    [0x%08p] \r\n", can_log_start_address);
 
         Serial_debug(DEBUG_INFO, &cli_serial, "\r\n=============================\r\n");
     }

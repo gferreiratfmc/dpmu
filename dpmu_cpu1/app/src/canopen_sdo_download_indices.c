@@ -527,7 +527,7 @@ static RET_T indices_I_ENERGY_BANK_SUMMARY(UNSIGNED8 subIndex)
         if( value_converted > 0.0 &&  value_converted <= MAX_VOLTAGE_ENERGY_BANK) {
             sharedVars_cpu1toCpu2.safety_threshold_state_of_charge = value_converted;
             checkDPMUAppInfoInitializeVars( IDX_DPMU_VAR_SAFETY_THRESHOLD_STATE_OF_CHARGE );
-            Serial_debug(DEBUG_INFO, &cli_serial, "S_SAFETY_THRESHOLD_STATE_OF_CHARGE: 0x%x\r\n", value);
+            Serial_debug(DEBUG_INFO, &cli_serial, "S_SAFETY_THRESHOLD_STATE_OF_CHARGE: 0x%x\r\n", value16);
         } else {
             retVal = RET_SDO_INVALID_VALUE;
             Serial_debug(DEBUG_INFO, &cli_serial, "INVALID S_SAFETY_THRESHOLD_STATE_OF_CHARGE: 0x%x\r\n", value);
@@ -718,6 +718,7 @@ static RET_T indices_I_DEBUG_LOG(BOOL_T execute, UNSIGNED8 sdoNr, UNSIGNED16  in
 static RET_T indices_I_CAN_LOG(BOOL_T execute, UNSIGNED8 sdoNr, UNSIGNED16  index, UNSIGNED8 subIndex)
 {
     RET_T retVal = RET_OK;
+    uint8_t value;
 
     Serial_debug(DEBUG_INFO, &cli_serial, "CAN_LOG  S 0x%0x  ", subIndex);
 
@@ -727,7 +728,20 @@ static RET_T indices_I_CAN_LOG(BOOL_T execute, UNSIGNED8 sdoNr, UNSIGNED16  inde
 //        retVal = log_can_log_read(execute, sdoNr, index, subIndex);
 //        break;
     case S_CAN_LOG_RESET:
-        log_can_log_reset();
+        retVal = coOdGetObj_u8(I_CAN_LOG, S_CAN_LOG_RESET, &value);
+        Serial_debug(DEBUG_INFO, &cli_serial, "S_CAN_LOG_RESET value:[%02d]\r\n", value);
+        switch( value ) {
+            case ERASE_CAN_LOG_EXT_FLASH:
+                log_can_log_reset();
+                break;
+            case ERASE_ENTIRE_EXT_FLASH:
+                log_erase_entire_flash();
+                break;
+            default:
+                break;
+
+        }
+
         Serial_debug(DEBUG_INFO, &cli_serial, "S_CAN_LOG_RESET\r\n");
         break;
     default:

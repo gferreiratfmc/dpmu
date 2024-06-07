@@ -36,6 +36,6 @@ typedef enum DPMU_Initialization_Vars
 
 extern bool DPMUAppInfoInitialized[IDX_DPMU_VAR_COUNT];
 
-void checkDPMUAppInfoInitializeVars(uint16_t DPMUappVarIdx );
+void checkDPMUAppInfoInitializeVars(DPMU_Initialization_Vars_t DPMUappVarIdx );
 
 #endif /* APP_INC_INITIALIZATION_APP_H_ */

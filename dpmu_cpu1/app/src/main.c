@@ -75,8 +75,6 @@ void toogle_LED1(timer_t *tqe);
 void main(void)
 {
 
-    /*  Testing branch ballancing in GIT */
-
     Device_init();
 
     /* configure and the start watchdog */

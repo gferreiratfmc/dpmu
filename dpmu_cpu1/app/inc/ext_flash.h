@@ -24,7 +24,7 @@
 #define EXT_FLASH_SIZE              (2 * EXT_FLASH_SIZE_CS3)
 
 // Flash logging area
-#define CAN_LOG_ADDRESS_START   (0x8000 /*ext_flash_info[FIRST_LOG_SECTOR].addr*/ +  EXT_FLASH_START_ADDRESS_CS3)
+#define CAN_LOG_ADDRESS_START   (EXT_FLASH_START_ADDRESS_CS3 + 0x8000 /*ext_flash_info[FIRST_LOG_SECTOR].addr*/)
 #define CAN_LOG_ADDRESS_END     (EXT_FLASH_START_ADDRESS_CS3 + EXT_FLASH_SIZE_CS3)
 
 // Application variables logging area
@@ -149,7 +149,9 @@ void ext_flash_chip_erase(void);
 /**
  * Erases addressed Flash sector.
  */
-void ext_flash_erase_sector(uint32_t addr);
+//void ext_flash_erase_sector(uint32_t addr);
+void ext_flash_erase_sector_by_descriptor(ext_flash_desc_t *sector_desc);
+void ext_flash_erase_sector(uint32_t sa);
 
 /**
  * Resets the external flash.
