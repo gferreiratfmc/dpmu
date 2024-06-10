@@ -43,6 +43,7 @@ float    convert_energy_soc_energy_bank_from_OD(uint16_t value);
 uint16_t convert_energy_soc_energy_bank_to_OD(float value);
 uint16_t convert_remaining_energy_to_min_soc_energy_bank_to_OD(float remaining_SoC);
 float convert_safety_threshold_soc_energy_bank_from_OD(uint16_t value);
+uint16_t convert_safety_threshold_soc_energy_bank_to_OD(float value);
 
 float    convert_soc_energy_cell_from_OD(uint16_t value);   /* state of charge */
 uint8_t  convert_soc_energy_cell_to_OD(float value);

@@ -39,7 +39,7 @@ static uint32_t debug_log_next_free_address          = EXT_RAM_START_ADDRESS_CS2
 static uint32_t debug_log_last_read_address          = EXT_RAM_START_ADDRESS_CS2;
 static uint32_t debug_log_last_writen_address        = 0;
 static bool     debug_log_address_has_wrapped_around = false;
-static uint32_t debug_log_size                       = sizeof(debug_log_t); //0;
+static uint32_t debug_log_size                       = sizeof(debug_log_t);
 static bool     debug_log_active                     = true;
 
 /* for can log in external FLASH */
@@ -47,7 +47,7 @@ static uint32_t can_log_start_address               = CAN_LOG_ADDRESS_START;
 static uint32_t can_log_last_read_address           = CAN_LOG_ADDRESS_START;
 static uint32_t can_log_next_free_address           = CAN_LOG_ADDRESS_START;
 static bool     can_log_address_has_wrapped_around  = false;
-static uint32_t can_log_size                        = sizeof(debug_log_t); //0;
+static uint32_t can_log_size                        = sizeof(debug_log_t);
 static bool can_log_possible = false;
 
 static States_t canLogState = { 0 };
@@ -56,11 +56,11 @@ RET_T log_debug_log_set_state(uint8_t value)
 {
 
     /* change active state of debug log */
-    if(0 == value)
+    if(value == 0) {
         debug_log_active = false;
-    if(1 == value)
+    } else {
         debug_log_active = true;
-
+    }
     return RET_OK;
 }
 

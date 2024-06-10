@@ -417,7 +417,8 @@ static inline uint8_t indices_I_ENERGY_BANK_SUMMARY(UNSIGNED8 subIndex)
     case S_SAFETY_THRESHOLD_STATE_OF_CHARGE:
         value16 = convert_safety_threshold_soc_energy_bank_to_OD( sharedVars_cpu1toCpu2.safety_threshold_state_of_charge );
         retVal = coOdPutObj_u16(I_ENERGY_BANK_SUMMARY, S_SAFETY_THRESHOLD_STATE_OF_CHARGE, value16 );
-//        Serial_debug(DEBUG_INFO, &cli_serial, "S_SAFETY_THRESHOLD_STATE_OF_CHARGE: xx%x\r\n", value16);
+        Serial_debug(DEBUG_INFO, &cli_serial, "S_SAFETY_THRESHOLD_STATE_OF_CHARGE: xx%x sharedVars_cpu1toCpu2.safety_threshold_state_of_charge[%4.2f]\r\n",
+                     value16, sharedVars_cpu1toCpu2.safety_threshold_state_of_charge);
         break;
     case S_STATE_OF_CHARGE_OF_ENERGY_BANK:
         value = convert_energy_soc_energy_bank_to_OD( sharedVars_cpu2toCpu1.soc_energy_bank );
@@ -562,12 +563,17 @@ RET_T co_usr_sdo_ul_indices(
     )
 {
     static uint32_t sdoUploadCounter = 0;
+    static uint16_t sdoUploadCounterHundred = 0;
     uint8_t retVal = RET_OK;
 
     if ((execute == CO_TRUE))
     {
-        sdoUploadCounter++;
-        Serial_debug(DEBUG_INFO, &cli_serial, "SDO <- [%lu]\r", sdoUploadCounter);
+        sdoUploadCounterHundred++;
+        if( sdoUploadCounterHundred >= 100 ) {
+            sdoUploadCounter++;
+            sdoUploadCounterHundred = 0;
+            Serial_debug(DEBUG_INFO, &cli_serial, "SDO <- [%lu]\r", sdoUploadCounter);
+        }
 
         switch (index)
         {

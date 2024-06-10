@@ -527,7 +527,8 @@ static RET_T indices_I_ENERGY_BANK_SUMMARY(UNSIGNED8 subIndex)
         if( value_converted > 0.0 &&  value_converted <= MAX_VOLTAGE_ENERGY_BANK) {
             sharedVars_cpu1toCpu2.safety_threshold_state_of_charge = value_converted;
             checkDPMUAppInfoInitializeVars( IDX_DPMU_VAR_SAFETY_THRESHOLD_STATE_OF_CHARGE );
-            Serial_debug(DEBUG_INFO, &cli_serial, "S_SAFETY_THRESHOLD_STATE_OF_CHARGE: 0x%x\r\n", value16);
+            Serial_debug(DEBUG_INFO, &cli_serial, "S_SAFETY_THRESHOLD_STATE_OF_CHARGE: 0x%x, value_converted=[%4.2f]\r\n",
+                         value16,sharedVars_cpu1toCpu2.safety_threshold_state_of_charge);
         } else {
             retVal = RET_SDO_INVALID_VALUE;
             Serial_debug(DEBUG_INFO, &cli_serial, "INVALID S_SAFETY_THRESHOLD_STATE_OF_CHARGE: 0x%x\r\n", value);

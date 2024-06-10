@@ -319,13 +319,13 @@ void DCDCConverterInit(void)
     CounterGroup.StateMachineCounter = 0;
 
     /* Init CLLC*/
-    CLLC_VI.DischargeFlag1 = 1;
-    CLLC_VI.DischargeFlag2 = 0;
-    CLLC_VI.I_Ref_Raw = 470;
+//    CLLC_VI.DischargeFlag1 = 1;
+//    CLLC_VI.DischargeFlag2 = 0;
+//    CLLC_VI.I_Ref_Raw = 470;
     CellDischargePiParameter.Pgain = 0.0077747;
     CellDischargePiParameter.Igain = 0.0046648;
-    CellDischargePiParameter.LowerLimit = 0;
-    CellDischargePiParameter.UpperLimit = 193;
+    CellDischargePiParameter.LowerLimit = CLLC_PHASE_180*0.02;
+    CellDischargePiParameter.UpperLimit = CLLC_PHASE_180*0.98;
 
 
     DCDC_VI.target_Voltage_At_DCBus = 180.0; /* TODO target_Voltage_At_DCBus updated inenergy_storage_update_settings */

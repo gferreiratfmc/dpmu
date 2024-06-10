@@ -206,7 +206,7 @@ void StateMachine(void)
 
     case Charge:
 
-        if( DCDC_VI.avgVStore < energy_bank_settings.max_voltage_applied_to_energy_bank ) {
+        if( DCDC_VI.avgVStore < energy_bank_settings.max_voltage_applied_to_energy_bank * MAX_ENERGY_BANK_VOLTAGE_RATIO ) {
             DCDC_current_buck_loop_float();
         } else {
             StateVector.State_Next = ChargeStop;
@@ -214,12 +214,10 @@ void StateMachine(void)
 
         if( ReadCellVoltagesDone() == true) {
             if( cellVoltageOverThreshold == true ) {
-                //StateVector.State_Next = BalancingInit; //Normal operation
-                StateVector.State_Next = ChargeStop;   // Endurance operation. Balaning not completely implemented
+                StateVector.State_Next = BalancingInit; //Normal operation
+//                StateVector.State_Next = ChargeStop;   // Endurance operation. Balancing not completely implemented
             }
         }
-
-//        calcAccumlatedCharge();
 
         break;
 
@@ -237,23 +235,22 @@ void StateMachine(void)
         DisableContinuousReadCellVoltages();
 
         /************** Testing CLLC BEGIN ********/
-        if( TestCellNr == BAT_15_N ) {
-            TestCellNr = BAT_16;
-        }
-        switch_matrix_reset();
-        switch_matrix_connect_cell( TestCellNr );
-        switch_matrix_set_cell_polarity( TestCellNr );
-        if( TestCellNr <= BAT_15 ) {
-            HAL_StopPwmCllcCellDischarge2();
-            HAL_StartPwmCllcCellDischarge1();
-        } else {
-            HAL_StopPwmCllcCellDischarge1();
-            HAL_StartPwmCllcCellDischarge2();
-        }
+//        if( TestCellNr == BAT_15_N ) {
+//            TestCellNr = BAT_16;
+//        }
+//        switch_matrix_reset();
+//        switch_matrix_connect_cell( TestCellNr );
+//        switch_matrix_set_cell_polarity( TestCellNr );
+//        if( TestCellNr <= BAT_15 ) {
+//            HAL_StopPwmCllcCellDischarge2();
+//            HAL_StartPwmCllcCellDischarge1();
+//        } else {
+//            HAL_StopPwmCllcCellDischarge1();
+//            HAL_StartPwmCllcCellDischarge2();
+//        }
         /************** Testing CLLC END ********/
 
         if( sensorVector[ISen2fIdx].realValue < 0.25 ) {
-            StateVector.State_Before_Balancing = StateVector.State_Before;
             HAL_StopPwmDCDC();
             StateVector.State_Next = Balancing;
         }
@@ -262,16 +259,20 @@ void StateMachine(void)
     case Balancing: // Balancing state supposed to run in parallel with Charge state.
 
         /************** Testing CLLC BEGIN ********/
-        if( TestCellNr <= BAT_15 ) {
-            HAL_PWM_setPhaseShift(QABPWM_6_7_BASE, PhaseshiftCount);
-        } else {
-            HAL_PWM_setPhaseShift(QABPWM_14_15_BASE, PhaseshiftCount);
-        }
+//        if( TestCellNr <= BAT_15 ) {
+//            HAL_PWM_setPhaseShift(QABPWM_6_7_BASE, PhaseshiftCount);
+//        } else {
+//            HAL_PWM_setPhaseShift(QABPWM_14_15_BASE, PhaseshiftCount);
+//        }
         /************** Testing CLLC END ********/
 
-//        if( BalancingAllCells( &cellVoltagesVector[0] ) == true ) {
-//           StateVector.State_Next = StateVector.State_Before_Blanancing;
-//        }
+        if( BalancingAllCells( &cellVoltagesVector[0] ) == true ) {
+           StateVector.State_Next = BalancingStop;
+        }
+        break;
+
+    case BalancingStop:
+        StateVector.State_Next = ChargeInit;
         break;
 
     case Keep:
@@ -547,6 +548,11 @@ void CheckCommandFromIOP(void)
                         case Charge:
                             StateVector.State_Next = ChargeStop;
                             break;
+                        case Balancing:
+                        case BalancingInit:
+                            StateVector.State_Next = BalancingStop;
+                            break;
+
                         default:
                             StateVector.State_Next = StopEPWMs;
                             break;
@@ -555,6 +561,7 @@ void CheckCommandFromIOP(void)
 
                 case Initialize:
                 case TrickleChargeInit:
+                case BalancingInit:
                 case RegulateInit:
                     if( StateVector.State_Current != Idle ) {
                         StateVector.State_Next = StateVector.State_Current;

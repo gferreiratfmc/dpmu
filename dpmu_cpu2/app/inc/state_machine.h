@@ -50,7 +50,8 @@ enum Operating_state
     Keep,                       // 17
     BalancingInit,              // 18
     Balancing,                  // 19
-    CC_Charge,                  // 20
+    BalancingStop = 191,              // 191
+    CC_Charge = 20,                  // 20
     StopEPWMs,                  // 21
     ChargeRamp,                 // 22
 };

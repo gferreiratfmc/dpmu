@@ -146,7 +146,7 @@ void energy_storage_check(void) {
 
     if( sharedVars_cpu1toCpu2.max_voltage_applied_to_energy_bank > 0.0 ) {
         sharedVars_cpu2toCpu1.soc_energy_bank = 100.0 * powf( ( DCDC_VI.avgVStore /
-                    ( sharedVars_cpu1toCpu2.max_voltage_applied_to_energy_bank * MAX_ENERGY_VOLTAGE_RATIO ) ), 2 );
+                    ( sharedVars_cpu1toCpu2.max_voltage_applied_to_energy_bank * MAX_ENERGY_BANK_VOLTAGE_RATIO ) ), 2 );
     } else {
 
         sharedVars_cpu2toCpu1.soc_energy_bank = 0.0;

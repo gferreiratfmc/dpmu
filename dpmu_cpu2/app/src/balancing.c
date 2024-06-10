@@ -10,6 +10,7 @@
 
 #include "common.h"
 #include "balancing.h"
+#include "cli_cpu2.h"
 #include "energy_storage.h"
 #include "sensors.h"
 #include "shared_variables.h"
@@ -224,11 +225,11 @@ bool BalancingAllCells( float *cellVoltageVector ) {
             cellIndex = ConvCellNrToIdx( cellNr );
             if( cellVoltageVector[cellIndex] >= (energy_bank_settings.max_allowed_voltage_energy_cell * CELL_VOLTAGE_RATIO_HIGH_THRESHOLD) ) {
                 balancing_state.State_Next = BALANCE_CONNECT;
+                PRINT("Start discharge cellNr:[%d] cellVoltageVector[cellIndex]:[%8.2f]\r\n", cellNr, cellVoltageVector[cellIndex]);
             } else {
                 totalCellsUnderThreshold++;
                 balancing_state.State_Next = BALANCE_NEXT_ITERATION;
             }
-
             break;
 
         case BALANCE_CONNECT:
@@ -237,13 +238,13 @@ bool BalancingAllCells( float *cellVoltageVector ) {
             switch_matrix_set_cell_polarity( cellNr );
             avgCellReadCount = 0;
             avgDischargingCellVoltage = 0.0;
-            //TODO: StartCllcContolLoop();
+            StartCllcControlLoop(cellNr);
             balancing_state.State_Next = BALANCE_DISCHARGE;
 
             break;
 
         case BALANCE_DISCHARGE:
-            //TODO: CllcContolLoop();
+            CllcControlLoop( cellNr );
             if( cellNr <= BAT_15 ) {
                 if( sensorVector[V_DwnfIdx].convertedReady ) {
                     dischargingCellVoltage = sensorVector[V_DwnfIdx].realValue;
@@ -269,7 +270,8 @@ bool BalancingAllCells( float *cellVoltageVector ) {
             if( avgCellReadCount == NCOUNTS_TO_STABLE_VOLTAGE ) {
                 avgDischargingCellVoltage = avgDischargingCellVoltage / avgCellReadCount;
                 if(  avgDischargingCellVoltage  < (energy_bank_settings.max_allowed_voltage_energy_cell * CELL_VOLTAGE_RATIO_LOW_THRESHOLD ) ) {
-                    //TODO: StopCllcControlLoop();
+                    PRINT("==>Stop discharge cellNr:[%d] cellVoltageVector[cellIndex]:[%8.2f]\r\n", cellNr, avgDischargingCellVoltage);
+                    StopCllcControlLoop();
                     balancing_state.State_Next = BALANCE_NEXT_ITERATION;
                 }
                 avgCellReadCount = 0;
@@ -288,7 +290,7 @@ bool BalancingAllCells( float *cellVoltageVector ) {
                     balancing_state.State_Next = BALANCE_DONE;
                 } else {
                     totalCellsUnderThreshold = 0;
-                    balancing_state.State_Next = BALANCE_READ_CELL_VOLTAGES;
+                    balancing_state.State_Next = BALANCE_INIT;
                 }
 
             } else {
@@ -296,6 +298,8 @@ bool BalancingAllCells( float *cellVoltageVector ) {
             }
             break;
         case BALANCE_DONE:
+            StopCllcControlLoop();
+            PRINT("==> Balancing done\r\n");
             done = true;
             balancing_state.State_Next = BALANCE_INIT;
             break;

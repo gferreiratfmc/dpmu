@@ -325,18 +325,8 @@ void cli_measure_cell_current(char *buf)
 
         DEVICE_DELAY_US(1000000);
 
-        /* execute measurement */
-        CLLC_VI.IDAB2_RAW = convert_current(HAL_ADC_readResult(ADCDRESULT_BASE,
-                                                               ADC_SOC_NUMBER0),
-                                            1,
-                                            CLLC_VI.CurrentOffset1);
-        CLLC_VI.IDAB3_RAW = convert_current(HAL_ADC_readResult(ADCDRESULT_BASE,
-                                                               ADC_SOC_NUMBER1),
-                                            1,
-                                            CLLC_VI.CurrentOffset2);
-
-        PRINT("CLLC_VI.IDAB2_RAW %04d  ",     CLLC_VI.IDAB2_RAW);
-        PRINT("CLLC_VI.IDAB3_RAW %04d  \r\n", CLLC_VI.IDAB3_RAW);
+        PRINT("I_Dab2f:[%06.2f]  ",     sensorVector[I_Dab2fIdx].realValue);
+        PRINT("I_Dab3f:[%06.2f]  \r\n", sensorVector[I_Dab3fIdx].realValue);
     }
     PRINT("\r\nTurns done: %d\r\n", turns);
 }
