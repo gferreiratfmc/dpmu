@@ -195,11 +195,27 @@ void energy_storage_check(void) {
             break;
 
         case sohCalcCapacitance:
-            if( StateVector.State_Current != Charge ) {
-                finalVoltage = DCDC_VI.avgVStore;
-                sohState.State_Next = sohCalcEnd;
-            } else {
-                calcAccumlatedCharge();
+
+            switch ( StateVector.State_Current ) {
+                case ChargeInit:
+                case ChargeRamp:
+                case Charge:
+                    calcAccumlatedCharge();
+                    sohState.State_Next =  sohCalcCapacitance;
+                    break;
+                case BalancingInit:
+                case Balancing:
+                case BalancingStop:
+                    sohState.State_Next =  sohCalcCapacitance;
+                    break;
+                case ChargeStop:
+                    finalVoltage = DCDC_VI.avgVStore;
+                    sohState.State_Next = sohCalcEnd;
+                    break;
+                default:
+                    finalVoltage = DCDC_VI.avgVStore;
+                    sohState.State_Next = sohCalcEnd;
+                    break;
             }
             break;
 
@@ -230,7 +246,10 @@ void energy_storage_check(void) {
                       sharedVars_cpu1toCpu2.initialCapacitance );
 
                 if( currentCapacitance >= sharedVars_cpu1toCpu2.initialCapacitance ) {
+                    PRINT("Current calculated capacitance[%8.2f]F >= initialCapacitance from flash:[%8.2f]F\r\n",
+                          currentCapacitance, sharedVars_cpu1toCpu2.initialCapacitance );
                     currentCapacitance = sharedVars_cpu1toCpu2.initialCapacitance;
+
                 }
 
                 sharedVars_cpu2toCpu1.soh_energy_bank = 100.0 * ( currentCapacitance / sharedVars_cpu1toCpu2.initialCapacitance );
@@ -243,14 +262,16 @@ void energy_storage_check(void) {
             // Initial Capacitance is the current capacitance When saving for the first time
             if( requestCPU1ToSaveCapacitancesToFlash( currentCapacitance, currentCapacitance ) == true ) {
                 sohState.State_Next = sohCalcWait;
-                PRINT( "initialCapacitance saved to flash:[%8.2f]%%\r\n",  currentCapacitance);
+                PRINT( "Saving first initial [%8.2f]F and current capacitance to flash:[%8.2f]F\r\n",
+                       currentCapacitance, currentCapacitance);
             }
             break;
 
         case saveCurrentEnergyConditionToFlash:
             if( requestCPU1ToSaveCapacitancesToFlash( sharedVars_cpu1toCpu2.initialCapacitance, currentCapacitance ) == true ) {
                 sohState.State_Next = sohCalcWait;
-                PRINT( "initialCapacitance saved to flash:[%8.2f]%%\r\n",  currentCapacitance);
+                PRINT( "Updating initial [%8.2f]F and current capacitance to flash:[%8.2f]F\r\n",
+                       sharedVars_cpu1toCpu2.initialCapacitance, currentCapacitance);
             }
             break;
 

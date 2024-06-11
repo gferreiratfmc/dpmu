@@ -180,6 +180,7 @@ void StateMachine(void)
         EPMWStarted = false;
         DCDC_VI.counter = 0;
 
+        EnableContinuousReadCellVoltages();
         StateVector.State_Next = ChargeRamp;
 
         break;
