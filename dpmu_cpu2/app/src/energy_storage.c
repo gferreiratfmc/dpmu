@@ -48,8 +48,10 @@ void calcAccumlatedCharge( void ) {
 
     soh_current_timer = timer_get_ticks();
     soh_elapsed_time = soh_current_timer - soh_last_timer;
+    static uint16_t countToPrint = 0;
 
-    if( soh_elapsed_time >= 100 ) {
+
+    if( soh_elapsed_time >= 1 ) {
         instant_current =  fabsf( sensorVector[ISen2fIdx].realValue );
         avgChargingCurrent = avgChargingCurrent + instant_current;
         avgChargingCurrentCount = avgChargingCurrentCount + 1;
@@ -58,11 +60,14 @@ void calcAccumlatedCharge( void ) {
     }
     if( avgChargingCurrentCount == NUMBER_OF_AVG_CHARGING_CURRENT_COUNT) {
         avgChargingCurrent = avgChargingCurrent / (float)NUMBER_OF_AVG_CHARGING_CURRENT_COUNT;
-        accumulatedCharge = accumulatedCharge + avgChargingCurrent;
-        PRINT("\r\n===> AccumulatedCharge:[%8.2f], TotalChargeTime:[%lu]ms,  AvgChargingCurrent:[%8.2f]\r\n\r\n",
-              accumulatedCharge,
-              totalChargeTime,
-              avgChargingCurrent );
+        accumulatedCharge = accumulatedCharge + avgChargingCurrent * ( ((float)soh_elapsed_time * NUMBER_OF_AVG_CHARGING_CURRENT_COUNT) / 1000.0 );
+        if( countToPrint++ > 100 ) {
+            PRINT("===> AccumulatedCharge:[%8.2f], TotalChargeTime:[%lu]ms,  AvgChargingCurrent:[%8.2f]\r\n",
+                  accumulatedCharge,
+                  totalChargeTime,
+                  avgChargingCurrent );
+            countToPrint = 0;
+        }
         avgChargingCurrent = 0.0;
         avgChargingCurrentCount = 0;
     }
@@ -206,6 +211,7 @@ void energy_storage_check(void) {
                 case BalancingInit:
                 case Balancing:
                 case BalancingStop:
+                    soh_last_timer = timer_get_ticks();
                     sohState.State_Next =  sohCalcCapacitance;
                     break;
                 case ChargeStop:

@@ -233,7 +233,6 @@ void StateMachine(void)
     case BalancingInit:
         DCDC_VI.I_Ref_Real = 0.0;
         DCDC_current_buck_loop_float();
-        DisableContinuousReadCellVoltages();
 
         /************** Testing CLLC BEGIN ********/
 //        if( TestCellNr == BAT_15_N ) {
@@ -268,12 +267,13 @@ void StateMachine(void)
         /************** Testing CLLC END ********/
 
         if( BalancingAllCells( &cellVoltagesVector[0] ) == true ) {
-           StateVector.State_Next = BalancingStop;
+           StateVector.State_Next = ChargeInit;
         }
         break;
 
     case BalancingStop:
-        StateVector.State_Next = ChargeInit;
+        switch_matrix_reset();
+        StateVector.State_Next = StopEPWMs;
         break;
 
     case Keep:
@@ -542,6 +542,7 @@ void CheckCommandFromIOP(void)
                         case RegulateVoltage:
                             StateVector.State_Next = RegulateVoltageStop;
                             break;
+
                         case TrickleCharge:
                         case TrickleChargeDelay:
                         case TrickleChargeInit:
@@ -549,6 +550,7 @@ void CheckCommandFromIOP(void)
                         case Charge:
                             StateVector.State_Next = ChargeStop;
                             break;
+
                         case Balancing:
                         case BalancingInit:
                             StateVector.State_Next = BalancingStop;
