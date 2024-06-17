@@ -24,45 +24,17 @@
 #define MAX_INRUSH_DUTY_CYCLE 1.0
 #define INRUSH_DUTY_CYLE_INCREMENT 5
 
-enum Operating_state
-{
-    Idle = 0,
-    Initialize,             // 1
-    SoftstartInitDefault,              // 2
-    SoftstartInitRedundant = 201,
-    Softstart = 3,                  // 3
-    TrickleChargeInit,          // 4
-    TrickleChargeDelay,         // 5
-    TrickleCharge,              // 6
-    ChargeInit,                 // 7
-    Charge,                     // 8
-    ChargeStop,                 // 9
-    ChargeConstantVoltageInit,  // 10
-    ChargeConstantVoltage,      // 11
-    RegulateInit,               // 12
-    Regulate,                   // 13
-    RegulateStop,               // 14
-    RegulateVoltageInit = 140,
-    RegulateVoltage = 141,
-    RegulateVoltageStop = 142,
-    Fault = 15,                      // 15
-    FaultDelay,                 // 16
-    Keep,                       // 17
-    BalancingInit,              // 18
-    Balancing,                  // 19
-    BalancingStop = 191,              // 191
-    CC_Charge = 20,                  // 20
-    StopEPWMs,                  // 21
-    ChargeRamp,                 // 22
-};
+
 
 typedef enum Balancing_state
 {
     BALANCE_INIT = 0,
-    BALANCE_VERIFY_THRESHOLD,
+    BALANCE_VERIFY_HIGH_THRESHOLD,
+    BALANCE_READ_CELL_VOLTAGES,
     BALANCE_CONNECT,
     BALANCE_DISCHARGE,
-    BALANCE_READ_CELL_VOLTAGES,
+    BALANCE_DISCHARGE_READ_CELL_VOLTAGES,
+    BALANCE_VERIFY_LOW_THRESHOLD,
     BALANCE_NEXT_ITERATION,
     BALANCE_DONE,
 }Balancing_state_t;
@@ -78,7 +50,14 @@ typedef enum Read_cell_state
     READ_CELL_DONE,
 }Read_cell_state_t;
 
+typedef struct Counters
+{
+    uint32_t StateMachineCounter;
+    int16_t PrestateCounter;
+    uint16_t InrushCurrentLimiterCounter;
+} Counters_t;
 
+extern Counters_t CounterGroup ;
 
 void StateMachineInit(void);
 void StateMachine(void);

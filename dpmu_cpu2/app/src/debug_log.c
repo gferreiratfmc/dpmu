@@ -48,7 +48,6 @@ uint32_t SetDebugLogPeriod(void) {
             case BalancingInit:
             case Balancing:
             case CC_Charge:
-            case Keep:
                 debug_period_in_ms = LOG_PERIOD_CHARGE;
                 break;
             case RegulateInit:

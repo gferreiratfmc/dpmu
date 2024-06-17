@@ -51,29 +51,6 @@ static void check_incoming_commands(void)
     uint32_t data;
     uint8_t  state;
 
-//    if( IPC_isFlagBusyRtoL(IPC_CPU1_L_CPU2_R, IPC_SWITCHES_QINB) ){
-//        PRINT("===========> Setting QINB:%d\r\n", sharedVars_cpu1toCpu2.QinbSwitchRequestState);
-//        switches_Qinb( sharedVars_cpu1toCpu2.QinbSwitchRequestState );
-//        IPC_ackFlagRtoL(IPC_CPU1_L_CPU2_R, IPC_SWITCHES_QINB);
-//    }
-//
-//    if( IPC_isFlagBusyRtoL(IPC_CPU1_L_CPU2_R, IPC_SWITCHES_QLB)){
-//        PRINT("===========> Setting QLB:%d\r\n", sharedVars_cpu1toCpu2.QlbSwitchRequestState);
-//        switches_Qlb( sharedVars_cpu1toCpu2.QlbSwitchRequestState );
-//        IPC_ackFlagRtoL(IPC_CPU1_L_CPU2_R, IPC_SWITCHES_QLB);
-//    }
-//
-//    if( IPC_isFlagBusyRtoL(IPC_CPU1_L_CPU2_R, IPC_SWITCHES_QSB)){
-//        PRINT("===========> Setting QSB:%d\r\n", sharedVars_cpu1toCpu2.QsbSwitchRequestState);
-//        switches_Qsb( sharedVars_cpu1toCpu2.QsbSwitchRequestState );
-//        IPC_ackFlagRtoL(IPC_CPU1_L_CPU2_R, IPC_SWITCHES_QSB);
-//    }
-//
-//    if( IPC_isFlagBusyRtoL(IPC_CPU1_L_CPU2_R, IPC_SWITCHES_QIRS)){
-//        //switches_Qinrush( sharedVars_cpu1toCpu2.QlbSwitchRequestState );
-//        IPC_ackFlagRtoL(IPC_CPU1_L_CPU2_R, IPC_SWITCHES_QIRS);
-//    }
-
 
     if (IPC_readCommand(IPC_CPU2_L_CPU1_R, IPC_FLAG_MESSAGE_CPU1_TO_CPU2, false, &command, &addr, &data) != false) {
         // We received a command.
@@ -252,9 +229,7 @@ void main(void)
         energy_storage_update_settings();
         energy_storage_check();
 
-
         UpdateDebugLog();
-        //UpdateDebugLogFake();
 
         CheckMainStateMachineIsRunning();
 

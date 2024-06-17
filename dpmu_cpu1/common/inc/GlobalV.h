@@ -34,13 +34,37 @@
 #define MAX_VOLTAGE_ENERGY_CELL 3.0
 #define MAGIC_NUMBER 0xDEADFACE
 
-
-typedef struct Counters
+enum Operating_state
 {
-    uint32_t StateMachineCounter;
-    int16_t PrestateCounter;
-    uint16_t InrushCurrentLimiterCounter;
-} Counters_t;
+    Idle = 0,
+    Initialize,             // 1
+    SoftstartInitDefault,              // 2
+    SoftstartInitRedundant = 201,
+    Softstart = 3,                  // 3
+    TrickleChargeInit,          // 4
+    TrickleChargeDelay,         // 5
+    TrickleCharge,              // 6
+    ChargeInit,                 // 7
+    Charge,                     // 8
+    ChargeStop,                 // 9
+    ChargeConstantVoltageInit,  // 10
+    ChargeConstantVoltage,      // 11
+    RegulateInit,               // 12
+    Regulate,                   // 13
+    RegulateStop,               // 14
+    RegulateVoltageInit = 140,
+    RegulateVoltage = 141,
+    RegulateVoltageStop = 142,
+    Fault = 15,                      // 15
+    FaultDelay,                 // 16
+    BalancingInit = 18,              // 18
+    Balancing,                  // 19
+    BalancingStop = 191,              // 191
+    CC_Charge = 20,                  // 20
+    StopEPWMs,                  // 21
+    ChargeRamp,                 // 22
+    PreInitialized = 255
+};
 
 typedef struct debug_log
 {
@@ -150,22 +174,8 @@ extern CLLC_Parameters_t CLLC_VI;
 extern PiOutput_t VLoop_PiOutput;
 extern PiOutput_t ILoop_PiOutput;
 extern States_t StateVector;
-extern uint16_t T_delay ;
-extern uint16_t CellNumber ;
-extern uint16_t MatrixReseted ;
-extern uint16_t pleaseChangecell ;
-extern uint16_t CellVoltages[30];
-extern Counters_t CounterGroup ;
-extern uint16_t PhaseShiftCount;
 
 
-
-
-#if 0
-uint16_t A1= 2032;
-uint16_t A2= 3514;
-float dutya=0.5;
-#endif
 
 
 #endif /* APP_INC_GLOBALV_H_ */

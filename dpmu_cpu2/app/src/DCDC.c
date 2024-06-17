@@ -22,6 +22,9 @@
 #include "state_machine.h"
 #include "switches.h"
 
+PiOutput_t VLoop_PiOutput = { 0 };
+PiOutput_t ILoop_PiOutput = { 0 };
+
 static PI_Parameters_t ILoopParamBuck = { 0 };
 static PI_Parameters_t VLoopParamBoost = { 0 };
 static PI_Parameters_t ILoopParamBoost = { 0 };
@@ -339,12 +342,14 @@ void DCDCConverterInit(void)
 }
 
 
-void StopAllPWMs(void)
+void StopAllEPWMs(void)
 {
     HAL_StopPwmDCDC();
     HAL_StopPwmCllcCellDischarge1();
     HAL_StopPwmCllcCellDischarge2();
-    HAL_StopPwmInrushCurrentLimit();
+//    HAL_StopPwmInrushCurrentLimit();
+    HAL_PWM_setCounterCompareValue(InrushCurrentLimit_BASE,
+                                       EPWM_COUNTER_COMPARE_A, 0); /* last one to turn off, least impact */
 }
 
 

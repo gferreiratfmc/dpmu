@@ -21,17 +21,14 @@
 #include "co_canopen.h"
 #include "common.h"
 #include "co_p401.h"
-//#include "DMAset.h"
 #include "debug_log.h"
 #include "initialization_app.h"
 #include "emifc.h"
 #include "error_handling.h"
 #include "ext_flash.h"
-//#include "flash.h"
 #include "flash_api.h"
 #include "fwupdate.h"
 #include "GlobalV.h"
-//#include "hal.h"
 #include "i2c_test.h"
 #include "ipc_cpu1.h"
 #include "lfs_api.h"
@@ -247,7 +244,7 @@ void main(void)
         check_changes_from_CPU2();
 
         /* check for errors and handle them */
-        //error_check_for_errors();
+        error_check_for_errors();
 
         // Handle timerq.
         timerq_tick();

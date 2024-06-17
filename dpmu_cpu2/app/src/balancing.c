@@ -234,17 +234,16 @@ bool BalancingAllCells( float *cellVoltageVector ) {
         case BALANCE_READ_CELL_VOLTAGES:
             if( ReadCellVoltagesBalancingDone() == true ) {
                 DisableContinuousReadCellVoltages();
-                balancing_state.State_Next = BALANCE_VERIFY_THRESHOLD;
+                balancing_state.State_Next = BALANCE_VERIFY_HIGH_THRESHOLD;
             }
             break;
 
-        case BALANCE_VERIFY_THRESHOLD:
+        case BALANCE_VERIFY_HIGH_THRESHOLD:
             cellIndex = ConvCellNrToIdx( cellNr );
             if( cellVoltageVector[cellIndex] >= (energy_bank_settings.max_allowed_voltage_energy_cell * CELL_VOLTAGE_RATIO_HIGH_THRESHOLD) ) {
                 balancing_state.State_Next = BALANCE_CONNECT;
                 PRINT("Start discharge cellNr:[%d] cellVoltageVector[cellIndex]:[%8.2f]\r\n", cellNr, cellVoltageVector[cellIndex]);
             } else {
-                //PRINT("Verify discharge cellNr:[%d] cellVoltageVector[cellIndex]:[%8.2f]\r\n", cellNr, cellVoltageVector[cellIndex]);
                 totalCellsUnderThreshold++;
                 balancing_state.State_Next = BALANCE_NEXT_ITERATION;
             }
@@ -262,9 +261,8 @@ bool BalancingAllCells( float *cellVoltageVector ) {
             if( totalCellsUnderThreshold == 30 ) {
                 balancing_state.State_Next = BALANCE_DONE;
             } else {
-                balancing_state.State_Next = BALANCE_VERIFY_THRESHOLD;
+                balancing_state.State_Next = BALANCE_VERIFY_HIGH_THRESHOLD;
             }
-            //PRINT("NEXT ITERATION cellNr[%d]\r\n", cellNr);
             break;
 
         case BALANCE_CONNECT:
@@ -284,7 +282,27 @@ bool BalancingAllCells( float *cellVoltageVector ) {
                 StopCllcControlLoop();
                 switch_matrix_reset();
                 switch_matrix_connect_cell( cellNr );
+                ConfigReadCellVoltagesBalancingDone( false );
+                EnableContinuousReadCellVoltages();
+                balancing_state.State_Next = BALANCE_DISCHARGE_READ_CELL_VOLTAGES;
+            }
+            break;
+
+        case BALANCE_DISCHARGE_READ_CELL_VOLTAGES:
+            if( ReadCellVoltagesBalancingDone() == true ) {
+                DisableContinuousReadCellVoltages();
+                balancing_state.State_Next = BALANCE_VERIFY_LOW_THRESHOLD;
+            }
+            break;
+
+        case BALANCE_VERIFY_LOW_THRESHOLD:
+            cellIndex = ConvCellNrToIdx( cellNr );
+            PRINT("Discharging cellNr:[%d] cellVoltageVector[cellIndex]:[%4.2f] Vstore:[%4.2f]\r\n", cellNr, cellVoltageVector[cellIndex], DCDC_VI.avgVStore);
+            if( cellVoltageVector[cellIndex] <= (energy_bank_settings.max_allowed_voltage_energy_cell * CELL_VOLTAGE_RATIO_LOW_THRESHOLD) ) {
                 balancing_state.State_Next = BALANCE_INIT;
+                PRINT("Stop discharge cellNr:[%d] cellVoltageVector[cellIndex]:[%8.2f]\r\n", cellNr, cellVoltageVector[cellIndex]);
+            } else {
+                balancing_state.State_Next = BALANCE_CONNECT;
             }
             break;
 

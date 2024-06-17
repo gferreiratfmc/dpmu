@@ -86,7 +86,8 @@ typedef struct sharedVars_cpu2toCpu1_t // commonCpu2ToCpu1
     uint16_t current_state;
     uint16_t error_code;
 
-    uint16_t voltage_at_dc_bus;                 /* last measured DC bus Voltage */
+    float voltage_at_dc_bus;                 /* last measured DC bus Voltage */
+    float voltage_at_storage_bank;              /* last measured super capacitor bank */
     uint16_t vdroop;                            /* the VDROOP used */
     uint16_t power_consumed_by_load;            /* last calculated */
     uint16_t power_from_dc_input;               /* last calculated */
@@ -112,6 +113,7 @@ typedef struct sharedVars_cpu2toCpu1_t // commonCpu2ToCpu1
     float current_charging_current;          /* last measured charging current */
     float current_max_allowed_load_power;    /* max_allowed_load_power, read */
     float current_load_current;              /* last measured load current */
+    float current_input_current;
     shared_energy_bank_t energy_bank;
 } sharedVars_cpu2toCpu1_t;
 

@@ -15,7 +15,7 @@ bool DPMUAppInfoInitialized[IDX_DPMU_VAR_COUNT] = { false };
 // Sets a flag in the DPMUAppIndoInitialized array for each initialized variable.
 // After all variables are set informs CPU2 through a shared flag from CPU1 to CPU2 - DPMUAppInfoInitializedFlag
 // The parameter is the index in the array for the variable being set
-void checkDPMUAppInfoInitializeVars(DPMU_Initialization_Vars_t DPMUappVarIdx ) {
+void CheckDPMUAppInfoInitializeVars(DPMU_Initialization_Vars_t DPMUappVarIdx ) {
     uint16_t idx = 0;
     if( DPMUappVarIdx < IDX_DPMU_VAR_COUNT ) {
         DPMUAppInfoInitialized[DPMUappVarIdx] = true;
@@ -30,5 +30,13 @@ void checkDPMUAppInfoInitializeVars(DPMU_Initialization_Vars_t DPMUappVarIdx ) {
         sharedVars_cpu1toCpu2.DPMUAppInfoInitializedFlag = true;
     } else {
         sharedVars_cpu1toCpu2.DPMUAppInfoInitializedFlag = false;
+    }
+}
+
+
+void ResetDPMUAppInfoInitializeVars() {
+    sharedVars_cpu1toCpu2.DPMUAppInfoInitializedFlag = false;
+    for( int idx=0; idx<IDX_DPMU_VAR_COUNT; idx++ ) {
+        DPMUAppInfoInitialized[idx] = false;
     }
 }

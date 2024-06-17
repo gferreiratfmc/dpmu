@@ -42,7 +42,7 @@ PiOutput_t Pi_ControllerBuckFloat(PI_Parameters_t PI, PiOutput_t PIout, float Re
 void DCDCConverterInit(void);
 void IncreasePulseStateDutyToSuperCapsVoltage( void );
 uint16_t CalculateCurrentOffset(uint16_t Offsetinput);
-void StopAllPWMs(void);
+void StopAllEPWMs(void);
 void TrackSensorValueForDEBUG(float sensorValue1, float sensorValue2, float sensorValue3, float sensorValue4);
 
 inline void handleEfuseVinOccurence();

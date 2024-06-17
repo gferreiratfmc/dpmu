@@ -39,12 +39,13 @@ uint16_t trackingStates[TRACK_STATE_BUFFER_SIZE];
 uint16_t trackStatesCount = 0;
 extern uint16_t PhaseshiftCount;
 uint16_t TestCellNr = 1;
-//bool run_inrush_current_limiter = false;
+
+Counters_t CounterGroup = { 0 };
 
 extern bool test_update_of_error_codes;
 
-extern float cellVoltagesVector[30];     /* used for first charge - SoH */
-float energyBankVoltage;    /* used for first charge - SoH */
+extern float cellVoltagesVector[30];
+float energyBankVoltage;
 bool cellVoltageOverThreshold;
 
 
@@ -56,6 +57,8 @@ void EnableOrDisblePWM();
 uint16_t ConvCellNrToIdx(uint16_t celNr);
 inline void EnableEFuseBBToStopDCDC_EPWM();
 void update_debug_log(void);
+
+
 
 void StateMachine(void)
 {
@@ -69,6 +72,9 @@ void StateMachine(void)
 
     switch (StateVector.State_Current)
     {
+    case PreInitialized:
+        break;
+
     case Initialize: /* Initial state, initialization of the parameters*/
         if( !DPMUInitializedFlag && (sharedVars_cpu1toCpu2.DPMUAppInfoInitializedFlag == true) ) {
             if( CalibrateZeroVoltageOffsetOfSensors() ) {
@@ -234,22 +240,6 @@ void StateMachine(void)
         DCDC_VI.I_Ref_Real = 0.0;
         DCDC_current_buck_loop_float();
 
-        /************** Testing CLLC BEGIN ********/
-//        if( TestCellNr == BAT_15_N ) {
-//            TestCellNr = BAT_16;
-//        }
-//        switch_matrix_reset();
-//        switch_matrix_connect_cell( TestCellNr );
-//        switch_matrix_set_cell_polarity( TestCellNr );
-//        if( TestCellNr <= BAT_15 ) {
-//            HAL_StopPwmCllcCellDischarge2();
-//            HAL_StartPwmCllcCellDischarge1();
-//        } else {
-//            HAL_StopPwmCllcCellDischarge1();
-//            HAL_StartPwmCllcCellDischarge2();
-//        }
-        /************** Testing CLLC END ********/
-
         if( sensorVector[ISen2fIdx].realValue < 0.25 ) {
             HAL_StopPwmDCDC();
             StateVector.State_Next = Balancing;
@@ -257,14 +247,6 @@ void StateMachine(void)
         break;
 
     case Balancing: // Balancing state supposed to run in parallel with Charge state.
-
-        /************** Testing CLLC BEGIN ********/
-//        if( TestCellNr <= BAT_15 ) {
-//            HAL_PWM_setPhaseShift(QABPWM_6_7_BASE, PhaseshiftCount);
-//        } else {
-//            HAL_PWM_setPhaseShift(QABPWM_14_15_BASE, PhaseshiftCount);
-//        }
-        /************** Testing CLLC END ********/
 
         if( BalancingAllCells( &cellVoltagesVector[0] ) == true ) {
            StateVector.State_Next = ChargeInit;
@@ -274,15 +256,6 @@ void StateMachine(void)
     case BalancingStop:
         switch_matrix_reset();
         StateVector.State_Next = StopEPWMs;
-        break;
-
-    case Keep:
-        // TODO: Change the threshold to re-charge to the correct variable variable
-        if (sensorVector[VStoreIdx].realValue <  DCDC_VI.avgVBus * 0.90 )
-        {
-            StateVector.State_Next = ChargeInit;
-        }
-
         break;
 
     case RegulateInit: /* Initialize the boost state */
@@ -299,6 +272,7 @@ void StateMachine(void)
         if( sensorVector[VStoreIdx].realValue < energy_bank_settings.min_voltage_applied_to_energy_bank ) {
             StateVector.State_Next = RegulateStop;
         }
+        //TODO: Commented only for endurance. Verify if it's should be uncommented for production version.
 //        if( DCDC_VI.avgVBus < REG_MIN_DC_BUS_VOLTAGE_RATIO * DCDC_VI.target_Voltage_At_DCBus ) {
 //            if( sensorVector[ISen1fIdx].realValue >= MIN_OUTPUT_CURRENT_TO_REGULATE_VOLTAGE ) {
 //                    StateVector.State_Next = RegulateVoltageInit;
@@ -352,16 +326,15 @@ void StateMachine(void)
 
         DPMUInitializedFlag = false;
 
-        StateVector.State_Next = StopEPWMs;
+        StopAllEPWMs();
+
+        StateVector.State_Next = PreInitialized;
 
         break;
 
     case StopEPWMs:
 
-        HAL_StopPwmDCDC();
-        HAL_StopPwmCllcCellDischarge1();
-        HAL_StopPwmCllcCellDischarge2();
-        HAL_PWM_setCounterCompareValue(InrushCurrentLimit_BASE, EPWM_COUNTER_COMPARE_A, 0); /* last one to turn off, least impact */
+        StopAllEPWMs();
         StateVector.State_Next = Idle;
         break;
         
@@ -501,9 +474,9 @@ void TrackStatesForDEBUG(void)
 
 void StateMachineInit(void)
 {
-    StateVector.State_Before = Idle;
-    StateVector.State_Current = Idle;
-    StateVector.State_Next = Idle;
+    StateVector.State_Before = PreInitialized;
+    StateVector.State_Current = PreInitialized;
+    StateVector.State_Next = PreInitialized;
 
     CounterGroup.PrestateCounter = 0;
     CounterGroup.StateMachineCounter = 0;
@@ -523,7 +496,7 @@ void CheckCommandFromIOP(void)
         }
         if ( !DPMUInitializedFlag ) {
             if( StateVector.State_Next != Initialize ) {
-                StateVector.State_Next = Idle;
+                StateVector.State_Next = PreInitialized;
             }
         } else {
             switch( StateVector.State_Next )
@@ -531,9 +504,12 @@ void CheckCommandFromIOP(void)
                 case Idle:
                     switch ( StateVector.State_Current )
                     {
+                        case PreInitialized:
+                            StateVector.State_Next = PreInitialized;
+                            break;
                         case Idle:
                             /* No change if it is in Idle already */
-                        break;
+                            break;
                         case RegulateInit:
                         case Regulate:
                             StateVector.State_Next = RegulateStop;
@@ -563,14 +539,18 @@ void CheckCommandFromIOP(void)
                     break;
 
                 case Initialize:
+                    StateVector.State_Next = StateVector.State_Current;
+                    break;
                 case TrickleChargeInit:
-                case BalancingInit:
                 case RegulateInit:
                     if( StateVector.State_Current != Idle ) {
                         StateVector.State_Next = StateVector.State_Current;
                     }
                     break;
                 case Fault:
+                    if( StateVector.State_Current == PreInitialized ) {
+                        StateVector.State_Next = PreInitialized;
+                    }
                     break;
                 default:
                     StateVector.State_Next = StateVector.State_Current;
@@ -671,143 +651,4 @@ void CheckMainStateMachineIsRunning()
     }
 }
 
-/* CPU1 can start the inrush current limiter,
- * but not stop it
- */
-//void start_inrush_current_limiter(uint8_t state)
-//{
-//    /* if not running
-//     * in the meaning of not incrementing the duty cycle
-//     * */
-//    if(false == run_inrush_current_limiter)
-//    {
-//        HAL_PWM_setCounterCompareValue(InrushCurrentLimit_BASE, EPWM_COUNTER_COMPARE_A, 0);
-//
-//        if(state)
-//            run_inrush_current_limiter = true;
-//    }
-//}
 
-
-//void soft_start(void)
-//{
-//    /* do not run function again until command from CPU1 */
-//    run_inrush_current_limiter = false;
-//
-//    /* signal to CPU1 the inrush current limiter is done */
-////    IPC_setFlagLtoR(IPC_CPU2_L_CPU1_R, IPC_SWITCHES_QIRS_DONE);
-//}
-
-//void soft_start_old(void)
-//{
-//    static uint32_t time_start;
-//    static uint32_t time_stop;
-//    uint16_t InrushPWMCompareAValue =
-//            HAL_PWM_getCounterCompareValue( InrushCurrentLimit_BASE, EPWM_COUNTER_COMPARE_A);
-//    uint16_t InrushPWMCompareAValueLimit =
-//            HAL_EPWM_getTimeBasePeriod(InrushCurrentLimit_BASE);
-//
-//    /* started by IPC flag set by CPU1 */
-//    if(true == run_inrush_current_limiter)
-//    {
-//        /* is inrush current limiter started */
-//        if(0 == InrushPWMCompareAValue)
-//        {
-//            // Initialize and start Inrush PWM
-//            HAL_PWM_setCounterCompareValue(InrushCurrentLimit_BASE,
-//                                           EPWM_COUNTER_COMPARE_A, 5);
-//            HAL_StartPwmInrushCurrentLimit();
-//
-//            time_start = timer_get_ticks();
-//        }
-//        else
-//        {
-//            /* is delay expired */
-//            if (CounterGroup.InrushCurrentLimiterCounter > DELAY_100_SM_CYCLES)
-//            {
-//                /* Intensify in-rush current gradually
-//                 * increasing In-rush PWM duty cycle
-//                 */
-//                InrushPWMCompareAValue += 5;
-//
-//                /* is PWM duty cycle limit reached */
-//                if(InrushPWMCompareAValue > InrushPWMCompareAValueLimit)
-//                {
-//                    /* limit the duty cycle
-//                     * _must_ be +1 to get true 100% */
-//                    HAL_PWM_setCounterCompareValue(InrushCurrentLimit_BASE, EPWM_COUNTER_COMPARE_A, InrushPWMCompareAValueLimit + 1);
-//
-//                    time_stop = timer_get_ticks();
-//                    uint32_t time_total = (time_stop - time_start);
-//                    PRINT("IRCL total time: %ld [ms]\r\n", time_total);
-//                    //TODO race condition with CPU1
-//
-//                    /* do not run function again until command from CPU1 */
-//                    run_inrush_current_limiter = false;
-//
-//                    /* signal to CPU1 the inrush current limiter is done */
-//                    IPC_setFlagLtoR(IPC_CPU2_L_CPU1_R, IPC_SWITCHES_QIRS_DONE);
-//                }
-//                else
-//                {
-//                    HAL_PWM_setCounterCompareValue(InrushCurrentLimit_BASE, EPWM_COUNTER_COMPARE_A, InrushPWMCompareAValue);
-//                }
-//
-//                /* reset delay */
-//                CounterGroup.InrushCurrentLimiterCounter = 0;
-//            }
-//            else
-//            {
-//                /* increment delay */
-//                CounterGroup.InrushCurrentLimiterCounter++;
-//            }
-//        }
-//    }
-//}
-
-
-//static uint8_t convert_current_state_to_OD(uint16_t state)
-//{
-//    uint16_t retVal;
-//
-//    switch(state)
-//    {
-//    case Idle:
-//    case StopEPWMs:
-//        retVal = Idle;
-//        break;
-//    case Initialize:         // 1
-//    case SoftstartInitDefault:          // 2
-//    case Softstart:              // 3
-//        retVal = Initialize;
-//        break;
-//    case TrickleChargeInit:      // 4
-//    case TrickleChargeDelay:     // 5
-//    case TrickleCharge:          // 6
-//    case ChargeRamp:
-//    case ChargeStop:
-//    case ChargeInit:             // 7
-//    case Charge:                 // 8
-//    case ChargeConstantVoltage:  // 9
-//    case BalancingInit:          // 10
-//    case Balancing:              // 11
-//        retVal = Charge;
-//        break;
-//    case RegulateInit:           // 12
-//    case Regulate:               // 13
-//    case RegulateStop:               // 13
-//        retVal = Regulate;
-//        break;
-//    case Fault:                  // 14
-//    case FaultDelay:             // 15
-//        retVal = Fault;
-//        break;
-//    case Keep:                   // 16
-//        retVal = Keep;
-//        break;
-//    default:
-//        break;
-//    }
-//
-//    return retVal & 0xff;
-//}
