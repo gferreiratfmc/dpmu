@@ -495,9 +495,13 @@ void CheckCommandFromIOP(void)
             return;
         }
         if ( !DPMUInitializedFlag ) {
-            if( StateVector.State_Next != Initialize ) {
-                StateVector.State_Next = PreInitialized;
-            }
+            if( StateVector.State_Current == PreInitialized ) {
+                    if( StateVector.State_Next != Initialize ) {
+                        StateVector.State_Next = PreInitialized;
+                    }
+                } else {
+                    StateVector.State_Next = StateVector.State_Current;
+                }
         } else {
             switch( StateVector.State_Next )
             {
@@ -507,6 +511,9 @@ void CheckCommandFromIOP(void)
                         case PreInitialized:
                             StateVector.State_Next = PreInitialized;
                             break;
+                        case Initialize:
+                              StateVector.State_Next = StateVector.State_Current;
+                              break;
                         case Idle:
                             /* No change if it is in Idle already */
                             break;
