@@ -20,6 +20,8 @@
 #include "DCDC.h"
 #include "debug_log.h"
 #include "energy_storage.h"
+#include "error_handling.h"
+#include "error_handling_CPU2.h"
 #include "GlobalV.h"
 #include "hal.h"
 #include "sensors.h"
@@ -72,281 +74,283 @@ void StateMachine(void)
 
     switch (StateVector.State_Current)
     {
-    case PreInitialized:
-        break;
+        case PreInitialized:
+            break;
 
-    case Initialize: /* Initial state, initialization of the parameters*/
-        if( !DPMUInitializedFlag && (sharedVars_cpu1toCpu2.DPMUAppInfoInitializedFlag == true) ) {
-            if( CalibrateZeroVoltageOffsetOfSensors() ) {
-                test_update_of_error_codes = true;
-                HAL_DcdcNormalModePwmSetting();
+        case Initialize: /* Initial state, initialization of the parameters*/
+            if( !DPMUInitializedFlag && (sharedVars_cpu1toCpu2.DPMUAppInfoInitializedFlag == true) ) {
+                if( CalibrateZeroVoltageOffsetOfSensors() ) {
+                    test_update_of_error_codes = true;
+                    HAL_DcdcNormalModePwmSetting();
 
-                switches_Qinb( SW_OFF );
-                switches_Qlb( SW_OFF );
-                switches_Qsb( SW_OFF );
+                    switches_Qinb( SW_OFF );
+                    switches_Qlb( SW_OFF );
+                    switches_Qsb( SW_OFF );
 
-                if( sharedVars_cpu1toCpu2.dpmu_default_flag == true ) {
-                    StateVector.State_Next = SoftstartInitDefault;
-                } else {
-                    StateVector.State_Next = SoftstartInitRedundant;
+                    if( sharedVars_cpu1toCpu2.dpmu_default_flag == true ) {
+                        StateVector.State_Next = SoftstartInitDefault;
+                    } else {
+                        StateVector.State_Next = SoftstartInitRedundant;
+                    }
                 }
+            } else {
+                StateVector.State_Next = StateVector.State_Before;
             }
-        } else {
-            StateVector.State_Next = StateVector.State_Before;
-        }
 
-        break;
+            break;
 
-    case SoftstartInitDefault:
-        //Close output Switch
-        switches_Qlb(SW_ON);
-        switches_Qsb(SW_ON);
-
-        // Initialize and start Inrush PWM
-        HAL_PWM_setCounterCompareValue(InrushCurrentLimit_BASE, EPWM_COUNTER_COMPARE_A, INRUSH_DUTY_CYLE_INCREMENT);
-        HAL_StartPwmInrushCurrentLimit();
-        CounterGroup.InrushCurrentLimiterCounter = 0;
-        StateVector.State_Next = Softstart;
-        break;
-
-    case SoftstartInitRedundant:
-        //Opens output Switch
-        switches_Qlb(SW_OFF);
-        switches_Qsb(SW_ON);
-
-        // Initialize and start Inrush PWM
-        HAL_PWM_setCounterCompareValue(InrushCurrentLimit_BASE, EPWM_COUNTER_COMPARE_A, INRUSH_DUTY_CYLE_INCREMENT);
-        HAL_StartPwmInrushCurrentLimit();
-        CounterGroup.InrushCurrentLimiterCounter = 0;
-        StateVector.State_Next = Softstart;
-        break;
-
-    case Softstart: /* Soft start of the 200V Bus*/
-
-        if( DoneWithInrush() ) {
-            EnableEFuseBBToStopDCDC_EPWM();
-            switches_Qinb(SW_ON);
+        case SoftstartInitDefault:
+            //Close output Switch
+            switches_Qlb(SW_ON);
             switches_Qsb(SW_ON);
-            //Stop In-rush PWM
-            HAL_PWM_setCounterCompareValue(InrushCurrentLimit_BASE, EPWM_COUNTER_COMPARE_A, 1);
-            HAL_StopPwmInrushCurrentLimit();
-            DPMUInitializedFlag = true;
-            EnableContinuousReadCellVoltages();
-            StateVector.State_Next = Idle;
-        }
-        break;
 
-    case TrickleChargeInit:
-        if ( DCDC_VI.avgVStore >= energy_bank_settings.preconditional_threshold ) {
-            StateVector.State_Next = ChargeInit;
-        } else {
-            HAL_DcdcPulseModePwmSetting();
-            HAL_StartPwmDCDC();
-            CounterGroup.PrestateCounter = DELAY_50_SM_CYCLES;
-            StateVector.State_Next = TrickleChargeDelay;
-            trickleChargeRangeState = 0;
-        }
-        break;
+            // Initialize and start Inrush PWM
+            HAL_PWM_setCounterCompareValue(InrushCurrentLimit_BASE, EPWM_COUNTER_COMPARE_A, INRUSH_DUTY_CYLE_INCREMENT);
+            HAL_StartPwmInrushCurrentLimit();
+            CounterGroup.InrushCurrentLimiterCounter = 0;
+            StateVector.State_Next = Softstart;
+            break;
 
-    case TrickleChargeDelay:
-        CounterGroup.PrestateCounter--;
-        if (CounterGroup.PrestateCounter == 0)
-        {
-            StateVector.State_Next = TrickleCharge;
-        }
-        break;
+        case SoftstartInitRedundant:
+            //Opens output Switch
+            switches_Qlb(SW_OFF);
+            switches_Qsb(SW_ON);
 
-    case TrickleCharge: /* Pulse charge state for when the super capacitor bank voltage is low */
-        IncreasePulseStateDutyToSuperCapsVoltage();
-        if ( DCDC_VI.avgVStore >= energy_bank_settings.preconditional_threshold)
-        {
-            HAL_StopPwmDCDC();
-            StateVector.State_Next = ChargeInit;
-        }
-        if ( ReadCellVoltagesDone() == true){
-            if( cellVoltageOverThreshold ){
-                StateVector.State_Next = StopEPWMs;
+            // Initialize and start Inrush PWM
+            HAL_PWM_setCounterCompareValue(InrushCurrentLimit_BASE, EPWM_COUNTER_COMPARE_A, INRUSH_DUTY_CYLE_INCREMENT);
+            HAL_StartPwmInrushCurrentLimit();
+            CounterGroup.InrushCurrentLimiterCounter = 0;
+            StateVector.State_Next = Softstart;
+            break;
+
+        case Softstart: /* Soft start of the 200V Bus*/
+
+            if( DoneWithInrush() ) {
+                EnableEFuseBBToStopDCDC_EPWM();
+                switches_Qinb(SW_ON);
+                switches_Qsb(SW_ON);
+                //Stop In-rush PWM
+                HAL_PWM_setCounterCompareValue(InrushCurrentLimit_BASE, EPWM_COUNTER_COMPARE_A, 1);
+                HAL_StopPwmInrushCurrentLimit();
+                DPMUInitializedFlag = true;
+                EnableContinuousReadCellVoltages();
+                StateVector.State_Next = Idle;
             }
-        }
-        break;
+            break;
 
-    case ChargeInit: /* Initialize the buck state */
+        case TrickleChargeInit:
+            if ( DCDC_VI.avgVStore >= energy_bank_settings.preconditional_threshold ) {
+                StateVector.State_Next = ChargeInit;
+            } else {
+                HAL_DcdcPulseModePwmSetting();
+                HAL_StartPwmDCDC();
+                CounterGroup.PrestateCounter = DELAY_50_SM_CYCLES;
+                StateVector.State_Next = TrickleChargeDelay;
+                trickleChargeRangeState = 0;
+            }
+            break;
 
-        HAL_DcdcNormalModePwmSetting();
-        ILoop_PiOutput.Int_out = 0;
+        case TrickleChargeDelay:
+            CounterGroup.PrestateCounter--;
+            if (CounterGroup.PrestateCounter == 0)
+            {
+                StateVector.State_Next = TrickleCharge;
+            }
+            break;
 
-        I_Ref_Real_Final = 0.5 * (  DCDC_VI.target_Voltage_At_DCBus * DCDC_VI.iIn_limit / energy_bank_settings.max_voltage_applied_to_energy_bank );
-
-        if( I_Ref_Real_Final >  MAX_INDUCTOR_BUCK_CURRENT ) {
-            I_Ref_Real_Final = MAX_INDUCTOR_BUCK_CURRENT;
-        }
-        DCDC_VI.I_Ref_Real = I_Ref_Real_Final / 100.0;
-
-        HAL_PWM_setCounterCompareValue( BEG_1_2_BASE, EPWM_COUNTER_COMPARE_A, 0.5*EPWM_getTimeBasePeriod(BEG_1_2_BASE) );
-        EPMWStarted = false;
-        DCDC_VI.counter = 0;
-
-        EnableContinuousReadCellVoltages();
-        StateVector.State_Next = ChargeRamp;
-
-        break;
-
-    case ChargeRamp:
-        if( !EPMWStarted ) {
-            HAL_StartPwmDCDC();
-            EPMWStarted = true;
-        }
-        DCDC_current_buck_loop_float();
-        if( DCDC_VI.counter == DELAY_50_SM_CYCLES) {
-            DCDC_VI.counter = 0;
-            if( -(sensorVector[ISen2fIdx].realValue) >= DCDC_VI.I_Ref_Real ) {
-                DCDC_VI.I_Ref_Real = DCDC_VI.I_Ref_Real + ( I_Ref_Real_Final / 100.0 );
-                if( DCDC_VI.I_Ref_Real >= I_Ref_Real_Final ) {
-                    DCDC_VI.I_Ref_Real = I_Ref_Real_Final;
-                    StateVector.State_Next = Charge;
+        case TrickleCharge: /* Pulse charge state for when the super capacitor bank voltage is low */
+            IncreasePulseStateDutyToSuperCapsVoltage();
+            if ( DCDC_VI.avgVStore >= energy_bank_settings.preconditional_threshold)
+            {
+                HAL_StopPwmDCDC();
+                StateVector.State_Next = ChargeInit;
+            }
+            if ( ReadCellVoltagesDone() == true){
+                if( cellVoltageOverThreshold ){
+                    StateVector.State_Next = StopEPWMs;
                 }
             }
-        } else {
-            DCDC_VI.counter++;
-        }
-        break;
+            break;
 
-    case Charge:
+        case ChargeInit: /* Initialize the buck state */
 
-        if( DCDC_VI.avgVStore < energy_bank_settings.max_voltage_applied_to_energy_bank * MAX_ENERGY_BANK_VOLTAGE_RATIO ) {
-            DCDC_current_buck_loop_float();
-        } else {
-            StateVector.State_Next = ChargeStop;
-        }
+            HAL_DcdcNormalModePwmSetting();
+            ILoop_PiOutput.Int_out = 0;
 
-        if( ReadCellVoltagesDone() == true) {
-            if( cellVoltageOverThreshold == true ) {
-                StateVector.State_Next = BalancingInit; //Normal operation
-//                StateVector.State_Next = ChargeStop;   // Endurance operation. Balancing not completely implemented
+            I_Ref_Real_Final = 0.5 * (  DCDC_VI.target_Voltage_At_DCBus * DCDC_VI.iIn_limit / energy_bank_settings.max_voltage_applied_to_energy_bank );
+
+            if( I_Ref_Real_Final >  MAX_INDUCTOR_BUCK_CURRENT ) {
+                I_Ref_Real_Final = MAX_INDUCTOR_BUCK_CURRENT;
             }
-        }
+            DCDC_VI.I_Ref_Real = I_Ref_Real_Final / 100.0;
 
-        break;
+            HAL_PWM_setCounterCompareValue( BEG_1_2_BASE, EPWM_COUNTER_COMPARE_A, 0.5*EPWM_getTimeBasePeriod(BEG_1_2_BASE) );
+            EPMWStarted = false;
+            DCDC_VI.counter = 0;
 
-    case ChargeStop:
+            EnableContinuousReadCellVoltages();
+            StateVector.State_Next = ChargeRamp;
+
+            break;
+
+        case ChargeRamp:
+            if( !EPMWStarted ) {
+                HAL_StartPwmDCDC();
+                EPMWStarted = true;
+            }
+            DCDC_current_buck_loop_float();
+            if( DCDC_VI.counter == DELAY_50_SM_CYCLES) {
+                DCDC_VI.counter = 0;
+                if( -(sensorVector[ISen2fIdx].realValue) >= DCDC_VI.I_Ref_Real ) {
+                    DCDC_VI.I_Ref_Real = DCDC_VI.I_Ref_Real + ( I_Ref_Real_Final / 100.0 );
+                    if( DCDC_VI.I_Ref_Real >= I_Ref_Real_Final ) {
+                        DCDC_VI.I_Ref_Real = I_Ref_Real_Final;
+                        StateVector.State_Next = Charge;
+                    }
+                }
+            } else {
+                DCDC_VI.counter++;
+            }
+            break;
+
+        case Charge:
+
+            if( DCDC_VI.avgVStore < energy_bank_settings.max_voltage_applied_to_energy_bank * MAX_ENERGY_BANK_VOLTAGE_RATIO ) {
+                DCDC_current_buck_loop_float();
+            } else {
+                StateVector.State_Next = ChargeStop;
+            }
+
+            if( ReadCellVoltagesDone() == true) {
+                if( cellVoltageOverThreshold == true ) {
+                    StateVector.State_Next = BalancingInit; //Normal operation
+    //                StateVector.State_Next = ChargeStop;   // Endurance operation. Balancing not completely implemented
+                }
+            }
+
+            break;
+
+        case ChargeStop:
+                DCDC_VI.I_Ref_Real = 0.0;
+                DCDC_current_buck_loop_float();
+                if( sensorVector[ISen2fIdx].realValue < 0.25 ) {
+                    StateVector.State_Next = StopEPWMs;
+                }
+              break;
+
+        case BalancingInit:
             DCDC_VI.I_Ref_Real = 0.0;
             DCDC_current_buck_loop_float();
+
+            if( sensorVector[ISen2fIdx].realValue < 0.25 ) {
+                HAL_StopPwmDCDC();
+                StateVector.State_Next = Balancing;
+            }
+            break;
+
+        case Balancing: // Balancing state supposed to run in parallel with Charge state.
+
+            if( BalancingAllCells( &cellVoltagesVector[0] ) == true ) {
+               StateVector.State_Next = ChargeInit;
+            }
+            break;
+
+        case BalancingStop:
+            switch_matrix_reset();
+            StateVector.State_Next = StopEPWMs;
+            break;
+
+        case RegulateInit: /* Initialize the boost state */
+            DCDC_VI.I_Ref_Real = 0.0;
+            StateVector.State_Next = Regulate;
+            HAL_StopPwmDCDC();
+            HAL_DcdcRegulateModePwmSetting();
+            break;
+
+        case Regulate:
+            calculate_boost_current();
+            DCDC_current_boost_loop_float();
+            EnableOrDisblePWM(DCDC_VI.I_Ref_Real);
+            if( sensorVector[VStoreIdx].realValue < energy_bank_settings.min_voltage_applied_to_energy_bank ) {
+                StateVector.State_Next = RegulateStop;
+            }
+            //TODO: Commented only for endurance. Verify if it's should be uncommented for production version.
+    //        if( DCDC_VI.avgVBus < REG_MIN_DC_BUS_VOLTAGE_RATIO * DCDC_VI.target_Voltage_At_DCBus ) {
+    //            if( sensorVector[ISen1fIdx].realValue >= MIN_OUTPUT_CURRENT_TO_REGULATE_VOLTAGE ) {
+    //                    StateVector.State_Next = RegulateVoltageInit;
+    //            }
+    //        }
+            break;
+
+        case RegulateStop:
+            DCDC_VI.I_Ref_Real = 0.0;
+            DCDC_current_boost_loop_float();
             if( sensorVector[ISen2fIdx].realValue < 0.25 ) {
                 StateVector.State_Next = StopEPWMs;
             }
-          break;
+            break;
 
-    case BalancingInit:
-        DCDC_VI.I_Ref_Real = 0.0;
-        DCDC_current_buck_loop_float();
+        case RegulateVoltageInit:
+            DCDC_VI.I_Ref_Real = 0.0;
+            DCDC_current_boost_loop_float();
+            switches_Qinb( SW_OFF );
+            StateVector.State_Next = RegulateVoltage;
+            break;
 
-        if( sensorVector[ISen2fIdx].realValue < 0.25 ) {
-            HAL_StopPwmDCDC();
-            StateVector.State_Next = Balancing;
-        }
-        break;
+        case RegulateVoltage:
+            DCDC_voltage_boost_loop_float();
+            DCDC_current_boost_loop_float();
+            EnableOrDisblePWM(DCDC_VI.I_Ref_Real);
+            if( DCDC_VI.avgVStore < energy_bank_settings.min_voltage_applied_to_energy_bank ) {
+                StateVector.State_Next = RegulateVoltageStop;
 
-    case Balancing: // Balancing state supposed to run in parallel with Charge state.
+            }
+            if(  DCDC_VI.avgVBus > sharedVars_cpu1toCpu2.max_allowed_dc_bus_voltage ) {
+                StateVector.State_Next = RegulateVoltageStop;
+            }
+            break;
 
-        if( BalancingAllCells( &cellVoltagesVector[0] ) == true ) {
-           StateVector.State_Next = ChargeInit;
-        }
-        break;
-
-    case BalancingStop:
-        switch_matrix_reset();
-        StateVector.State_Next = StopEPWMs;
-        break;
-
-    case RegulateInit: /* Initialize the boost state */
-        DCDC_VI.I_Ref_Real = 0.0;
-        StateVector.State_Next = Regulate;
-        HAL_StopPwmDCDC();
-        HAL_DcdcRegulateModePwmSetting();
-        break;
-
-    case Regulate:
-        calculate_boost_current();
-        DCDC_current_boost_loop_float();
-        EnableOrDisblePWM(DCDC_VI.I_Ref_Real);
-        if( sensorVector[VStoreIdx].realValue < energy_bank_settings.min_voltage_applied_to_energy_bank ) {
+        case RegulateVoltageStop:
+            DPMUInitializedFlag = false;
             StateVector.State_Next = RegulateStop;
-        }
-        //TODO: Commented only for endurance. Verify if it's should be uncommented for production version.
-//        if( DCDC_VI.avgVBus < REG_MIN_DC_BUS_VOLTAGE_RATIO * DCDC_VI.target_Voltage_At_DCBus ) {
-//            if( sensorVector[ISen1fIdx].realValue >= MIN_OUTPUT_CURRENT_TO_REGULATE_VOLTAGE ) {
-//                    StateVector.State_Next = RegulateVoltageInit;
-//            }
-//        }
-        break;
+            break;
 
-    case RegulateStop:
-        DCDC_VI.I_Ref_Real = 0.0;
-        DCDC_current_boost_loop_float();
-        if( sensorVector[ISen2fIdx].realValue < 0.25 ) {
-            StateVector.State_Next = StopEPWMs;
-        }
-        break;
+        case Fault:
+            HAL_StopPwmDCDC();
 
-    case RegulateVoltageInit:
-        DCDC_VI.I_Ref_Real = 0.0;
-        DCDC_current_boost_loop_float();
-        switches_Qinb( SW_OFF );
-        StateVector.State_Next = RegulateVoltage;
-        break;
+            switches_Qlb( SW_OFF );
+            switches_Qsb( SW_OFF );
+            switches_Qinb( SW_OFF );
 
-    case RegulateVoltage:
-        DCDC_voltage_boost_loop_float();
-        DCDC_current_boost_loop_float();
-        EnableOrDisblePWM(DCDC_VI.I_Ref_Real);
-        if( DCDC_VI.avgVStore < energy_bank_settings.min_voltage_applied_to_energy_bank ) {
-            StateVector.State_Next = RegulateVoltageStop;
+            CounterGroup.PrestateCounter = 0;
 
-        }
-        if(  DCDC_VI.avgVBus > sharedVars_cpu1toCpu2.max_allowed_dc_bus_voltage ) {
-            StateVector.State_Next = RegulateVoltageStop;
-        }
-        break;
+            test_update_of_error_codes = false;
 
-    case RegulateVoltageStop:
-        DPMUInitializedFlag = false;
-        StateVector.State_Next = RegulateStop;
-        break;
+            DPMUInitializedFlag = false;
 
-    case Fault:
-        HAL_StopPwmDCDC();
+            StopAllEPWMs();
 
-        switches_Qlb( SW_OFF );
-        switches_Qsb( SW_OFF );
-        switches_Qinb( SW_OFF );
+            ResetDpmuErrorOcurred();
 
-        CounterGroup.PrestateCounter = 0;
+            StateVector.State_Next = PreInitialized;
 
-        test_update_of_error_codes = false;
+            break;
 
-        DPMUInitializedFlag = false;
+        case StopEPWMs:
 
-        StopAllEPWMs();
+            StopAllEPWMs();
+            StateVector.State_Next = Idle;
+            break;
 
-        StateVector.State_Next = PreInitialized;
+        case Idle:
+            if( StatusContinousReadCellVoltages() == false) {
+                EnableContinuousReadCellVoltages();
+            }
+            break;
 
-        break;
-
-    case StopEPWMs:
-
-        StopAllEPWMs();
-        StateVector.State_Next = Idle;
-        break;
-        
-    case Idle:
-        if( StatusContinousReadCellVoltages() == false) {
-            EnableContinuousReadCellVoltages();
-        }
-        break;
-
-    default:
-        /* should never enter here */
-        break;
+        default:
+            /* should never enter here */
+            break;
     }
 
     ReadCellVoltagesStateMachine( &cellVoltagesVector[0], &energyBankVoltage, &cellVoltageOverThreshold);
@@ -354,6 +358,8 @@ void StateMachine(void)
     /*** commands from CPU1/IOP ***/
     /* check if IOP request for  a change of state */
     CheckCommandFromIOP();
+
+
 
     if( !DPMUSwitchesStatesOK ) {
         DefineDPMUSafeState();
@@ -365,9 +371,15 @@ void StateMachine(void)
         PRINT("Next state %02d\r\n", StateVector.State_Next);
     }
 
+    if( DpmuErrorOcurred() == true ) {
+        StateVector.State_Next = Fault;
+    }
+
     /* update current state */
     StateVector.State_Before = StateVector.State_Current;
     StateVector.State_Current = StateVector.State_Next;
+
+
 
     /* reflect state in CANopen OD */
 //    sharedVars_cpu2toCpu1.current_state = convert_current_state_to_OD(StateVector.State_Current);

@@ -14,24 +14,16 @@
 
 #include <stdint.h>
 
-#define MaximumCellVoltage      4000
-#define MaintainanceChargeLevel 33800   // To be Changed
-#define LowestVoltageforBoost   24920   // To be changed
-#define MaximumInductorCurrent  15      // Maximum average continuous inductor current
-#define FromAmpToTick           136.5f // ACS730KLCTR-20AB-S for the current patch board   100mV/A   0.1/3.3*4095
-#define ADC_VREF 3.0
-#define VOLTAGE_DIVIDER_GAIN 100.0 // 100-> 100=Resistive divisor ratio
+
 #define BOOST_TIME_BASE_PERIOD 714
 #define BUCK_NORMAL_MODE_TIME_BASE_PERIOD 714
 #define BUCK_PULSE_MODE_TIME_BASE_PERIOD 5000
-#define BUCK_PULSE_BOUNDARY_RATIO 0.55
-#define PULSE_MODE_INITIAL_DUTY_CYCLE 175
 #define MAX_INDUCTOR_BUCK_CURRENT 5.0
-#define MAX_INDUCTOR_BOOST_CURRENT 19
-#define UPDATE_CPU2_FIRMWARE_CODE 9999
+#define MAX_INDUCTOR_BOOST_CURRENT 19.0
 #define NUMBER_OF_CELLS 30
 #define MAX_VOLTAGE_ENERGY_BANK 90.0
 #define MAX_VOLTAGE_ENERGY_CELL 3.0
+#define MAX_DPMU_OUTPUT_CURRENT 20.0
 #define MAGIC_NUMBER 0xDEADFACE
 
 enum Operating_state
@@ -121,40 +113,11 @@ typedef struct PI_Parameters
     float LowerLimit;   // PI Output Lower Limit
 } PI_Parameters_t;
 
-typedef struct CLLC_Parameters
-{
-    int16_t IDAB2_RAW;
-    int16_t IDAB3_RAW;
-    uint16_t VHalfC_U_Raw;
-    uint16_t VHalfC_U_Filter[9]; //reserved for filtering  VBUS_F[8] stores the filtered value
-    uint16_t VHalfC_D_Raw;
-    uint16_t VHalfC_D_Filter[9];
-    uint16_t VCell_U_Raw;
-    uint16_t VCell_U_Filter[9];  //reserved for filtering  VSTORE_F[8] stores the filtered value
-    uint16_t VCell_D_Raw;
-    uint16_t VCell_D_Filter[9];
-    uint16_t CellVoltage_Ref_Raw;
-    uint16_t CurrentOffset1;
-    uint16_t CurrentOffset2;
-    uint16_t I_Ref_Raw;
-    uint16_t Counter;            // Counter for Digi filter
-    uint16_t PeriodTick;         // Period
-    uint16_t PhaseTick;          // Phase shift
-    uint16_t PowerDirection;
-    uint16_t CellDischargePeriod;
-    uint16_t DischargeFlag1;
-    uint16_t DischargeFlag2;
-    uint16_t CelldischargeNumber1;
-    uint16_t CelldischargeNumber2;
-} CLLC_Parameters_t;
-
-
 
 // ADC Values shall not be stored in this struct. Now it is sotred in the sensorVector updated by interrupts. See sensor.c
 // All control related variables shall be done in real values not in counts. *_Raw values should be removed from this Structure
 typedef struct DCDC_Parameters
 {
-
     float I_Ref_Real;
     float iIn_limit;
     float target_Voltage_At_DCBus;
@@ -170,7 +133,6 @@ typedef struct DCDC_Parameters
 
 
 extern DCDC_Parameters_t DCDC_VI;
-extern CLLC_Parameters_t CLLC_VI;
 extern PiOutput_t VLoop_PiOutput;
 extern PiOutput_t ILoop_PiOutput;
 extern States_t StateVector;

@@ -1018,7 +1018,7 @@ static void error_load_overcurrent(void)
         {
             /* disconnect all switches
              * turn off regulation */
-            IPC_setFlagLtoR(IPC_CPU1_L_CPU2_R, IPC_CPU1_REQUIERS_EMERGECY_SHUT_DOWN);
+//            IPC_setFlagLtoR(IPC_CPU1_L_CPU2_R, IPC_CPU1_REQUIERS_EMERGECY_SHUT_DOWN);
 
             /* mark handled */
             global_error_code_handled |= (1UL << ERROR_LOAD_OVER_CURRENT);
@@ -1029,6 +1029,8 @@ static void error_load_overcurrent(void)
             /* mark it sent */
             global_error_code_sent    |= (1UL << ERROR_LOAD_OVER_CURRENT);
             global_error_code_handled |= (1UL << ERROR_LOAD_OVER_CURRENT);
+
+            Serial_debug(DEBUG_INFO, &cli_serial, "************* Load over current detected\r\n");
         } else
         {
             ;
@@ -1039,8 +1041,10 @@ static void error_load_overcurrent(void)
     } else
     {
         /* send EMCY CLEAR - send it once */
-        if(global_error_code_sent & (1 << ERROR_LOAD_OVER_CURRENT))
+        if(global_error_code_sent & (1 << ERROR_LOAD_OVER_CURRENT)) {
             canopen_emcy_send_load_overcurrent(0);
+            Serial_debug(DEBUG_INFO, &cli_serial, "************* Load over current clear\r\n");
+        }
 
         /* mark as unhandled - nothing need to be done  */
         global_error_code_sent    &= ~(1UL << ERROR_LOAD_OVER_CURRENT);
@@ -1658,45 +1662,45 @@ void error_check_for_errors(void)
         uint32_t code;
         code = 1ul << ERROR_EXT_PWR_LOSS_OTHER;
         global_error_code = code;
-        test_update_of_error_codes = false;
+//        test_update_of_error_codes = false;
 
-    error_copy_error_codes_from_CPU2();
-
+        error_copy_error_codes_from_CPU2();
+        error_load_overcurrent();
+//
 //    error_dcbus_over_voltage();
-    error_check_error_flag_generic(ERROR_BUS_OVER_VOLTAGE,
-                                   EMCY_ERROR_CODE_VOLTAGE,
-                                   2,
-                                   canopen_emcy_send_generic,
-                                   EMCY_ERROR_BUS_OVER_VOLTAGE,
-                                   payload_gen_bus_voltage);
-
-    error_dcbus_under_voltage();
-//    error_check_error_flag_generic(ERROR_BUS_UNDER_VOLTAGE,
+//    error_check_error_flag_generic(ERROR_BUS_OVER_VOLTAGE,
 //                                   EMCY_ERROR_CODE_VOLTAGE,
-//                                   0,
+//                                   2,
 //                                   canopen_emcy_send_generic,
 //                                   EMCY_ERROR_BUS_OVER_VOLTAGE,
-//                                   payload_gen_bus_over_voltage);
+//                                   payload_gen_bus_voltage);
+//
+//    error_dcbus_under_voltage();
+////    error_check_error_flag_generic(ERROR_BUS_UNDER_VOLTAGE,
+////                                   EMCY_ERROR_CODE_VOLTAGE,
+////                                   0,
+////                                   canopen_emcy_send_generic,
+////                                   EMCY_ERROR_BUS_OVER_VOLTAGE,
+////                                   payload_gen_bus_over_voltage);
+//
+//    error_dcbus_short_circuit();
 
-    error_dcbus_short_circuit();
 
-    error_load_overcurrent();
-
-    error_system_temperature();
-
-    error_operational();
-
-    error_power_line_failure();
-
-    error_state_of_charge();
-
-    error_check_error_flag_generic(ERROR_LOAD_OVER_CURRENT,
-                                   EMCY_ERROR_CODE_CURRENT,
-                                   2,
-                                   canopen_emcy_send_generic,
-                                   EMCY_ERROR_OVER_CURRENT_LOAD,
-                                   payload_gen_load_current);
-
+//    error_system_temperature();
+//
+//    error_operational();
+//
+//    error_power_line_failure();
+//
+//    error_state_of_charge();
+//
+//    error_check_error_flag_generic(ERROR_LOAD_OVER_CURRENT,
+//                                   EMCY_ERROR_CODE_CURRENT,
+//                                   2,
+//                                   canopen_emcy_send_generic,
+//                                   EMCY_ERROR_OVER_CURRENT_LOAD,
+//                                   payload_gen_load_current);
+//
     error_no_error();
     }
 }

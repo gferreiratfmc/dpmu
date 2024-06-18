@@ -20,16 +20,16 @@ typedef struct sharedVars_cpu1toCpu2_t // commonCpu1ToCpu2
     uint8_t iop_operation_request_state;        /* First section in the group */
 //    uint8_t DPMU_RequestEmergecyStop;           /* Handled with IPC flag - Request to emergency stop */
 
-    uint16_t max_allowed_dc_bus_voltage;
-    uint16_t target_voltage_at_dc_bus;
-    uint16_t min_allowed_dc_bus_voltage;
-    uint16_t vdc_bus_short_circuit_limit;
-    uint16_t vdroop;                            /* the VDROOP setting */
+    float max_allowed_dc_bus_voltage;
+    float target_voltage_at_dc_bus;
+    float min_allowed_dc_bus_voltage;
+    float vdc_bus_short_circuit_limit;
+    float vdroop;                            /* the VDROOP setting */
 
-    uint16_t max_allowed_load_power;            /* max_allowed_load_power, set */
-    uint16_t available_power_budget_dc_input;   /* from our INPUT bus */
-    uint16_t use_power_budget_dc_input;         /* include pwr budget from INPUT bus in calculation */
-    uint16_t use_power_budget_dc_shared;        /* include pwr budget from SHARED bus in calculation */
+    float max_allowed_load_power;            /* max_allowed_load_power, set */
+    float available_power_budget_dc_input;   /* from our INPUT bus */
+    float use_power_budget_dc_input;         /* include pwr budget from INPUT bus in calculation */
+    float use_power_budget_dc_shared;        /* include pwr budget from SHARED bus in calculation */
 
     /* for safe parking we need to allow for total drainage of external energy
      * storage

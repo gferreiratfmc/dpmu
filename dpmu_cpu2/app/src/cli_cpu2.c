@@ -253,7 +253,8 @@ void cli_measure_zero_current_matrix_switch(char *buf)
     int turns = 0;
     char str[20];
     int infinit = 0;
-
+    uint16_t CurrentOffset1;
+    uint16_t CurrentOffset2;
     count_number_of_arguments(buf);
 
     if (cli_nargs() > 2) {
@@ -278,11 +279,11 @@ void cli_measure_zero_current_matrix_switch(char *buf)
         DEVICE_DELAY_US(1000000);
 
         /* execute measurement */
-        CLLC_VI.CurrentOffset1 = HAL_ADC_readResult(ADCDRESULT_BASE, ADC_SOC_NUMBER0);
-        CLLC_VI.CurrentOffset2 = HAL_ADC_readResult(ADCDRESULT_BASE, ADC_SOC_NUMBER1);
+        CurrentOffset1 = HAL_ADC_readResult(ADCDRESULT_BASE, ADC_SOC_NUMBER0);
+        CurrentOffset2 = HAL_ADC_readResult(ADCDRESULT_BASE, ADC_SOC_NUMBER1);
 
-        PRINT("CLLC_VI.CurrentOffset1 %04d  ",     CLLC_VI.CurrentOffset1);
-        PRINT("CLLC_VI.CurrentOffset2 %04d  \r\n", CLLC_VI.CurrentOffset2);
+        PRINT("CLLC_VI.CurrentOffset1 %04d  ",     CurrentOffset1);
+        PRINT("CLLC_VI.CurrentOffset2 %04d  \r\n", CurrentOffset2);
     }
     PRINT("\r\nTurns done: %d\r\n", turns);
 }

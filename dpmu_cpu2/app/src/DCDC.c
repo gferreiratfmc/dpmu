@@ -37,10 +37,7 @@ int Count = 1;
 uint16_t trickleChargeRangeState = 0;
 float trickleChargeRangeLevel[] = { 0.25, 0.5, 0.75, 1.0 };
 float trickleChargeDutyCycle[] =  { 0.005, 0.01, 0.015, 0.02 };
-//float trickleChargeDutyCycle[3] =  { 0.01, 0.02, 0.03 };
 
-uint16_t MaximumDuty = 990;
-uint16_t MinimumDuty = 100;
 
 float I_IN_LIMIT_RATE = 0.8;
 uint16_t NUMBER_OF_CURRENT_SAMPLES = 25;
@@ -261,28 +258,13 @@ void DCDCConverterInit(void)
 {
 
     /* Stop all PWMs at initialization*/
-    //HAL_StopPwmDCDC();
- //   HAL_StopPwmCllcCellCharge1();
- //   HAL_StopPwmCllcCellCharge2();
+
     HAL_StopPwmCllcCellDischarge1();
     HAL_StopPwmCllcCellDischarge2();
     HAL_StopPwmInrushCurrentLimit();
 
     eFuseBuckBoostOcurred = false;
     eFuseInputCurrentOcurred = false;
-
-
-    /* DCDC_VI initialization*/
-    //DCDC_VI.I_Ref = -280;
-//    DCDC_VI.Isen2Offset_Raw = 2140;
-//    DCDC_VI.iIn_limit = -480;
-//    DCDC_VI.VBus_Ref_Raw = (int)FulllyChargedVoltageLevel*1.8; /* TODO FulllyChargedVoltageLevel updated in energy_storage_update_settings */
-
-    /*Init Current PI parameters*/
-//    ILoop.Pgain = 0.003888/248.18f*1000; //0.003888/(62.06f) * 1000;         /* 62.06 tick/A  */
-//    ILoop.Igain = 0.00087256;//0.4537/248.18f * 0.00002f * 1000; 0.00002f=1/50000(sampling time)
-//    ILoop.LowerLimit = -0.2f*1000 ;
-//    ILoop.UpperLimit = 0.2f*1000  ;
 
 
     ILoopParamBuck.Pgain = 0.002;
@@ -301,43 +283,18 @@ void DCDCConverterInit(void)
     VLoopParamBoost.UpperLimit = 19.0;
     VLoopParamBoost.LowerLimit = 0.1;
 
-    DCDC_VI.iIn_limit = 2.0; //TODO updated in dcbus_update_settings
-
-    /*Init Voltage Loop PI parameters */
-//    VLoop.Pgain = 0.2562f*0.0091553f;         /* 100*3.3/2^15            */  // KP =0.2562
-//    VLoop.Igain = 10.08f*0.00000091553f ;     /* 100*3.3/2^15 * 1/10000  */  // Ki =10.08
-
-//    VLoop.LowerLimit = 0 ;
-//    VLoop.UpperLimit = 10 ;
-
     /*Init Counters */
-//    CounterGroup.MatrixSwitchesCounter = 38;
-//    CounterGroup.CellIndex = 0;
-//    CounterGroup.PollingCounter = 0;
-//    CounterGroup.CellVoltageCounter = 0;
-//    CounterGroup.PrestateCounter = 2;
-//    CounterGroup.VLoopCounter = 0;
+
     CounterGroup.InrushCurrentLimiterCounter = 0;
     CounterGroup.PrestateCounter = 0;
     CounterGroup.StateMachineCounter = 0;
 
-    /* Init CLLC*/
-//    CLLC_VI.DischargeFlag1 = 1;
-//    CLLC_VI.DischargeFlag2 = 0;
-//    CLLC_VI.I_Ref_Raw = 470;
     CellDischargePiParameter.Pgain = 0.0077747;
     CellDischargePiParameter.Igain = 0.0046648;
     CellDischargePiParameter.LowerLimit = CLLC_PHASE_180*0.02;
     CellDischargePiParameter.UpperLimit = CLLC_PHASE_180*0.98;
 
-
-    DCDC_VI.target_Voltage_At_DCBus = 180.0; /* TODO target_Voltage_At_DCBus updated inenergy_storage_update_settings */
-    DCDC_VI.target_Voltage_At_VStore = 60.0; /* TODO target_Voltage_At_VStore updated inenergy_storage_update_settings */
-
     DCDC_VI.I_Ref_Real = 0.50;
-
-    MaximumDuty             = 990;
-    MinimumDuty             = 100;
 
 }
 

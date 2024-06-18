@@ -9,7 +9,6 @@
 #include "main.h"
 
 DCDC_Parameters_t DCDC_VI = { 0 };
-CLLC_Parameters_t CLLC_VI = { 0 };
 
 States_t StateVector =  {
                           .State_Before = PreInitialized,

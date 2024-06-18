@@ -43,92 +43,8 @@
 // This flag variable will be set by EPWM Trip Zone interrupt handlers.
 volatile uint16_t efuse_top_half_flag = 0;
 
-
-static void check_incoming_commands(void)
-{
-    uint32_t command;
-    uint32_t addr;
-    uint32_t data;
-    uint8_t  state;
-
-
-    if (IPC_readCommand(IPC_CPU2_L_CPU1_R, IPC_FLAG_MESSAGE_CPU1_TO_CPU2, false, &command, &addr, &data) != false) {
-        // We received a command.
-
-        // Copy sub-command to message buffer.
-        strncpy((char*)&state, (char*)addr,  1);
-
-        switch (command) {
-        case IPC_PING:
-            IPC_sendResponse(IPC_CPU2_L_CPU1_R, IPC_PONG);
-            break;
-
-        case IPC_GET_TICKS:
-            IPC_sendResponse(IPC_CPU2_L_CPU1_R, timer_get_ticks());
-            break;
-        case IPC_SWITCHES_QIRS:
-            //switches_Qinrush(state); /* run inrush current limiter */
-            break;
-
-        case IPC_SWITCHES_QLB:
-            if( DPMUInitialized() )  {
-                switches_Qlb(state);
-            }
-            break;
-
-        case IPC_SWITCHES_QSB:
-            if( DPMUInitialized() )  {
-                switches_Qsb(state);
-            }
-            break;
-
-        case IPC_SWITCHES_QINB:
-            if( DPMUInitialized() )  {
-                switches_Qinb(state);
-            }
-            break;
-
-        default:
-            break;
-        }
-
-        // Acknowledge the flag.
-        IPC_ackFlagRtoL(IPC_CPU2_L_CPU1_R, IPC_FLAG_MESSAGE_CPU1_TO_CPU2);
-
-        if( sharedVars_cpu1toCpu2.debug_log_disable_flag==true ) {
-            DisableDebugLog();
-        } else {
-            EnableDebugLog();
-        }
-    }
-}
-
-/*
- * Called by super loop to handle any interrupt triggered by the interrupts:
- * eFuseBB (external interrupt 5)
- * eFuseVin  (GLOAD_4_3 EPWM One Shot Interrupt)
- */
-static void handle_top_half_interrupts(void)
-{
-    if (efuse_top_half_flag == true) {
-        cpu2_status.num_short_circ += 1;
-        // Send a short-circuit indication message to CPU1.
-        IPC_sendCommand(IPC_CPU2_L_CPU1_R, IPC_FLAG_MESSAGE_CPU2_TO_CPU1, false, IPC_SHORT_CIRCUIT, 0, 0);
-        efuse_top_half_flag = false;
-    }
-
-    // A trip interrupt was generate to the GLOAD_4_3 EPWM.
-    if ( eFuseInputCurrentOcurred == true ) {
-        handleEfuseVinOccurence();
-    }
-
-    // A trip interrupt was generate to the BEG EPWM.
-    if( eFuseBuckBoostOcurred == true) {
-        handleEFuseBBOccurence();
-    }
-
-}
-
+static void check_incoming_commands(void);
+static void handle_top_half_interrupts(void);
 
 
 void main(void)
@@ -235,3 +151,93 @@ void main(void)
 
     }
 }
+
+
+static void check_incoming_commands(void)
+{
+    uint32_t command;
+    uint32_t addr;
+    uint32_t data;
+    uint8_t  state;
+
+
+    if (IPC_readCommand(IPC_CPU2_L_CPU1_R, IPC_FLAG_MESSAGE_CPU1_TO_CPU2, false, &command, &addr, &data) != false) {
+        // We received a command.
+
+        // Copy sub-command to message buffer.
+        strncpy((char*)&state, (char*)addr,  1);
+
+        switch (command) {
+        case IPC_PING:
+            IPC_sendResponse(IPC_CPU2_L_CPU1_R, IPC_PONG);
+            break;
+
+        case IPC_GET_TICKS:
+            IPC_sendResponse(IPC_CPU2_L_CPU1_R, timer_get_ticks());
+            break;
+        case IPC_SWITCHES_QIRS:
+            //switches_Qinrush(state); /* run inrush current limiter */
+            break;
+
+        case IPC_SWITCHES_QLB:
+            if( DPMUInitialized() )  {
+                switches_Qlb(state);
+            }
+            break;
+
+        case IPC_SWITCHES_QSB:
+            if( DPMUInitialized() )  {
+                switches_Qsb(state);
+            }
+            break;
+
+        case IPC_SWITCHES_QINB:
+            if( DPMUInitialized() )  {
+                switches_Qinb(state);
+            }
+            break;
+
+        default:
+            break;
+        }
+
+        // Acknowledge the flag.
+        IPC_ackFlagRtoL(IPC_CPU2_L_CPU1_R, IPC_FLAG_MESSAGE_CPU1_TO_CPU2);
+
+        if( sharedVars_cpu1toCpu2.debug_log_disable_flag==true ) {
+            DisableDebugLog();
+        } else {
+            EnableDebugLog();
+        }
+    }
+}
+
+/*
+ * Called by super loop to handle any interrupt triggered by the interrupts:
+ * eFuseBB (external interrupt 5)
+ * eFuseVin  (GLOAD_4_3 EPWM One Shot Interrupt)
+ */
+static void handle_top_half_interrupts(void)
+{
+    if (efuse_top_half_flag == true) {
+        cpu2_status.num_short_circ += 1;
+        // Send a short-circuit indication message to CPU1.
+        IPC_sendCommand(IPC_CPU2_L_CPU1_R, IPC_FLAG_MESSAGE_CPU2_TO_CPU1, false, IPC_SHORT_CIRCUIT, 0, 0);
+        efuse_top_half_flag = false;
+    }
+
+    // A trip interrupt was generate to the GLOAD_4_3 EPWM.
+    if ( eFuseInputCurrentOcurred == true ) {
+        handleEfuseVinOccurence();
+    }
+
+    // A trip interrupt was generate to the BEG EPWM.
+    if( eFuseBuckBoostOcurred == true) {
+        handleEFuseBBOccurence();
+    }
+
+}
+
+
+
+
