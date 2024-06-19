@@ -14,32 +14,7 @@
 
 #include "type_common.h"
 
-typedef enum error_codes {
-    ERROR_NO_ERRORS = 0,
-    ERROR_CONSUMED_POWER_TO_HIGH,
-    ERROR_INPUT_POWER_TO_HIGH,
-    ERROR_LOAD_OVER_CURRENT,
-    ERROR_BUS_SHORT_CIRCUIT,
-    ERROR_BUS_UNDER_VOLTAGE,
-    ERROR_BUS_OVER_VOLTAGE,
-    ERROR_VOLTAGE_BALANCING,
-    ERROR_HIGH_TEMPERATURE,
-    ERROR_OVER_TEMPERATURE,
-    ERROR_SOC_BELOW_LIMIT,
-    ERROR_SOC_BELOW_SAFETY_THRESHOLD,
-    ERROR_CELL_SOC_BELOW_LIMIT,
-    ERROR_SYSTEM_SHUTDOWN,
-    ERROR_DISCHARGING,
-    ERROR_PRE_CHARGING,
-    ERROR_CHARGING,
-    ERROR_BALANCING,
-    ERROR_OPERATIONAL,
-    ERROR_POWER_SHARING,
-    ERROR_EXT_PWR_LOSS_MAIN,
-    ERROR_EXT_PWR_LOSS_OTHER,
-    ERROR_EXT_PWR_LOSS_BOTH,
-    NR_OF_ERROR_CODES   /* MUST BE THE LAST ONE */
-} error_codes_t;
+
 
 #define EMCY_ERROR_NO_ERRORS                    0x0000 /* not used */
 #define EMCY_ERROR_OVER_CURRENT_INPUT           0x2100 /* not used */
@@ -81,11 +56,74 @@ typedef enum error_codes {
 #define EMCY_ERROR_SOC_BELOW_SAFETY_THRESHOLD   0xFF31
 
 
+typedef enum error_codes {
+    ERROR_NO_ERRORS = 0,
+    ERROR_CONSUMED_POWER_TO_HIGH,
+    ERROR_INPUT_POWER_TO_HIGH,
+    ERROR_LOAD_OVER_CURRENT,
+    ERROR_BUS_SHORT_CIRCUIT,
+    ERROR_BUS_UNDER_VOLTAGE,
+    ERROR_BUS_OVER_VOLTAGE,
+    ERROR_VOLTAGE_BALANCING,
+    ERROR_HIGH_TEMPERATURE,
+    ERROR_OVER_TEMPERATURE,
+    ERROR_SOC_BELOW_LIMIT,
+    ERROR_SOC_BELOW_SAFETY_THRESHOLD,
+    ERROR_CELL_SOC_BELOW_LIMIT,
+    ERROR_SYSTEM_SHUTDOWN,
+    ERROR_DISCHARGING,
+    ERROR_PRE_CHARGING,
+    ERROR_CHARGING,
+    ERROR_BALANCING,
+    ERROR_OPERATIONAL,
+    ERROR_POWER_SHARING,
+    ERROR_EXT_PWR_LOSS_MAIN,
+    ERROR_EXT_PWR_LOSS_OTHER,
+    ERROR_EXT_PWR_LOSS_BOTH,
+    NR_OF_ERROR_CODES   /* MUST BE THE LAST ONE */
+} error_codes_t;
+
+
 extern uint32_t global_error_code;
 
 bool connect_other_dpmu_to_shared_bus(void);
 int8_t connect_other_dpmu_to_shared_bus_answer(float *remote_bus_voltage);
 void error_check_for_errors(void);
+static void error_copy_error_codes_from_CPU2(void);
+static void error_dcbus_short_circuit(void);
+static void error_load_overcurrent(void);
+static void error_no_error(void);
+static void error_dcbus_over_voltage(void);
 
+
+//enum short_circuit_states{
+//    no_short_circuit = 0,
+//    wait_for_answer_from_other_dpmu_disconnect,
+//    shared_bus_disconnected,
+//    shared_bus_not_disconnected,
+//    reconnect_shared_bus,
+//    wait_for_answer_from_other_dpmu_reconnect,
+//    shared_bus_reconnected,
+//    shared_bus_disconnect_after_reconnect,
+//    shared_bus_disconnect_after_reconnect_answer,
+//    shared_bus_not_reconnected,
+//    clear_error,
+//    wait_for_error_to_disappear,
+//};
+
+//enum short_circuit_status{
+//    scs_no_error,
+//    scs_not_allowed_to_connect_sb,
+//    scs_short_circuit,
+//    scs_waiting_for_disconnection,
+//    scs_waiting_for_disconnection_timeout,
+//    scs_other_dpmu_not_disconnected,
+//    scs_other_dpmu_still_connected,
+//    scs_after_disconnection,
+//    scs_waiting_for_connection,
+//    scs_waiting_for_connection_timeout,
+//    scs_other_dpmu_still_disconnected,
+//    scs_other_dpmu_after_reconnection,
+//};
 
 #endif /* COAPPL_ERROR_CODES_H_ */

@@ -38,4 +38,5 @@ extern bool DPMUAppInfoInitialized[IDX_DPMU_VAR_COUNT];
 
 void CheckDPMUAppInfoInitializeVars(DPMU_Initialization_Vars_t DPMUappVarIdx );
 void ResetDPMUAppInfoInitializeVars();
+
 #endif /* APP_INC_INITIALIZATION_APP_H_ */

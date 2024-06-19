@@ -46,6 +46,7 @@ void dcbus_update_settings(void)
     }
 }
 
+
 void dcbus_check(void)
 {
     if(test_update_of_error_codes)
@@ -64,10 +65,7 @@ void dcbus_check(void)
         sharedVars_cpu2toCpu1.error_code &= ~(1UL << ERROR_BUS_UNDER_VOLTAGE);
 
     /* check for DC bus shortage */
-    if( sensorVector[VBusIdx].realValue < (float)sharedVars_cpu1toCpu2.vdc_bus_short_circuit_limit)
-        sharedVars_cpu2toCpu1.error_code |=  (1UL << ERROR_BUS_SHORT_CIRCUIT);
-    else
-        sharedVars_cpu2toCpu1.error_code &= ~(1UL << ERROR_BUS_SHORT_CIRCUIT);
+    HandleDCBusShortCircuit();
 
     /* check for DC bus load power */
     if( ( sensorVector[VBusIdx].realValue * sensorVector[ISen1fIdx].realValue ) > (float)sharedVars_cpu1toCpu2.max_allowed_load_power)

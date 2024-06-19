@@ -15,6 +15,7 @@
 #include "convert.h"
 #include "ext_flash.h"
 #include "gen_indices.h"
+#include "initialization_app.h"
 #include "serial.h"
 #include "shared_variables.h"
 #include "state_of_health.h"
