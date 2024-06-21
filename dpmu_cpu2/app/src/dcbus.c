@@ -49,38 +49,36 @@ void dcbus_update_settings(void)
 
 void dcbus_check(void)
 {
-    if(test_update_of_error_codes)
-    {
-//        test_update_of_error_codes = false;
-    /* check for DC bus over Voltage */
-    if( sensorVector[VBusIdx].realValue > (float)sharedVars_cpu1toCpu2.max_allowed_dc_bus_voltage)
-        sharedVars_cpu2toCpu1.error_code |=  (1UL << ERROR_BUS_OVER_VOLTAGE);
-    else
-        sharedVars_cpu2toCpu1.error_code &= ~(1UL << ERROR_BUS_OVER_VOLTAGE);
+    if(test_update_of_error_codes) {
+    //        test_update_of_error_codes = false;
+        /* check for DC bus over Voltage */
+    //    if( sensorVector[VBusIdx].realValue > (float)sharedVars_cpu1toCpu2.max_allowed_dc_bus_voltage)
+    //        sharedVars_cpu2toCpu1.error_code |=  (1UL << ERROR_BUS_OVER_VOLTAGE);
+    //    else
+    //        sharedVars_cpu2toCpu1.error_code &= ~(1UL << ERROR_BUS_OVER_VOLTAGE);
+        HandleDCBusOverVoltage();
 
-    /* check for DC bus under Voltage */
-    if( sensorVector[VBusIdx].realValue < (float)sharedVars_cpu1toCpu2.min_allowed_dc_bus_voltage)
-        sharedVars_cpu2toCpu1.error_code |=  (1UL << ERROR_BUS_UNDER_VOLTAGE);
-    else
-        sharedVars_cpu2toCpu1.error_code &= ~(1UL << ERROR_BUS_UNDER_VOLTAGE);
 
-    /* check for DC bus shortage */
-    HandleDCBusShortCircuit();
+        /* check for DC bus under Voltage */
+        HandleDCBusUnderVoltage();
 
-    /* check for DC bus load power */
-    if( ( sensorVector[VBusIdx].realValue * sensorVector[ISen1fIdx].realValue ) > (float)sharedVars_cpu1toCpu2.max_allowed_load_power)
-        sharedVars_cpu2toCpu1.error_code |=  (1UL << ERROR_CONSUMED_POWER_TO_HIGH);
-    else
-        sharedVars_cpu2toCpu1.error_code &= ~(1UL << ERROR_CONSUMED_POWER_TO_HIGH);
+        /* check for DC bus shortage */
+        HandleDCBusShortCircuit();
 
-    /* check for DC bus load current */
-    HandleLoadOverCurrent(max_allowed_load_current, efuse_top_half_flag);
+        /* check for DC bus load power */
+        if( ( sensorVector[VBusIdx].realValue * sensorVector[ISen1fIdx].realValue ) > (float)sharedVars_cpu1toCpu2.max_allowed_load_power)
+            sharedVars_cpu2toCpu1.error_code |=  (1UL << ERROR_CONSUMED_POWER_TO_HIGH);
+        else
+            sharedVars_cpu2toCpu1.error_code &= ~(1UL << ERROR_CONSUMED_POWER_TO_HIGH);
 
-    /* check for DC bus input power */
-    if((sensorVector[VBusIdx].realValue * sensorVector[IF_1fIdx].realValue) > (float)sharedVars_cpu1toCpu2.available_power_budget_dc_input)
-        sharedVars_cpu2toCpu1.error_code |=  (1UL << ERROR_INPUT_POWER_TO_HIGH);
-    else
-        sharedVars_cpu2toCpu1.error_code &= ~(1UL << ERROR_INPUT_POWER_TO_HIGH);
+        /* check for DC bus load current */
+        HandleLoadOverCurrent(max_allowed_load_current, efuse_top_half_flag);
+
+        /* check for DC bus input power */
+        if((sensorVector[VBusIdx].realValue * sensorVector[IF_1fIdx].realValue) > (float)sharedVars_cpu1toCpu2.available_power_budget_dc_input)
+            sharedVars_cpu2toCpu1.error_code |=  (1UL << ERROR_INPUT_POWER_TO_HIGH);
+        else
+            sharedVars_cpu2toCpu1.error_code &= ~(1UL << ERROR_INPUT_POWER_TO_HIGH);
     }
     sharedVars_cpu2toCpu1.voltage_at_dc_bus = DCDC_VI.avgVBus;
     sharedVars_cpu2toCpu1.voltage_at_storage_bank = DCDC_VI.avgVStore;

@@ -185,3 +185,10 @@ void HandleDCBusOverVoltage() {
     stateBOV.State_Current = stateBOV.State_Next;
 }
 
+void HandleDCBusUnderVoltage() {
+    if (DCDC_VI.avgVBus < (float) sharedVars_cpu1toCpu2.min_allowed_dc_bus_voltage) {
+        sharedVars_cpu2toCpu1.error_code |= (1UL << ERROR_BUS_UNDER_VOLTAGE);
+    } else {
+        sharedVars_cpu2toCpu1.error_code &= ~(1UL << ERROR_BUS_UNDER_VOLTAGE);
+    }
+}

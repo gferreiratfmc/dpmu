@@ -60,6 +60,7 @@ void error_check_for_errors(void)
         error_load_overcurrent();
         error_dcbus_short_circuit();
         error_dcbus_over_voltage();
+        error_dcbus_under_voltage();
 
         //    error_check_error_flag_generic(ERROR_BUS_OVER_VOLTAGE,
 //                                   EMCY_ERROR_CODE_VOLTAGE,
@@ -68,7 +69,6 @@ void error_check_for_errors(void)
 //                                   EMCY_ERROR_BUS_OVER_VOLTAGE,
 //                                   payload_gen_bus_voltage);
 //
-//    error_dcbus_under_voltage();
 ////    error_check_error_flag_generic(ERROR_BUS_UNDER_VOLTAGE,
 ////                                   EMCY_ERROR_CODE_VOLTAGE,
 ////                                   0,
@@ -117,14 +117,14 @@ static void error_dcbus_over_voltage(void) {
             global_error_code_sent    |= (1UL << ERROR_BUS_OVER_VOLTAGE);
             global_error_code_handled |= (1UL << ERROR_BUS_OVER_VOLTAGE);
 
-            Serial_printf( &cli_serial, "************* Load over current detected\r\n");
+            Serial_printf( &cli_serial, "************* Load over voltage detected\r\n");
         }
     } else
     {
         /* send EMCY CLEAR - send it once */
         if(global_error_code_sent & (1 << ERROR_BUS_OVER_VOLTAGE)) {
             canopen_emcy_send_load_overcurrent(0);
-            Serial_printf( &cli_serial, "************* Load over current clear\r\n");
+            Serial_printf( &cli_serial, "************* Load over voltage clear\r\n");
         }
 
         /* mark as unhandled - nothing need to be done  */
@@ -137,95 +137,41 @@ static void error_dcbus_over_voltage(void) {
 /* brief: check if DC bus Voltage level is below min
  *
  * details: checks error flag
- *          turns off switches and DCDC
  *          signal IOP with EMCY
  *
- * requirements:
- *
- * argument: none
- *
- * return: none
- *
  * note: non-blocking
- *
- * presumptions: there is big gap in Voltage between short_circuit and
- *               min_allowed_voltage, no need to have a timer.
- *               A short circuit need immediate reaction!
- *
  */
-static void error_dcbus_under_voltage(void)
-{
-//    static bool timer_started = false;
-//    static uint32_t time_start;
-    uint8_t pay_load[4];
-
+static void error_dcbus_under_voltage(void) {
 
     if(global_error_code & (1UL << ERROR_BUS_UNDER_VOLTAGE))
     {
         if(!(global_error_code_handled & (1UL << ERROR_BUS_UNDER_VOLTAGE)))
         {
-//            if(!timer_started)
-//            {
-//                time_start = timer_get_ticks() & 0x7fffffff;
-//                timer_started = true;
-//            }
-//
-//            /* ms ticks, enough with 127 ms */
-//            uint32_t elapsed_time = (timer_get_ticks() & 0x7fffffff) - time_start;
-//            //TODO - Time does not handle wrap around
+            /* mark handled */
+            global_error_code_handled |= (1UL << ERROR_BUS_UNDER_VOLTAGE);
 
             /* send EMCY - send it once */
-            if(!(global_error_code_sent & (1UL << ERROR_BUS_UNDER_VOLTAGE)))
-            {
-                /* generate necessary payload */
-                payload_gen_bus_voltage(0, pay_load);
+            canopen_emcy_send_dcbus_under_voltage(1);
 
-                canopen_emcy_send_dcbus_under_voltage(1, pay_load);
+            /* mark it sent */
+            global_error_code_sent    |= (1UL << ERROR_BUS_UNDER_VOLTAGE);
+            global_error_code_handled |= (1UL << ERROR_BUS_UNDER_VOLTAGE);
 
-                /* mark it sent */
-                global_error_code_sent |= (1UL << ERROR_BUS_UNDER_VOLTAGE);
-            }
-
-//            /* check timeout */
-//            if(0 <= elapsed_time)
-//            {
-                /* disconnect all switches
-                 * turn off regulation */
-                IPC_setFlagLtoR(IPC_CPU1_L_CPU2_R, IPC_CPU1_REQUIERS_EMERGECY_SHUT_DOWN);
-
-                /* mark handled */
-                global_error_code_handled |= (1UL << ERROR_BUS_UNDER_VOLTAGE);
-//            }
-        } else
-        {
-            /* there is nothing more we can do
-             * let IOP decide next step
-             * */
+            Serial_printf( &cli_serial, "************* DC Bus under voltage detected\r\n");
         }
     } else
-    {   /* problem resolved */
+    {
         /* send EMCY CLEAR - send it once */
-        if(global_error_code_sent & (1UL << ERROR_BUS_UNDER_VOLTAGE))
-        {
-            /* generate necessary payload */
-            payload_gen_bus_voltage(0, pay_load);
-
-            canopen_emcy_send_dcbus_under_voltage(0, pay_load);
+        if(global_error_code_sent & (1 << ERROR_BUS_UNDER_VOLTAGE)) {
+            canopen_emcy_send_dcbus_under_voltage(0);
+            Serial_printf( &cli_serial, "************* DC Bus under voltage clear\r\n");
         }
 
         /* mark as unhandled - nothing need to be done  */
         global_error_code_sent    &= ~(1UL << ERROR_BUS_UNDER_VOLTAGE);
         global_error_code_handled &= ~(1UL << ERROR_BUS_UNDER_VOLTAGE);
-
-        /* clear the timer */
-//        timer_started = false;
     }
 }
-
-
-
-
-
 
 
 /* brief: check if Current output to load is above max
@@ -288,7 +234,7 @@ static void error_dcbus_short_circuit(void)
             global_error_code_handled |= (1UL << ERROR_BUS_SHORT_CIRCUIT);
 
             /* send EMCY - send it once */
-            canopen_emcy_send_load_overcurrent(1);
+            canopen_emcy_send_dcbus_short_curcuit(1);
 
             /* mark it sent */
             global_error_code_sent    |= (1UL << ERROR_BUS_SHORT_CIRCUIT);
@@ -300,7 +246,7 @@ static void error_dcbus_short_circuit(void)
     {
         /* send EMCY CLEAR - send it once */
         if(global_error_code_sent & (1 << ERROR_BUS_SHORT_CIRCUIT)) {
-            canopen_emcy_send_load_overcurrent(0);
+            canopen_emcy_send_dcbus_short_curcuit(0);
             Serial_printf( &cli_serial, "************* DC BUS short circuit clear\r\n");
         }
 

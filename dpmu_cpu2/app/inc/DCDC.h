@@ -32,6 +32,7 @@
 
 void DCDC_current_buck_loop_float( void );
 void DCDC_voltage_boost_loop_float( void );
+void DCDCInitializePWMForRegulateVoltage(void);
 void DCDC_current_boost_loop_float( void );
 void DCDC_voltage_pure_boost_loop_float( void );
 bool calculate_boost_current(void);

@@ -60,8 +60,6 @@ uint16_t ConvCellNrToIdx(uint16_t celNr);
 inline void EnableEFuseBBToStopDCDC_EPWM();
 void update_debug_log(void);
 
-
-
 void StateMachine(void)
 {
     static bool cellVoltageOverThreshold = false;
@@ -275,11 +273,11 @@ void StateMachine(void)
                 StateVector.State_Next = RegulateStop;
             }
             //TODO: Commented only for endurance. Verify if it's should be uncommented for production version.
-    //        if( DCDC_VI.avgVBus < REG_MIN_DC_BUS_VOLTAGE_RATIO * DCDC_VI.target_Voltage_At_DCBus ) {
-    //            if( sensorVector[ISen1fIdx].realValue >= MIN_OUTPUT_CURRENT_TO_REGULATE_VOLTAGE ) {
-    //                    StateVector.State_Next = RegulateVoltageInit;
-    //            }
-    //        }
+            if( DCDC_VI.avgVBus < REG_MIN_DC_BUS_VOLTAGE_RATIO * DCDC_VI.target_Voltage_At_DCBus ) {
+                if( sensorVector[ISen1fIdx].realValue >= MIN_OUTPUT_CURRENT_TO_REGULATE_VOLTAGE ) {
+                        StateVector.State_Next = RegulateVoltageInit;
+                }
+            }
             break;
 
         case RegulateStop:
@@ -291,16 +289,15 @@ void StateMachine(void)
             break;
 
         case RegulateVoltageInit:
-            DCDC_VI.I_Ref_Real = 0.0;
-            DCDC_current_boost_loop_float();
+//            DCDC_VI.I_Ref_Real = 0.0;
+//            DCDC_current_boost_loop_float();
             switches_Qinb( SW_OFF );
+            DCDCInitializePWMForRegulateVoltage();
             StateVector.State_Next = RegulateVoltage;
             break;
 
         case RegulateVoltage:
             DCDC_voltage_boost_loop_float();
-            DCDC_current_boost_loop_float();
-            EnableOrDisblePWM(DCDC_VI.I_Ref_Real);
             if( DCDC_VI.avgVStore < energy_bank_settings.min_voltage_applied_to_energy_bank ) {
                 StateVector.State_Next = RegulateVoltageStop;
 
@@ -312,7 +309,7 @@ void StateMachine(void)
 
         case RegulateVoltageStop:
             DPMUInitializedFlag = false;
-            StateVector.State_Next = RegulateStop;
+            StateVector.State_Next = StopEPWMs;
             break;
 
         case Fault:

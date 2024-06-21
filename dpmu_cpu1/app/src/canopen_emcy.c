@@ -108,7 +108,7 @@ void canopen_emcy_send_dcbus_over_voltage(uint8_t status)
     canopen_emcy_send();
 }
 
-void canopen_emcy_send_dcbus_under_voltage(uint8_t status, uint8_t payload[4])
+void canopen_emcy_send_dcbus_under_voltage(uint8_t status)
 {
     /* clear error message */
     memset(error_message, 0, sizeof(error_message));
@@ -118,16 +118,13 @@ void canopen_emcy_send_dcbus_under_voltage(uint8_t status, uint8_t payload[4])
     error_message[2] = (EMCY_ERROR_BUS_UNDER_VOLTAGE >> 8) & 0xff;
     error_message[3] = EMCY_ERROR_CODE_VOLTAGE;
     error_message[4] = status;
-    error_message[5] = payload[0];
-    error_message[6] = payload[1];
-    error_message[7] = payload[2];
-    error_message[8] = payload[3];
+
 
     /* send the error over CANopen */
     canopen_emcy_send();
 }
 
-void canopen_emcy_send_dcbus_short_curcuit(uint8_t status, uint8_t payload[4])
+void canopen_emcy_send_dcbus_short_curcuit(uint8_t status)
 {
     /* clear error message */
     memset(error_message, 0, sizeof(error_message));
@@ -137,10 +134,6 @@ void canopen_emcy_send_dcbus_short_curcuit(uint8_t status, uint8_t payload[4])
     error_message[2] = (EMCY_ERROR_BUS_SHORT_CIRCUIT >> 8) & 0xff;
     error_message[3] = EMCY_ERROR_CODE_VOLTAGE;
     error_message[4] = status;
-    error_message[5] = payload[0];
-    error_message[6] = payload[1];
-    error_message[7] = payload[2];
-    error_message[8] = payload[3];
 
     /* send the error over CANopen */
     canopen_emcy_send();

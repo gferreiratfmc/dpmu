@@ -94,6 +94,7 @@ static void error_dcbus_short_circuit(void);
 static void error_load_overcurrent(void);
 static void error_no_error(void);
 static void error_dcbus_over_voltage(void);
+static void error_dcbus_under_voltage(void);
 
 
 //enum short_circuit_states{

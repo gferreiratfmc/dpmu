@@ -285,35 +285,35 @@ static RET_T indices_I_DC_BUS_VOLTAGE(UNSIGNED8 subIndex)
         value_converted = convert_dc_bus_voltage_from_OD(value);
         sharedVars_cpu1toCpu2.min_allowed_dc_bus_voltage = value_converted;
         CheckDPMUAppInfoInitializeVars( IDX_DPMU_VAR_MIN_ALLOWED_DC_BUS_VOLTAGE );
-        Serial_debug(DEBUG_INFO, &cli_serial, "S_MIN_ALLOWED_DC_BUS_VOLTAGE: 0x%x, value_converted:8.2f\r\n", value, value_converted);
+        Serial_debug(DEBUG_INFO, &cli_serial, "S_MIN_ALLOWED_DC_BUS_VOLTAGE: 0x%x, value_converted:[%6.2f]\r\n", value, value_converted);
         break;
     case S_MAX_ALLOWED_DC_BUS_VOLTAGE:
         retVal = coOdGetObj_u8(I_DC_BUS_VOLTAGE, S_MAX_ALLOWED_DC_BUS_VOLTAGE, &value);
         value_converted = convert_dc_bus_voltage_from_OD(value);
         sharedVars_cpu1toCpu2.max_allowed_dc_bus_voltage = value_converted;
         CheckDPMUAppInfoInitializeVars( IDX_DPMU_VAR_MAX_ALLOWED_DC_BUS_VOLTAGE );
-        Serial_debug(DEBUG_INFO, &cli_serial, "S_MAX_ALLOWED_DC_BUS_VOLTAGE: 0x%x, value_converted:8.2f\r\n", value, value_converted);
+        Serial_debug(DEBUG_INFO, &cli_serial, "S_MAX_ALLOWED_DC_BUS_VOLTAGE: 0x%x, value_converted:[%6.2f]\r\n", value, value_converted);
         break;
     case S_TARGET_VOLTAGE_AT_DC_BUS:
         retVal = coOdGetObj_u8(I_DC_BUS_VOLTAGE, S_TARGET_VOLTAGE_AT_DC_BUS, &value);
         value_converted = convert_dc_bus_voltage_from_OD(value);
         sharedVars_cpu1toCpu2.target_voltage_at_dc_bus = value_converted;
         CheckDPMUAppInfoInitializeVars( IDX_DPMU_VAR_TARGET_VOLTAGE_AT_DC_BUS );
-        Serial_debug(DEBUG_INFO, &cli_serial, "S_TARGET_VOLTAGE_AT_DC_BUS: 0x%x, value_converted:8.2f\r\n", value, value_converted);
+        Serial_debug(DEBUG_INFO, &cli_serial, "S_TARGET_VOLTAGE_AT_DC_BUS: 0x%x, value_converted:[%6.2f]\r\n", value, value_converted);
         break;
     case S_VDC_BUS_SHORT_CIRCUIT_LIMIT:
         retVal = coOdGetObj_u8(I_DC_BUS_VOLTAGE, S_VDC_BUS_SHORT_CIRCUIT_LIMIT, &value);
         value_converted = convert_dc_bus_voltage_from_OD(value);
         CheckDPMUAppInfoInitializeVars( IDX_DPMU_VAR_VDC_BUS_SHORT_CIRCUIT_LIMIT );
         sharedVars_cpu1toCpu2.vdc_bus_short_circuit_limit = value_converted;
-        Serial_debug(DEBUG_INFO, &cli_serial, "S_VDC_BUS_SHORT_CIRCUIT_LIMIT: 0x%x, value_converted:8.2f\r\n", value, value_converted);
+        Serial_debug(DEBUG_INFO, &cli_serial, "S_VDC_BUS_SHORT_CIRCUIT_LIMIT: 0x%x, value_converted:[%6.2f]\r\n", value, value_converted);
         break;
     case S_VDROOP:
         retVal = coOdGetObj_u8(I_DC_BUS_VOLTAGE, S_VDROOP, &value);
         //TODO how the 'value' be converted ?
         value_converted = convert_dc_bus_voltage_from_OD(value);
         sharedVars_cpu1toCpu2.vdroop = value_converted;
-        Serial_debug(DEBUG_INFO, &cli_serial, "S_VDROOP: 0x%x, value_converted:8.2f\r\n", value, value_converted);
+        Serial_debug(DEBUG_INFO, &cli_serial, "S_VDROOP: 0x%x, value_converted:[%6.2f]\r\n", value, value_converted);
         break;
     default:
         Serial_debug(DEBUG_ERROR, &cli_serial, "UNKNOWN CAN OD SUBINDEX: 0x%x\r\n", subIndex);
@@ -332,7 +332,7 @@ static RET_T indices_I_ESS_CURRENT(void)
     value_converted = convert_ess_current_from_OD(value);
     sharedVars_cpu1toCpu2.ess_current = value_converted;
     CheckDPMUAppInfoInitializeVars( IDX_DPMU_VAR_ESS_CURRENT );
-    Serial_debug(DEBUG_INFO, &cli_serial, "I_ESS_CURRENT: 0x%x\r\n", value);
+    Serial_debug(DEBUG_INFO, &cli_serial, "I_ESS_CURRENT: 0x%x value_converted:[%6.2f]\r\n", value, value_converted);
 
     return retVal;
 }
@@ -351,9 +351,9 @@ static RET_T indices_I_ENERGY_CELL_SUMMARY(UNSIGNED8 subIndex)
         if( value_converted <= MAX_VOLTAGE_ENERGY_CELL ) {
             sharedVars_cpu1toCpu2.min_allowed_voltage_energy_cell = value_converted;
             CheckDPMUAppInfoInitializeVars( IDX_DPMU_VAR_MIN_VOLTAGE_ENERGY_CELL );
-            Serial_debug(DEBUG_INFO, &cli_serial, "S_MIN_VOLTAGE_ENERGY_CELL: 0x%x\r\n", value);
+            Serial_debug(DEBUG_INFO, &cli_serial, "S_MIN_VOLTAGE_ENERGY_CELL: 0x%x value_converted:[%6.2f]\r\n", value, value_converted);
         } else {
-            Serial_debug(DEBUG_INFO, &cli_serial, "INVALID S_MIN_VOLTAGE_ENERGY_CELL: %x > MAX_VOLTAGE_ENERGY_CELL\r\n", value);
+            Serial_debug(DEBUG_INFO, &cli_serial, "INVALID S_MIN_VOLTAGE_ENERGY_CELL: %x > MAX_VOLTAGE_ENERGY_CELL[%6.2f]\r\n", value, MAX_VOLTAGE_ENERGY_CELL);
             retVal = RET_SDO_INVALID_VALUE;
         }
         break;
@@ -363,9 +363,9 @@ static RET_T indices_I_ENERGY_CELL_SUMMARY(UNSIGNED8 subIndex)
         if( value_converted <= MAX_VOLTAGE_ENERGY_CELL ) {
             sharedVars_cpu1toCpu2.max_allowed_voltage_energy_cell = value_converted;
             CheckDPMUAppInfoInitializeVars( IDX_DPMU_VAR_MAX_VOLTAGE_ENERGY_CELL );
-            Serial_debug(DEBUG_INFO, &cli_serial, "S_MAX_VOLTAGE_ENERGY_CELL: 0x%x\r\n", value);
+            Serial_debug(DEBUG_INFO, &cli_serial, "S_MAX_VOLTAGE_ENERGY_CELL: 0x%x value_converted:[%6.2f]\r\n ", value, value_converted);
         } else {
-            Serial_debug(DEBUG_INFO, &cli_serial, "INVALID S_MAX_VOLTAGE_ENERGY_CELL: %x > MAX_VOLTAGE_ENERGY_CELL\r\n", value);
+            Serial_debug(DEBUG_INFO, &cli_serial, "INVALID S_MAX_VOLTAGE_ENERGY_CELL: %x > MAX_VOLTAGE_ENERGY_CELL:[%6.2f]\r\n", value, MAX_VOLTAGE_ENERGY_CELL);
             retVal = RET_SDO_INVALID_VALUE;
         }
 

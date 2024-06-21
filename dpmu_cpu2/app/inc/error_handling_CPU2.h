@@ -13,5 +13,6 @@ void ResetDpmuErrorOcurred();
 void HandleLoadOverCurrent(float max_allowed_load_current, uint16_t efuse_top_half_flag);
 void HandleDCBusShortCircuit();
 void HandleDCBusOverVoltage();
+void HandleDCBusUnderVoltage();
 
 #endif /* APP_INC_ERROR_HANDLING_CPU2_H_ */

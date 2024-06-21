@@ -104,13 +104,32 @@ void DCDC_current_buck_loop_float(void)
 
 void DCDC_voltage_boost_loop_float(void)
 {
+    uint16_t dutyCycle;
+
     VLoop_PiOutput = Pi_ControllerBoostFloat(VLoopParamBoost,
                                              VLoop_PiOutput,
                                              DCDC_VI.target_Voltage_At_DCBus * REG_TARGET_DC_BUS_VOLTAGE_RATIO,
                                              sensorVector[VBusIdx].realValue);
-    DCDC_VI.I_Ref_Real =  (VLoop_PiOutput.Output);
+//    DCDC_VI.I_Ref_Real =  (VLoop_PiOutput.Output);
+
+    dutyCycle = BOOST_TIME_BASE_PERIOD - (BOOST_TIME_BASE_PERIOD * VLoop_PiOutput.Output);
+
+    HAL_PWM_setCounterCompareValue(BEG_1_2_BASE, EPWM_COUNTER_COMPARE_A, dutyCycle);
+
+    VLoop_PiOutput.dutyCycle = dutyCycle;
 }
 
+void DCDCInitializePWMForRegulateVoltage()
+{
+    uint16_t dutyCycle;
+
+    DCDC_VI.avgVStore / DCDC_VI.avgVBus;
+
+    dutyCycle = BOOST_TIME_BASE_PERIOD * ( DCDC_VI.avgVStore / DCDC_VI.avgVBus );
+
+    HAL_PWM_setCounterCompareValue(BEG_1_2_BASE, EPWM_COUNTER_COMPARE_A, dutyCycle);
+    HAL_StartPwmDCDC();
+}
 
 void DCDC_current_boost_loop_float(void)
 {
@@ -280,7 +299,8 @@ void DCDCConverterInit(void)
     /*Init Voltage boost Loop PI parameters */
     VLoopParamBoost.Pgain = 0.8761f * 0.0050354f;         /* 100*3.3/2^16            */
     VLoopParamBoost.Igain = 57.55f * 0.00000050354f ;     /* 100*3.3/2^16 * 1/10000  */
-    VLoopParamBoost.UpperLimit = 19.0;
+    //VLoopParamBoost.UpperLimit = 19.0;
+    VLoopParamBoost.UpperLimit = 0.83;
     VLoopParamBoost.LowerLimit = 0.1;
 
     /*Init Counters */
