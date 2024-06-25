@@ -74,6 +74,9 @@ void dcbus_check(void)
         /* check for DC bus load current */
         HandleLoadOverCurrent(max_allowed_load_current, efuse_top_half_flag);
 
+        /* Check for temperature max limit */
+        HandleOverTemperature();
+
         /* check for DC bus input power */
         if((sensorVector[VBusIdx].realValue * sensorVector[IF_1fIdx].realValue) > (float)sharedVars_cpu1toCpu2.available_power_budget_dc_input)
             sharedVars_cpu2toCpu1.error_code |=  (1UL << ERROR_INPUT_POWER_TO_HIGH);

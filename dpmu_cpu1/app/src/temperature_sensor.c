@@ -9,6 +9,7 @@
 #include <stdint.h>
 #include <string.h>
 
+#include "board.h"
 #include "canopen_emcy.h"
 #include "cli_cpu1.h"
 #include "co_common.h"
@@ -21,13 +22,14 @@
 #include "main.h"
 #include "serial.h"
 #include "temperature_sensor.h"
+#include "timer.h"
 
 struct I2CHandle temperature_sensor[4];
 uint16_t TX_MsgBuffer[MAX_BUFFER_SIZE];
 uint16_t RX_MsgBuffer[MAX_BUFFER_SIZE];
 uint32_t controlAddress;
 uint16_t status;
-int8_t temperatureSensorVector[4];
+int16_t temperatureSensorVector[4];
 int8_t temperatureHotPoint;
 int8_t temperature_absolute_max_limit;
 int8_t temperature_high_limit;
@@ -118,7 +120,7 @@ int16_t temperature_sensor_read_temperature(uint8_t temp_sensor_number, int16_t 
 
 void temperature_sensor_read_all_temperatures(void)
 {
-    static bool absolute_max_limit_reached = false;
+    static bool absolute_max_limit_reached_flag = false;
     static bool high_limit_reached = false;
     static bool normal_reached = true;
     int16_t status = SUCCESS;
@@ -136,12 +138,13 @@ void temperature_sensor_read_all_temperatures(void)
             }
             else
             {
+                read_temperature_max = -128;
                 //read_temperature >>= 8;   /* convert to full degrees */
                 temperatureSensorVector[TEMPERATURE_SENSOR_BASE] = read_temperature;
                 coOdPutObj_i8(I_TEMPERATURE, S_TEMPERATURE_BASE, read_temperature);
                 read_temperature_max = MAX(read_temperature, read_temperature_max);
+                sensorCount = 1;
             }
-            sensorCount = 1;
             break;
 
         /* MAIN */
@@ -156,8 +159,8 @@ void temperature_sensor_read_all_temperatures(void)
                 temperatureSensorVector[TEMPERATURE_SENSOR_MAIN] = read_temperature;
                 coOdPutObj_i8(I_TEMPERATURE, S_TEMPERATURE_MAIN, read_temperature);
                 read_temperature_max = MAX(read_temperature, read_temperature_max);
+                sensorCount = 2;
             }
-            sensorCount = 2;
             break;
 
         /* MEZZANINE */
@@ -172,8 +175,8 @@ void temperature_sensor_read_all_temperatures(void)
                 temperatureSensorVector[TEMPERATURE_SENSOR_MEZZANINE] = read_temperature;
                 coOdPutObj_i8(I_TEMPERATURE, S_TEMPERATURE_MEZZANINE, read_temperature);
                 read_temperature_max = MAX(read_temperature, read_temperature_max);
+                sensorCount = 3;
             }
-            sensorCount = 3;
             break;
 
         /* connected/external energy backup */
@@ -188,8 +191,9 @@ void temperature_sensor_read_all_temperatures(void)
                 temperatureSensorVector[TEMPERATURE_SENSOR_PWR_BANK] = read_temperature;
                 coOdPutObj_i8(I_TEMPERATURE, S_TEMPERATURE_PWR_BANK, read_temperature);
                 read_temperature_max = MAX(read_temperature, read_temperature_max);
+                sensorCount = 0;
+                temperatureHotPoint = read_temperature_max;
             }
-            sensorCount = 0;
             break;
 
         default:
@@ -198,77 +202,89 @@ void temperature_sensor_read_all_temperatures(void)
 
     }
     /* store maximum measured temperature */
-    temperatureHotPoint = read_temperature_max;
-    //coOdPutObj_i8(I_TEMPERATURE, S_TEMPERATURE_MEASURED_AT_DPMU_HOTTEST_POINT, read_temperature_max);
 
-    /* get temperature limits */
+    if ( read_temperature_max > temperature_absolute_max_limit ){
+        Serial_printf(&cli_serial, "read_temperature_max:[%d] > temperature_absolute_max_limit:[%d]\r\n", read_temperature_max, temperature_absolute_max_limit );
+        global_error_code |= (1 << ERROR_OVER_TEMPERATURE);
+    } else {
+        Serial_printf(&cli_serial, "read_temperature_max:[%d] <= temperature_absolute_max_limit:[%d]\r\n", read_temperature_max, temperature_absolute_max_limit );
+        global_error_code &= ~(1 << ERROR_OVER_TEMPERATURE);
+    }
 
-    //coOdGetObj_i8(I_TEMPERATURE, S_DPMU_TEMPERATURE_MAX_LIMIT, &absolute_max_limit);
-    //coOdGetObj_i8(I_TEMPERATURE, S_DPMU_TEMPERATURE_HIGH_LIMIT, &high_limit);
+//    if( read_temperature_max > temperature_high_limit ) {
+//        global_error_code |= (1 << ERROR_HIGH_TEMPERATURE);
+//    } else {
+//        global_error_code &= ~(1 << ERROR_HIGH_TEMPERATURE);
+//    }
+
 
     /* check if to high temperature */
-    if(read_temperature_max >= temperature_absolute_max_limit)
-    {   /* critical state, turn off everything and cool down */
-
-        if(!absolute_max_limit_reached)
-        {
-            /* send error */
-            canopen_emcy_send_temperature_error(read_temperature_max);
-            Serial_debug(DEBUG_ERROR, &cli_serial, "DEVICE_TEMPERATURE_MAX\r\n");
-        }
-
-        /* mark event so we can handle it elsewhere */
-        global_error_code |= (1 << ERROR_OVER_TEMPERATURE);
-
-        /* mark it happened so we do not continuous send errors */
-        absolute_max_limit_reached = true;
-
-        /* mark it false so we can send an warning if temperature reaches
-         * high_limit <= read_temperature_max < absolute_max_limit */
-        high_limit_reached = false;
-
-        /* mark it false so we can send a clear message if temperature reaches
-         * read_temperature_max < high_limit */
-        normal_reached = false;
-    } else if(read_temperature_max >= temperature_high_limit)
-    {   /* non critical state, send warning to IOP */
-        if(!high_limit_reached)
-        {
-            /* send warning */
-            canopen_emcy_send_temperature_warning(read_temperature_max);
-            Serial_debug(DEBUG_ERROR, &cli_serial, "DEVICE_TEMPERATURE_HIGH\r\n");
-        }
-
-        /* keep commented
-         * use this temperature range as hysteresis
-         * */
+//    if(read_temperature_max >= temperature_absolute_max_limit)
+//    {   /* critical state, turn off everything and cool down */
+//
+//
+//
+//        if(!absolute_max_limit_reached_flag)
+//        {
+//            /* send error */
+//            canopen_emcy_send_temperature_error(read_temperature_max);
+//            Serial_debug(DEBUG_ERROR, &cli_serial, "DEVICE_TEMPERATURE_MAX\r\n");
+//
+//        }
+//
+//        /* mark event so we can handle it elsewhere */
+//        global_error_code |= (1 << ERROR_OVER_TEMPERATURE);
+//
+//        /* mark it happened so we do not continuous send errors */
+//        absolute_max_limit_reached_flag = true;
+//
+//        /* mark it false so we can send an warning if temperature reaches
+//         * high_limit <= read_temperature_max < absolute_max_limit */
+//        high_limit_reached = false;
+//
+//        /* mark it false so we can send a clear message if temperature reaches
+//         * read_temperature_max < high_limit */
+//        normal_reached = false;
+//    } else if(read_temperature_max >= temperature_high_limit)
+//    {   /* non critical state, send warning to IOP */
+//        if(!high_limit_reached)
+//        {
+//            /* send warning */
+//            canopen_emcy_send_temperature_warning(read_temperature_max);
+//            Serial_debug(DEBUG_ERROR, &cli_serial, "DEVICE_TEMPERATURE_HIGH\r\n");
+//        }
+//
+//        /* keep commented
+//         * use this temperature range as hysteresis
+//         * */
+////        global_error_code &= ~(1 << ERROR_OVER_TEMPERATURE);
+//
+//        /* mark it happened so we do not continuous send warnings
+//         *
+//         * clear/set markings
+//         * no high temperature warning
+//         * max temperature error */
+//        absolute_max_limit_reached_flag = false;
+//        high_limit_reached = true;
+//        normal_reached = false;
+//    } else
+//    {
+//        if(!normal_reached)
+//        {
+//            /* send OK */
+//            canopen_emcy_send_temperature_ok(read_temperature_max);
+//            Serial_debug(DEBUG_ERROR, &cli_serial, "DEVICE_TEMPERATURE_OK\r\n");
+//        }
+//
+//        /* clear markings
+//         * no high temperature warning
+//         * no max temperature error */
 //        global_error_code &= ~(1 << ERROR_OVER_TEMPERATURE);
+//        absolute_max_limit_reached_flag = false;
+//        high_limit_reached = false;
+//        normal_reached = true;
+//    }
 
-        /* mark it happened so we do not continuous send warnings
-         *
-         * clear/set markings
-         * no high temperature warning
-         * max temperature error */
-        absolute_max_limit_reached = false;
-        high_limit_reached = true;
-        normal_reached = false;
-    } else
-    {
-        if(!normal_reached)
-        {
-            /* send OK */
-            canopen_emcy_send_temperature_ok(read_temperature_max);
-            Serial_debug(DEBUG_ERROR, &cli_serial, "DEVICE_TEMPERATURE_OK\r\n");
-        }
-
-        /* clear markings
-         * no high temperature warning
-         * no max temperature error */
-        global_error_code &= ~(1 << ERROR_OVER_TEMPERATURE);
-        absolute_max_limit_reached = false;
-        high_limit_reached = false;
-        normal_reached = true;
-    }
 }
 
 
@@ -410,7 +426,7 @@ void temperature_sensor_init_individual_sensor(
     temperatureSensor->WriteCycleTime_in_us = 0;                //  Slave write cycle time. Depends on slave.
                                                                 //  Please check slave device datasheet
 
-    temperatureSensor->NumOfAttempts        = 1;                //  Number of attempts to make before reporting
+    temperatureSensor->NumOfAttempts        = 5;                //  Number of attempts to make before reporting
                                                                 //  slave not ready (NACK condition)
     temperatureSensor->Delay_us             = 10;               //  Delay time in microsecs (us)
 }
@@ -418,27 +434,108 @@ void temperature_sensor_init_individual_sensor(
 void readAlltemperatures(){
     int16_t status;
     int16_t readValue;
-    status = temperature_sensor_read_temperature( TEMPERATURE_SENSOR_BASE, &readValue );
-    if(status == 0) {
-        temperatureSensorVector[TEMPERATURE_SENSOR_BASE] = readValue;
-    }
-    status = temperature_sensor_read_temperature( TEMPERATURE_SENSOR_MAIN, &readValue );
-    if(status == 0) {
-        temperatureSensorVector[TEMPERATURE_SENSOR_MAIN] = readValue;
-    }
+    static uint32_t lastTimeTick = 0;
+    static uint16_t sensorCount = 0;
+    static bool errorI2CFlag = false;
+    int16_t maxTemperature = -10000;
 
-    status = temperature_sensor_read_temperature( TEMPERATURE_SENSOR_MEZZANINE, &readValue );
-    if(status == 0) {
-        temperatureSensorVector[TEMPERATURE_SENSOR_MEZZANINE] = readValue;
-    }
+    if( (timer_get_ticks() - lastTimeTick) >= 1000 ) {
+        lastTimeTick = timer_get_ticks();
 
-    status = temperature_sensor_read_temperature( TEMPERATURE_SENSOR_PWR_BANK, &readValue );
-    if(status == 0) {
-        temperatureSensorVector[TEMPERATURE_SENSOR_PWR_BANK] = readValue;
-    }
+        Serial_printf(&cli_serial,"Temp Reading state[%d] ====> ", sensorCount);
 
+        switch( sensorCount ) {
+
+            case 0:
+                status = temperature_sensor_read_temperature( TEMPERATURE_SENSOR_BASE, &readValue );
+                if(status == 0) {
+                    temperatureSensorVector[TEMPERATURE_SENSOR_BASE] = readValue;
+                    if( readValue > maxTemperature ) {
+                        maxTemperature = readValue;
+                    }
+                    Serial_printf(&cli_serial,"temperatureSensorVector[TEMPERATURE_SENSOR_BASE]:=[%d]\r\n", temperatureSensorVector[TEMPERATURE_SENSOR_BASE]);
+                }
+                else {
+                    Serial_printf(&cli_serial,"Error reading TEMPERATURE_SENSOR_BASE status:=[%d]\r\n", status);
+                    errorI2CFlag = true;
+                }
+                sensorCount = 1;
+                break;
+
+            case 1:
+                status = temperature_sensor_read_temperature( TEMPERATURE_SENSOR_MAIN, &readValue );
+                if(status == 0) {
+                    temperatureSensorVector[TEMPERATURE_SENSOR_MAIN] = readValue;
+                    if( readValue > maxTemperature ) {
+                        maxTemperature = readValue;
+                    }
+                    Serial_printf(&cli_serial,"temperatureSensorVector[TEMPERATURE_SENSOR_MAIN]:=[%d]\r\n", temperatureSensorVector[TEMPERATURE_SENSOR_MAIN]);
+                }
+                else {
+                    Serial_printf(&cli_serial,"Error reading TEMPERATURE_SENSOR_MAIN status:=[%d]\r\n", status);
+                    errorI2CFlag = true;
+                }
+                sensorCount = 2;
+                break;
+
+            case 2:
+                status = temperature_sensor_read_temperature( TEMPERATURE_SENSOR_MEZZANINE, &readValue );
+                if(status == 0) {
+                    temperatureSensorVector[TEMPERATURE_SENSOR_MEZZANINE] = readValue;
+                    if( readValue > maxTemperature ) {
+                        maxTemperature = readValue;
+                    }
+                    Serial_printf(&cli_serial,"temperatureSensorVector[TEMPERATURE_SENSOR_MEZZANINE]:=[%d]\r\n", temperatureSensorVector[TEMPERATURE_SENSOR_MEZZANINE]);
+                }
+                else {
+                    Serial_printf(&cli_serial,"Error reading TEMPERATURE_SENSOR_MEZZANINE status:=[%d]\r\n", status);
+                    errorI2CFlag = true;
+                }
+                sensorCount = 3;
+                break;
+
+            case 3:
+                status = temperature_sensor_read_temperature( TEMPERATURE_SENSOR_PWR_BANK, &readValue );
+                if(status == 0) {
+                    temperatureSensorVector[TEMPERATURE_SENSOR_PWR_BANK] = readValue;
+                    if( readValue > maxTemperature ) {
+                        maxTemperature = readValue;
+                    }
+                    temperatureHotPoint = maxTemperature;
+                    maxTemperature = -10000;
+                    sensorCount = 0;
+                    Serial_printf(&cli_serial, "temperatureSensorVector[TEMPERATURE_SENSOR_PWR_BANK]:=[%d]\r\n", temperatureSensorVector[TEMPERATURE_SENSOR_PWR_BANK]);
+                }
+                else {
+                    Serial_printf(&cli_serial,"Error reading TEMPERATURE_SENSOR_PWR_BANK status:=[%d]\r\n", status);
+                    errorI2CFlag = true;
+                }
+                if( errorI2CFlag == true) {
+                    sensorCount = 4;
+                }
+                break;
+
+            case 4:
+                I2C_init();
+                Serial_printf(&cli_serial,"Reseting I2C bus\r\n");
+                errorI2CFlag = false;
+                sensorCount = 5;
+                break;
+
+            case 5:
+
+                Serial_printf(&cli_serial,"Init temperature sensors\r\n");
+                Serial_printf(&cli_serial,"=============================\r\n");
+                temperature_sensors_init();
+                sensorCount = 0;
+                break;
+
+            default:
+                sensorCount = 0;
+                break;
+        }
+    }
 }
-
 int16_t temperature_sensors_init(void)
 {
     int16_t return_value = SUCCESS;

@@ -121,7 +121,9 @@ void main(void)
     /* print the content of the boot configuration memories */
     Serial_printf(&cli_serial, "BOOTPINCONFIG = 0x%lX\r\n", boot_pin_config);
     Serial_printf(&cli_serial, "BOOTDEF-LOW   = 0x%lX\r\n", boot_def_low);
-    Serial_printf(&cli_serial, "DPMU_CPU1 Firmware compilation timestamp= %s %s\r\n", __DATE__, __TIME__ );
+    Serial_printf(&cli_serial, "*************** DPMU_CPU1 Firmware compilation ********************\r\n");
+    Serial_printf(&cli_serial, "\r\nDPMU_CPU1 Firmware compilation timestamp= %s %s\r\n", __DATE__, __TIME__ );
+
 
 
     cli_ok();
@@ -236,9 +238,10 @@ void main(void)
 
 
         /* check every second */
-        if(!(timer_get_ticks()%1000)) {
-            temperature_sensor_read_all_temperatures();
-        }
+//        if( (timer_get_ticks()%1000) < 1) {
+////            temperature_sensor_read_all_temperatures();
+//        }
+        readAlltemperatures();
 
         /* check changes from controlling algorithm in CPU2 */
         check_changes_from_CPU2();

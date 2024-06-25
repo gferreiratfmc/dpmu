@@ -61,6 +61,7 @@ void error_check_for_errors(void)
         error_dcbus_short_circuit();
         error_dcbus_over_voltage();
         error_dcbus_under_voltage();
+        error_system_temperature();
 
         //    error_check_error_flag_generic(ERROR_BUS_OVER_VOLTAGE,
 //                                   EMCY_ERROR_CODE_VOLTAGE,
@@ -78,7 +79,6 @@ void error_check_for_errors(void)
 //
 
 
-//    error_system_temperature();
 //
 //    error_operational();
 //
@@ -256,6 +256,46 @@ static void error_dcbus_short_circuit(void)
     }
 }
 
+
+/* brief: check if temperatures are above threshold
+ *
+ * details: checks error flag
+ *
+ */
+static void error_system_temperature(void)
+{
+    if(global_error_code & (1UL << ERROR_OVER_TEMPERATURE))
+    {
+        if(!(global_error_code_handled & (1UL << ERROR_OVER_TEMPERATURE)))
+        {
+            /* mark handled */
+            global_error_code_handled |= (1UL << ERROR_OVER_TEMPERATURE);
+
+            /* send EMCY - send it once */
+            canopen_emcy_send_temperature_error(temperatureHotPoint);
+            sharedVars_cpu1toCpu2.temperatureMaxLimitReachedFlag = true;
+            /* mark it sent */
+            global_error_code_sent    |= (1UL << ERROR_OVER_TEMPERATURE);
+            global_error_code_handled |= (1UL << ERROR_OVER_TEMPERATURE);
+
+            Serial_printf( &cli_serial, "*************Over temperature detected temperatureHotPoint[%d]\r\n", temperatureHotPoint);
+        }
+    } else
+    {
+        /* send EMCY CLEAR - send it once */
+        if(global_error_code_sent & (1 << ERROR_OVER_TEMPERATURE)) {
+            canopen_emcy_send_temperature_ok(temperatureHotPoint);
+            Serial_printf( &cli_serial, "*************Normal temperature temperatureHotPoint[%d]\r\n", temperatureHotPoint);
+            sharedVars_cpu1toCpu2.temperatureMaxLimitReachedFlag = false;
+        }
+
+        /* mark as unhandled - nothing need to be done  */
+        global_error_code_sent    &= ~(1UL << ERROR_OVER_TEMPERATURE);
+        global_error_code_handled &= ~(1UL << ERROR_OVER_TEMPERATURE);
+    }
+}
+
+
 /* brief: check if temperatures are above thresholds
  *
  * details: checks error flag
@@ -274,63 +314,63 @@ static void error_dcbus_short_circuit(void)
  * presumptions:
  *
  */
-static void error_system_temperature(void)
-{
-    static bool timer_started = false;
-    static uint32_t time_start;
-
-    /* !!! EMCY messages is handled in temperature_sensor_read_all_temperatures() !!! */
-    if(global_error_code & (1UL << ERROR_OVER_TEMPERATURE))
-    {
-        /* According to specification:
-         * Only inform IOP (done in temperature_sensor_read_all_temperatures())
-         * Do not do anything more
-         * IOP takes decision on what to do next
-         * */
-        if(!(global_error_code_handled & (1UL << ERROR_OVER_TEMPERATURE)))
-        {
-            if(!timer_started)
-            {
-                time_start = timer_get_ticks() & 0x7fffffff;
-                timer_started = true;
-            }
-
-            /* ms ticks, enough with 127 ms */
-            int16_t elapsed_time = (timer_get_ticks() & 0x7fffffff) - time_start;
-            //TODO - Time does not handle wrap around
-
-            /* check timeout */
-            if(2 < elapsed_time)
-            {
-//                static bool message_sent = false;
-
-                /* disconnect all switches
-                 * turn off regulation */
-                IPC_setFlagLtoR(IPC_CPU1_L_CPU2_R, IPC_CPU1_REQUIERS_EMERGECY_SHUT_DOWN);
-
-                global_error_code_handled |= (1UL << ERROR_OVER_TEMPERATURE);
-
-                /* clear the timer */
-                timer_started = false;
-            }
-        } else
-        {
-            /* there is nothing more we can do
-             * let IOP decide next step
-             * */
-
-            /* clear the timer */
-            timer_started = false;
-        }
-    } else
-    {
-        /* mark as unhandled - nothing need to be done  */
-        global_error_code_handled &= ~(1UL << ERROR_OVER_TEMPERATURE);
-
-        /* clear the timer */
-        timer_started = false;
-    }
-}
+//static void error_system_temperature(void)
+//{
+//    static bool timer_started = false;
+//    static uint32_t time_start;
+//
+//    /* !!! EMCY messages is handled in temperature_sensor_read_all_temperatures() !!! */
+//    if(global_error_code & (1UL << ERROR_OVER_TEMPERATURE))
+//    {
+//        /* According to specification:
+//         * Only inform IOP (done in temperature_sensor_read_all_temperatures())
+//         * Do not do anything more
+//         * IOP takes decision on what to do next
+//         * */
+//        if(!(global_error_code_handled & (1UL << ERROR_OVER_TEMPERATURE)))
+//        {
+//            if(!timer_started)
+//            {
+//                time_start = timer_get_ticks() & 0x7fffffff;
+//                timer_started = true;
+//            }
+//
+//            /* ms ticks, enough with 127 ms */
+//            int16_t elapsed_time = (timer_get_ticks() & 0x7fffffff) - time_start;
+//            //TODO - Time does not handle wrap around
+//
+//            /* check timeout */
+//            if(2 < elapsed_time)
+//            {
+////                static bool message_sent = false;
+//
+//                /* disconnect all switches
+//                 * turn off regulation */
+//                IPC_setFlagLtoR(IPC_CPU1_L_CPU2_R, IPC_CPU1_REQUIERS_EMERGECY_SHUT_DOWN);
+//
+//                global_error_code_handled |= (1UL << ERROR_OVER_TEMPERATURE);
+//
+//                /* clear the timer */
+//                timer_started = false;
+//            }
+//        } else
+//        {
+//            /* there is nothing more we can do
+//             * let IOP decide next step
+//             * */
+//
+//            /* clear the timer */
+//            timer_started = false;
+//        }
+//    } else
+//    {
+//        /* mark as unhandled - nothing need to be done  */
+//        global_error_code_handled &= ~(1UL << ERROR_OVER_TEMPERATURE);
+//
+//        /* clear the timer */
+//        timer_started = false;
+//    }
+//}
 
 /* brief: check if there are any internal operational errors
  *

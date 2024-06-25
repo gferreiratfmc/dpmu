@@ -14,5 +14,6 @@ void HandleLoadOverCurrent(float max_allowed_load_current, uint16_t efuse_top_ha
 void HandleDCBusShortCircuit();
 void HandleDCBusOverVoltage();
 void HandleDCBusUnderVoltage();
+void HandleOverTemperature();
 
 #endif /* APP_INC_ERROR_HANDLING_CPU2_H_ */

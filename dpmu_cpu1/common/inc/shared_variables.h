@@ -64,6 +64,8 @@ typedef struct sharedVars_cpu1toCpu2_t // commonCpu1ToCpu2
     bool newCapacitanceSaved;
     bool DPMUAppInfoInitializedFlag;
 
+    bool temperatureMaxLimitReachedFlag;
+
 
 } sharedVars_cpu1toCpu2_t;
 

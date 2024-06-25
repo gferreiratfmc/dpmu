@@ -192,3 +192,26 @@ void HandleDCBusUnderVoltage() {
         sharedVars_cpu2toCpu1.error_code &= ~(1UL << ERROR_BUS_UNDER_VOLTAGE);
     }
 }
+
+void HandleOverTemperature() {
+    enum { TEMPInit, TEMPWait };
+    static States_t stateTemp = {0};
+
+    switch( stateTemp.State_Current ) {
+        case TEMPInit:
+            if( sharedVars_cpu1toCpu2.temperatureMaxLimitReachedFlag == true ) {
+                PRINT("******* Absolute Max Limit Reached detected.\r\n"
+                        "******* Send main state machine to FAULT state\r\n");
+                stateTemp.State_Next = TEMPWait;
+                }
+        break;
+        case TEMPWait:
+            if( sharedVars_cpu1toCpu2.temperatureMaxLimitReachedFlag == false ) {
+                PRINT("******* Normal limit Reached detected.\r\n");
+                stateTemp.State_Next = TEMPInit;
+            }
+    }
+    stateTemp.State_Current = stateTemp.State_Next;
+}
+
+

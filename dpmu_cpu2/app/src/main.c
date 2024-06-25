@@ -101,7 +101,8 @@ void main(void)
     HAL_StopPwmDCDC();
     HAL_StopPwmInrushCurrentLimit();
 
-    PRINT( "DPMU_CPU2 Firmware compilation timestamp= %s %s\r\n", __DATE__, __TIME__ );
+    PRINT("*************** DPMU_CPU2 Firmware compilation ********************\r\n");
+    PRINT( "\r\nDPMU_CPU2 Firmware compilation timestamp= %s %s\r\n", __DATE__, __TIME__ );
 
     StateMachineInit();
     DCDCConverterInit();
