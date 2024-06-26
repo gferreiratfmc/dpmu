@@ -516,9 +516,9 @@ void readAlltemperatures(){
                 if( errorI2CFlag == true) {
                     sensorNumber = 4;
                 }
-                Serial_printf(&cli_serial, "Temperatures:BASE[%d], MAIN:[%d], MEZZ:[%d], SC:[%d]\r\n",
-                                      temperatureSensorVector[TEMPERATURE_SENSOR_BASE], temperatureSensorVector[TEMPERATURE_SENSOR_MAIN],
-                                      temperatureSensorVector[TEMPERATURE_SENSOR_MEZZANINE], temperatureSensorVector[TEMPERATURE_SENSOR_PWR_BANK] );
+//                Serial_printf(&cli_serial, "Temperatures:BASE[%d], MAIN:[%d], MEZZ:[%d], SC:[%d]\r",
+//                                      temperatureSensorVector[TEMPERATURE_SENSOR_BASE], temperatureSensorVector[TEMPERATURE_SENSOR_MAIN],
+//                                      temperatureSensorVector[TEMPERATURE_SENSOR_MEZZANINE], temperatureSensorVector[TEMPERATURE_SENSOR_PWR_BANK] );
                 break;
 
             case 4:
