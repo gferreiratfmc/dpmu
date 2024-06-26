@@ -85,11 +85,12 @@ typedef enum error_codes {
 
 
 extern uint32_t global_error_code;
+extern uint32_t error_code_CPU1;
 
 bool connect_other_dpmu_to_shared_bus(void);
 int8_t connect_other_dpmu_to_shared_bus_answer(float *remote_bus_voltage);
 void error_check_for_errors(void);
-static void error_copy_error_codes_from_CPU2(void);
+static void error_copy_error_codes_from_CPU1_and_CPU2(void);
 static void error_dcbus_short_circuit(void);
 static void error_load_overcurrent(void);
 static void error_no_error(void);

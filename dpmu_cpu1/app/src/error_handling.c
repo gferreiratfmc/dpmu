@@ -24,7 +24,7 @@
 
 
 uint32_t global_error_code         = 0;
-
+uint32_t error_code_CPU1           = 0;
 static uint32_t global_error_code_handled = 0;
 static uint32_t global_error_code_sent    = 0;
 
@@ -56,7 +56,7 @@ void error_check_for_errors(void)
         code = 1ul << ERROR_EXT_PWR_LOSS_OTHER;
         global_error_code = code;
 
-        error_copy_error_codes_from_CPU2();
+        error_copy_error_codes_from_CPU1_and_CPU2();
         error_load_overcurrent();
         error_dcbus_short_circuit();
         error_dcbus_over_voltage();
@@ -266,6 +266,7 @@ static void error_system_temperature(void)
 {
     if(global_error_code & (1UL << ERROR_OVER_TEMPERATURE))
     {
+
         if(!(global_error_code_handled & (1UL << ERROR_OVER_TEMPERATURE)))
         {
             /* mark handled */
@@ -478,9 +479,11 @@ static void error_no_error(void)
     }
 }
 
-static void error_copy_error_codes_from_CPU2()
+static void error_copy_error_codes_from_CPU1_and_CPU2()
 {
-    global_error_code |= sharedVars_cpu2toCpu1.error_code;
+    global_error_code = global_error_code | sharedVars_cpu2toCpu1.error_code;
+    global_error_code = global_error_code | error_code_CPU1;
+
 }
 
 

@@ -40,3 +40,9 @@ void ResetDPMUAppInfoInitializeVars() {
         DPMUAppInfoInitialized[idx] = false;
     }
 }
+
+
+//Checks if any specific variable is initialized
+bool VerifyAppInfoVarInitialized( DPMU_Initialization_Vars_t DPMUappVarIdx ) {
+    return DPMUAppInfoInitialized[DPMUappVarIdx];
+}

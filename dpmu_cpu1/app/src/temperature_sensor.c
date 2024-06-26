@@ -18,11 +18,15 @@
 #include "error_handling.h"
 #include "gen_indices.h"
 #include "i2c_com.h"
+#include "initialization_app.h"
 #include "log.h"
 #include "main.h"
 #include "serial.h"
 #include "temperature_sensor.h"
 #include "timer.h"
+
+#define TEMPERATURE_READ_INTERVAL_TIME_IN_MILISECS 250
+
 
 struct I2CHandle temperature_sensor[4];
 uint16_t TX_MsgBuffer[MAX_BUFFER_SIZE];
@@ -30,9 +34,9 @@ uint16_t RX_MsgBuffer[MAX_BUFFER_SIZE];
 uint32_t controlAddress;
 uint16_t status;
 int16_t temperatureSensorVector[4];
-int8_t temperatureHotPoint;
-int8_t temperature_absolute_max_limit;
-int8_t temperature_high_limit;
+int16_t temperatureHotPoint;
+int16_t temperature_absolute_max_limit;
+int16_t temperature_high_limit;
 /*
  * returns pointer do wanted sensor struct
  */
@@ -48,6 +52,7 @@ static int16_t temperature_sensor_read_register(struct I2CHandle *temperatureSen
 {
     int16_t status = STATUS_S_SUCCESS;
 
+    I2C_clearStatus(temperatureSensor->base, I2C_STS_NO_ACK|I2C_STS_STOP_CONDITION|I2C_STS_NACK_SENT|I2C_STS_SLAVE_DIR);
     /* receive data */
     status = I2C_MasterReceiver(temperatureSensor);
 
@@ -67,6 +72,8 @@ static int16_t temperature_sensor_write_register(struct I2CHandle *temperatureSe
     return status;
 }
 
+
+
 /* reads the temperature from the sensor
  *
  * Attribute:
@@ -84,7 +91,7 @@ static int16_t temperature_sensor_write_register(struct I2CHandle *temperatureSe
 int16_t temperature_sensor_read_temperature(uint8_t temp_sensor_number, int16_t *readValue)
 {
     int16_t  status = 0;
-    uint16_t readBuffer[2] = {0, 0};
+    static uint16_t readBuffer[2] = {0, 0};
     struct I2CHandle *temperatureSensor;
     temperatureSensor = select_temperature_sensor(temp_sensor_number);
 
@@ -426,7 +433,7 @@ void temperature_sensor_init_individual_sensor(
     temperatureSensor->WriteCycleTime_in_us = 0;                //  Slave write cycle time. Depends on slave.
                                                                 //  Please check slave device datasheet
 
-    temperatureSensor->NumOfAttempts        = 5;                //  Number of attempts to make before reporting
+    temperatureSensor->NumOfAttempts        = 1;                //  Number of attempts to make before reporting
                                                                 //  slave not ready (NACK condition)
     temperatureSensor->Delay_us             = 10;               //  Delay time in microsecs (us)
 }
@@ -435,16 +442,16 @@ void readAlltemperatures(){
     int16_t status;
     int16_t readValue;
     static uint32_t lastTimeTick = 0;
-    static uint16_t sensorCount = 0;
+    static uint16_t sensorNumber = 0;
     static bool errorI2CFlag = false;
-    int16_t maxTemperature = -10000;
+    static int16_t maxTemperature = -10000;
 
-    if( (timer_get_ticks() - lastTimeTick) >= 1000 ) {
+    if( (timer_get_ticks() - lastTimeTick) >= TEMPERATURE_READ_INTERVAL_TIME_IN_MILISECS ) {
         lastTimeTick = timer_get_ticks();
 
-        Serial_printf(&cli_serial,"Temp Reading state[%d] ====> ", sensorCount);
+        // Serial_printf(&cli_serial,"Temperature Reading state[%d] ====> ", sensorCount);
 
-        switch( sensorCount ) {
+        switch( sensorNumber ) {
 
             case 0:
                 status = temperature_sensor_read_temperature( TEMPERATURE_SENSOR_BASE, &readValue );
@@ -453,13 +460,12 @@ void readAlltemperatures(){
                     if( readValue > maxTemperature ) {
                         maxTemperature = readValue;
                     }
-                    Serial_printf(&cli_serial,"temperatureSensorVector[TEMPERATURE_SENSOR_BASE]:=[%d]\r\n", temperatureSensorVector[TEMPERATURE_SENSOR_BASE]);
-                }
-                else {
+                    //Serial_printf(&cli_serial,"temperatureSensorVector[TEMPERATURE_SENSOR_BASE]:=[%d]\r\n", temperatureSensorVector[TEMPERATURE_SENSOR_BASE]);
+                } else {
                     Serial_printf(&cli_serial,"Error reading TEMPERATURE_SENSOR_BASE status:=[%d]\r\n", status);
                     errorI2CFlag = true;
                 }
-                sensorCount = 1;
+                sensorNumber = 1;
                 break;
 
             case 1:
@@ -469,13 +475,12 @@ void readAlltemperatures(){
                     if( readValue > maxTemperature ) {
                         maxTemperature = readValue;
                     }
-                    Serial_printf(&cli_serial,"temperatureSensorVector[TEMPERATURE_SENSOR_MAIN]:=[%d]\r\n", temperatureSensorVector[TEMPERATURE_SENSOR_MAIN]);
-                }
-                else {
+                    //Serial_printf(&cli_serial,"temperatureSensorVector[TEMPERATURE_SENSOR_MAIN]:=[%d]\r\n", temperatureSensorVector[TEMPERATURE_SENSOR_MAIN]);
+                } else {
                     Serial_printf(&cli_serial,"Error reading TEMPERATURE_SENSOR_MAIN status:=[%d]\r\n", status);
                     errorI2CFlag = true;
                 }
-                sensorCount = 2;
+                sensorNumber = 2;
                 break;
 
             case 2:
@@ -485,13 +490,12 @@ void readAlltemperatures(){
                     if( readValue > maxTemperature ) {
                         maxTemperature = readValue;
                     }
-                    Serial_printf(&cli_serial,"temperatureSensorVector[TEMPERATURE_SENSOR_MEZZANINE]:=[%d]\r\n", temperatureSensorVector[TEMPERATURE_SENSOR_MEZZANINE]);
-                }
-                else {
+                    //Serial_printf(&cli_serial,"temperatureSensorVector[TEMPERATURE_SENSOR_MEZZANINE]:=[%d]\r\n", temperatureSensorVector[TEMPERATURE_SENSOR_MEZZANINE]);
+                } else {
                     Serial_printf(&cli_serial,"Error reading TEMPERATURE_SENSOR_MEZZANINE status:=[%d]\r\n", status);
                     errorI2CFlag = true;
                 }
-                sensorCount = 3;
+                sensorNumber = 3;
                 break;
 
             case 3:
@@ -503,36 +507,45 @@ void readAlltemperatures(){
                     }
                     temperatureHotPoint = maxTemperature;
                     maxTemperature = -10000;
-                    sensorCount = 0;
-                    Serial_printf(&cli_serial, "temperatureSensorVector[TEMPERATURE_SENSOR_PWR_BANK]:=[%d]\r\n", temperatureSensorVector[TEMPERATURE_SENSOR_PWR_BANK]);
-                }
-                else {
+                    sensorNumber = 0;
+                    //Serial_printf(&cli_serial, "temperatureSensorVector[TEMPERATURE_SENSOR_PWR_BANK]:=[%d]\r\n", temperatureSensorVector[TEMPERATURE_SENSOR_PWR_BANK]);
+                } else {
                     Serial_printf(&cli_serial,"Error reading TEMPERATURE_SENSOR_PWR_BANK status:=[%d]\r\n", status);
                     errorI2CFlag = true;
                 }
                 if( errorI2CFlag == true) {
-                    sensorCount = 4;
+                    sensorNumber = 4;
                 }
+                Serial_printf(&cli_serial, "Temperatures:BASE[%d], MAIN:[%d], MEZZ:[%d], SC:[%d]\r\n",
+                                      temperatureSensorVector[TEMPERATURE_SENSOR_BASE], temperatureSensorVector[TEMPERATURE_SENSOR_MAIN],
+                                      temperatureSensorVector[TEMPERATURE_SENSOR_MEZZANINE], temperatureSensorVector[TEMPERATURE_SENSOR_PWR_BANK] );
                 break;
 
             case 4:
-                I2C_init();
                 Serial_printf(&cli_serial,"Reseting I2C bus\r\n");
+                I2C_sendStopCondition(I2C_BUS_BASE);
+                I2C_clearStatus(I2C_BUS_BASE, I2C_STS_NO_ACK|I2C_STS_STOP_CONDITION|I2C_STS_NACK_SENT|I2C_STS_SLAVE_DIR);
                 errorI2CFlag = false;
-                sensorCount = 5;
-                break;
-
-            case 5:
-
-                Serial_printf(&cli_serial,"Init temperature sensors\r\n");
-                Serial_printf(&cli_serial,"=============================\r\n");
-                temperature_sensors_init();
-                sensorCount = 0;
+                sensorNumber = 0;
                 break;
 
             default:
-                sensorCount = 0;
+                sensorNumber = 0;
                 break;
+        }
+
+
+        if( VerifyAppInfoVarInitialized( IDX_DPMU_VAR_MAX_ALLOWED_DPMU_TEMPERATURE ) == true ) {
+            if ( temperatureHotPoint > temperature_absolute_max_limit ){
+                error_code_CPU1 = error_code_CPU1 | (1 << ERROR_OVER_TEMPERATURE);
+                //Serial_printf(&cli_serial, "read_temperature_max:[%d] > temperature_absolute_max_limit:[%d] global_error_code:[0x%04p]\r\n",
+                //              temperatureHotPoint, temperature_absolute_max_limit, error_code_CPU1 );
+            } else {
+                error_code_CPU1 = error_code_CPU1 & ~(1 << ERROR_OVER_TEMPERATURE);
+                //Serial_printf(&cli_serial, "read_temperature_max:[%d] <= temperature_absolute_max_limit:[%d] global_error_code:[0x%04p]\r\n",
+                //              temperatureHotPoint, temperature_absolute_max_limit, error_code_CPU1 );
+
+            }
         }
     }
 }
