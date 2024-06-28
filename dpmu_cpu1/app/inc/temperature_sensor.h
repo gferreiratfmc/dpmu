@@ -53,6 +53,7 @@ int16_t temperature_sensor_write_tLow_reg(uint8_t temp_sensor_number, uint16_t *
 int16_t temperature_sensor_read_tHigh_reg(uint8_t temp_sensor_number, uint16_t *readBuffer);
 int16_t temperature_sensor_write_tHigh_reg(uint8_t temp_sensor_number, uint16_t *writeBuffer);
 
+int16_t temperature_sensor_reset(uint8_t temp_sensor_number);
 
 int16_t temperature_sensor_configure(uint8_t temp_sensor_number);
 void temperature_sensor_init_individual_sensor(

@@ -46,10 +46,9 @@ const gpio21           = gpio.addInstance();
 const gpio22           = gpio.addInstance();
 const gpio23           = gpio.addInstance();
 const gpio24           = gpio.addInstance();
-const gpio25           = gpio.addInstance();
-const gpio26           = gpio.addInstance();
 const i2c              = scripting.addModule("/driverlib/i2c.js", {}, false);
 const i2c1             = i2c.addInstance();
+const i2c2             = i2c.addInstance();
 const inputxbar_input  = scripting.addModule("/driverlib/inputxbar_input.js", {}, false);
 const inputxbar_input1 = inputxbar_input.addInstance();
 const inputxbar_input2 = inputxbar_input.addInstance();
@@ -338,73 +337,68 @@ gpio15.$name           = "SPARE_H1";
 gpio15.masterCore      = "GPIO_CORE_CPU2";
 gpio15.gpioPin.$assign = "GPIO100";
 
+gpio16.$name           = "GLOAD_2";
 gpio16.direction       = "GPIO_DIR_MODE_OUT";
 gpio16.masterCore      = "GPIO_CORE_CPU2";
-gpio16.$name           = "LED2";
-gpio16.gpioPin.$assign = "GPIO2";
+gpio16.gpioPin.$assign = "GPIO167";
 
-gpio17.$name           = "LED1";
-gpio17.direction       = "GPIO_DIR_MODE_OUT";
-gpio17.gpioPin.$assign = "GPIO3";
+gpio17.$name             = "N_OE_POL";
+gpio17.direction         = "GPIO_DIR_MODE_OUT";
+gpio17.writeInitialValue = true;
+gpio17.initialValue      = 1;
+gpio17.masterCore        = "GPIO_CORE_CPU2";
+gpio17.gpioPin.$assign   = "GPIO132";
 
-gpio18.$name           = "GLOAD_2";
+gpio18.$name           = "N_LE_POL_0";
 gpio18.direction       = "GPIO_DIR_MODE_OUT";
 gpio18.masterCore      = "GPIO_CORE_CPU2";
-gpio18.gpioPin.$assign = "GPIO167";
+gpio18.gpioPin.$assign = "GPIO133";
 
-gpio19.$name             = "N_OE_POL";
-gpio19.direction         = "GPIO_DIR_MODE_OUT";
-gpio19.writeInitialValue = true;
-gpio19.initialValue      = 1;
-gpio19.masterCore        = "GPIO_CORE_CPU2";
-gpio19.gpioPin.$assign   = "GPIO132";
+gpio19.$name           = "N_LE_POL_1";
+gpio19.direction       = "GPIO_DIR_MODE_OUT";
+gpio19.masterCore      = "GPIO_CORE_CPU2";
+gpio19.gpioPin.$assign = "GPIO134";
 
-gpio20.$name           = "N_LE_POL_0";
+gpio20.$name           = "Testpin";
 gpio20.direction       = "GPIO_DIR_MODE_OUT";
 gpio20.masterCore      = "GPIO_CORE_CPU2";
-gpio20.gpioPin.$assign = "GPIO133";
+gpio20.gpioPin.$assign = "GPIO9";
 
-gpio21.$name           = "N_LE_POL_1";
-gpio21.direction       = "GPIO_DIR_MODE_OUT";
-gpio21.masterCore      = "GPIO_CORE_CPU2";
-gpio21.gpioPin.$assign = "GPIO134";
+gpio21.$name           = "TEST_SYNC";
+gpio21.gpioPin.$assign = "GPIO141";
 
-gpio22.$name           = "Testpin";
+gpio22.$name           = "GLOAD_1";
 gpio22.direction       = "GPIO_DIR_MODE_OUT";
 gpio22.masterCore      = "GPIO_CORE_CPU2";
-gpio22.gpioPin.$assign = "GPIO9";
+gpio22.gpioPin.$assign = "GPIO163";
 
-gpio23.$name           = "TEST_SYNC";
-gpio23.gpioPin.$assign = "GPIO141";
+gpio23.$name           = "eFuseBB";
+gpio23.padConfig       = "PULLUP";
+gpio23.qualMode        = "GPIO_QUAL_ASYNC";
+gpio23.masterCore      = "GPIO_CORE_CPU2";
+gpio23.useInterrupt    = true;
+gpio23.gpioPin.$assign = "GPIO166";
+gpio23.xint.enableInt  = true;
 
-gpio24.$name           = "GLOAD_1";
+gpio24.$name           = "GCMD8";
 gpio24.direction       = "GPIO_DIR_MODE_OUT";
 gpio24.masterCore      = "GPIO_CORE_CPU2";
-gpio24.gpioPin.$assign = "GPIO163";
-
-gpio25.$name           = "eFuseBB";
-gpio25.padConfig       = "PULLUP";
-gpio25.qualMode        = "GPIO_QUAL_ASYNC";
-gpio25.masterCore      = "GPIO_CORE_CPU2";
-gpio25.useInterrupt    = true;
-gpio25.gpioPin.$assign = "GPIO166";
-gpio25.xint.enableInt  = true;
-
-gpio26.$name           = "GCMD8";
-gpio26.direction       = "GPIO_DIR_MODE_OUT";
-gpio26.masterCore      = "GPIO_CORE_CPU2";
-gpio26.gpioPin.$assign = "GPIO146";
+gpio24.gpioPin.$assign = "GPIO146";
 
 i2c1.bitCount               = "I2C_BITCOUNT_8";
 i2c1.$name                  = "I2C_BUS";
-i2c1.bitRate                = 100000;
-i2c1.initialMode            = "RECEIVE_MODE";
 i2c1.useInterrupts          = false;
+i2c1.bitRate                = 50000;
 i2c1.i2c.$assign            = "I2CA";
 i2c1.i2c.i2c_sdaPin.$assign = "GPIO0";
 i2c1.i2c.i2c_sclPin.$assign = "GPIO1";
-i2c1.sdaQual.padConfig      = "STD";
-i2c1.sclQual.padConfig      = "STD";
+
+i2c2.$name                  = "I2C_BUS_B";
+i2c2.useInterrupts          = false;
+i2c2.bitCount               = "I2C_BITCOUNT_8";
+i2c2.i2c.$assign            = "I2CB";
+i2c2.i2c.i2c_sdaPin.$assign = "GPIO2";
+i2c2.i2c.i2c_sclPin.$assign = "GPIO3";
 
 inputxbar_input1.$name         = "Trip1";
 inputxbar_input1.inputxbarGpio = "GPIO8";
@@ -416,7 +410,7 @@ inputxbar_input2.inputxbarGpio  = "GPIO2";
 
 inputxbar_input3.$name         = "Trip3";
 inputxbar_input3.inputxbarGpio = "GPIO166";
-gpio25.xint.inputxbar          = inputxbar_input3;
+gpio23.xint.inputxbar          = inputxbar_input3;
 
 memcfg.config_MEMCFG_SECT_GS1 = "MEMCFG_GSRAMMASTER_CPU2";
 memcfg.config_MEMCFG_SECT_GS3 = "MEMCFG_GSRAMMASTER_CPU2";

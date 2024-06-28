@@ -198,7 +198,6 @@ void main(void)
      * */
     ipc_sync_comm(IPC_FLAG31, true);
 
-    GPIO_writePin(LED1, 0);
 
     //
     // Initialize I2C HW
@@ -239,7 +238,7 @@ void main(void)
 
         /* check every second */
 //        if( (timer_get_ticks()%1000) < 1) {
-////            temperature_sensor_read_all_temperatures();
+//            temperature_sensor_read_all_temperatures();
 //        }
         readAlltemperatures();
 

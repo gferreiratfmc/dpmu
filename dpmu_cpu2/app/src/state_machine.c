@@ -131,7 +131,7 @@ void StateMachine(void)
                 HAL_PWM_setCounterCompareValue(InrushCurrentLimit_BASE, EPWM_COUNTER_COMPARE_A, 1);
                 HAL_StopPwmInrushCurrentLimit();
                 DPMUInitializedFlag = true;
-                EnableContinuousReadCellVoltages();
+                //EnableContinuousReadCellVoltages();
                 StateVector.State_Next = Idle;
             }
             break;
@@ -273,11 +273,11 @@ void StateMachine(void)
                 StateVector.State_Next = RegulateStop;
             }
             //TODO: Commented only for endurance. Verify if it's should be uncommented for production version.
-            if( DCDC_VI.avgVBus < REG_MIN_DC_BUS_VOLTAGE_RATIO * DCDC_VI.target_Voltage_At_DCBus ) {
-                if( sensorVector[ISen1fIdx].realValue >= MIN_OUTPUT_CURRENT_TO_REGULATE_VOLTAGE ) {
-                        StateVector.State_Next = RegulateVoltageInit;
-                }
-            }
+//            if( DCDC_VI.avgVBus < REG_MIN_DC_BUS_VOLTAGE_RATIO * DCDC_VI.target_Voltage_At_DCBus ) {
+//                if( sensorVector[ISen1fIdx].realValue >= MIN_OUTPUT_CURRENT_TO_REGULATE_VOLTAGE ) {
+//                        StateVector.State_Next = RegulateVoltageInit;
+//                }
+//            }
             break;
 
         case RegulateStop:

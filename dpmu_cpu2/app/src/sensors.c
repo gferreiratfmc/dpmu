@@ -197,8 +197,8 @@ void InitializeSensorParameters() {
     sensorVector[IF_1fIdx].maxCounts = 65535;
     sensorVector[IF_1fIdx].zeroVoltageOffset = 1.05;
     sensorVector[IF_1fIdx].adcReference = 3.0;
-    // sensorVector[IF_1fIdx].gain = (1/0.05);
-        sensorVector[IF_1fIdx].gain = (1/0.1);
+    sensorVector[IF_1fIdx].gain = (1/0.05);
+    //    sensorVector[IF_1fIdx].gain = (1/0.1); // Only for an old DPMU DSP Card
     sensorVector[IF_1fIdx].invertedGain = true;
     sensorVector[IF_1fIdx].differentialADC = false;
     sensorVector[IF_1fIdx].name = "Input Current";
