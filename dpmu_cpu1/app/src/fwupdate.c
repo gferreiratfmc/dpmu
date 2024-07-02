@@ -134,7 +134,7 @@ static FWImageStatus fwupdate_isCPU2ImageAvailable(){
 //    flash_api_init();
     /*Read checksum*/
     memcpy( &data, (uint32_t*)FLASH_CPU2_CHECKSUM_ADDRESS, sizeof(data) );
-    Serial_printf(&cli_serial, "\r\ndata from FLASH_CPU2_CHECKSUM_ADDRESS:[0x%08lu]\r\n", data);
+    Serial_printf(&cli_serial, "\r\ndata from FLASH_CPU2_CHECKSUM_ADDRESS:[0x%08p]\r\n", data);
 
    if (data!= 0xFFFFFFFF){
        return fw_available;

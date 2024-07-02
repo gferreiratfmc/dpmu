@@ -73,8 +73,7 @@ typedef struct {
 /* for use with 2 domains only - words */
 static const flashImageConfiguration_t flashImage[2] = {
 		{ 0x084000, 0x1C000ul, 0x100 },  /* 192 K */
-		//{ 0x0A0000, 0x1C000ul, 0x08 }       /*64 K */
-		{ 0x0A0000, 0x1C000ul, 0x00 }       /*64 K */
+		{ 0x0A0000, 0x1C000ul, 0x08 }       /*64 K */
 };
 
 
