@@ -25,16 +25,16 @@
 #define EMCY_ERROR_BUS_OVER_VOLTAGE             0x3003
 #define EMCY_ERROR_VOLTAGE_BALANCING            0x3200 /* not used */
 #define EMCY_ERROR_TEMPERATURE                  0x4200
-#define EMCY_ERROR_LOGGING                      0x6001 /* not used, used in EMOTAS stack*/
+#define EMCY_ERROR_LOGGING                      0x6001 /* not used */
 #define EMCY_ERROR_SYSTEM_SHUTDOWN              0x6002 /* not used */
-#define EMCY_ERROR_REBOOT_WARNING               0x6003
+#define EMCY_ERROR_REBOOT_WARNING               0x6003 /* not used */
 #define EMCY_ERROR_SYSTEM_INITIALIZATION        0x6004 /* not used */
 #define EMCY_ERROR_FIRMWARE_UPGRADE             0x6005 /* not used */
 #define EMCY_ERROR_CAN_OVERRUN                  0x8110 /* not used */
 #define EMCY_ERROR_CAN_PASSIVE                  0x8111 /* not used */
 #define EMCY_ERROR_CAN_BUS_OFF                  0x8112 /* not used */
 #define EMCY_ERROR_HEARTBEAT                    0x8113 /* not used */
-#define EMCY_ERROR_CANB_GENERAL                 0x8120
+#define EMCY_ERROR_CANB_GENERAL                 0x8120 /* not used */
 #define EMCY_ERROR_BUCK_INIT                    0xFF02 /* not used */
 #define EMCY_ERROR_BUCK                         0xFF03 /* not used */
 #define EMCY_ERROR_BOOST_INIT                   0xFF04 /* not used */
@@ -45,15 +45,15 @@
 #define EMCY_ERROR_PULSE                        0xFF0A /* not used */
 #define EMCY_ERROR_BALANCING_INIT               0xFF0C /* not used */
 #define EMCY_ERROR_BALANCING                    0xFF0D /* not used */
-#define EMCY_ERROR_OPERATIONAL                  0xF105
-#define EMCY_ERROR_POWER_SHARING                0xFF16
-#define EMCY_ERROR_EXT_PWR_LOSS                 0xFF17
-#define EMCY_ERROR_EXT_PWR_LOSS_BOTH            0xFF18
-#define EMCY_ERROR_INPUT_POWER_TO_HIGH          0xFF19
-#define EMCY_ERROR_CONSUMED_POWER_TO_HIGH       0xFF1A
+#define EMCY_ERROR_OPERATIONAL                  0xF105 /* not used */
+#define EMCY_ERROR_POWER_SHARING                0xFF16 /* not used */
+#define EMCY_ERROR_EXT_PWR_LOSS                 0xFF17 /* not used */
+#define EMCY_ERROR_EXT_PWR_LOSS_BOTH            0xFF18 /* not used */
+#define EMCY_ERROR_INPUT_POWER_TO_HIGH          0xFF19 /* not used */
+#define EMCY_ERROR_CONSUMED_POWER_TO_HIGH       0xFF1A /* not used */
 #define EMCY_ERROR_SWITCHING                    0xFF20 /* not used */
-#define EMCY_ERROR_SOC_BELOW_LIMIT              0xFF30
-#define EMCY_ERROR_SOC_BELOW_SAFETY_THRESHOLD   0xFF31
+#define EMCY_ERROR_SOC_BELOW_LIMIT              0xFF30 /* not used */
+#define EMCY_ERROR_SOC_BELOW_SAFETY_THRESHOLD   0xFF31 /* not used */
 
 
 typedef enum error_codes {
