@@ -111,7 +111,7 @@ static void error_dcbus_over_voltage(void) {
             global_error_code_handled |= (1UL << ERROR_BUS_OVER_VOLTAGE);
 
             /* send EMCY - send it once */
-            canopen_emcy_send_load_overcurrent(1);
+            canopen_emcy_send_dcbus_over_voltage(1);
 
             /* mark it sent */
             global_error_code_sent    |= (1UL << ERROR_BUS_OVER_VOLTAGE);
@@ -123,7 +123,7 @@ static void error_dcbus_over_voltage(void) {
     {
         /* send EMCY CLEAR - send it once */
         if(global_error_code_sent & (1 << ERROR_BUS_OVER_VOLTAGE)) {
-            canopen_emcy_send_load_overcurrent(0);
+            canopen_emcy_send_dcbus_over_voltage(0);
             Serial_printf( &cli_serial, "************* Load over voltage clear\r\n");
         }
 
