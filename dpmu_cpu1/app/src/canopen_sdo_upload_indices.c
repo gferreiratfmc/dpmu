@@ -8,6 +8,7 @@
 #ifndef APP_SRC_CANOPEN_INDICES_C_
 #define APP_SRC_CANOPEN_INDICES_C_
 
+#include "application_vars.h"
 #include "co_datatype.h"
 #include "co_odaccess.h"
 #include "convert.h"
@@ -59,6 +60,8 @@ static inline uint8_t indices_I_RESTORE_DEFAULT_PARAMETERS(UNSIGNED8 subIndex)
 {
     uint8_t retVal = CO_FALSE;
     uint32_t value;
+    static uint32_t serialNumber32bits;
+
 
     switch (subIndex)
     {
@@ -77,6 +80,13 @@ static inline uint8_t indices_I_RESTORE_DEFAULT_PARAMETERS(UNSIGNED8 subIndex)
     case S_RESTORE_MANUFACTURER_DEFINED_DEFAULT_PARAMETERS:
         retVal = coOdGetObj_u32(I_RESTORE_DEFAULT_PARAMETERS, S_RESTORE_MANUFACTURER_DEFINED_DEFAULT_PARAMETERS, &value);
         Serial_debug(DEBUG_INFO, &cli_serial, "S_RESTORE_MANUFACTURER_DEFINED_DEFAULT_PARAMETERS: 0x%x\r\n", value);
+        break;
+
+    case S_RESTORE_SERIAL_NUMBER:
+        retVal = coOdGetObj_u32(I_RESTORE_DEFAULT_PARAMETERS, S_RESTORE_SERIAL_NUMBER, &value);
+        while( RetriveSerialNumberFromFlash( value, &serialNumber32bits ) != true );
+        coOdPutObj_u32(I_RESTORE_DEFAULT_PARAMETERS, S_RESTORE_SERIAL_NUMBER, serialNumber32bits);
+        Serial_debug(DEBUG_INFO, &cli_serial, "S_RESTORE_SERIAL_NUMBER CMD:%08p\r\n", value, serialNumber32bits);
         break;
     default:
         Serial_debug(DEBUG_ERROR, &cli_serial, "UNKNOWN CAN OD SUBINDEX: 0x%x\r\n", subIndex);

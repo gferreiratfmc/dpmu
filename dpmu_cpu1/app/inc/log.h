@@ -75,7 +75,7 @@ uint8_t log_debug_log_read(
         UNSIGNED16  index,
         UNSIGNED8   subIndex
     );
-void log_debug_log_reset(LogResetType_e resetType);
+void log_debug_log_reset(uint8_t resetType);
 
 uint8_t log_can_log_read(
         BOOL_T      execute,

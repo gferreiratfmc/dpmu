@@ -13,6 +13,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#include "application_vars.h"
 #include "cli_cpu1.h"
 #include "co_datatype.h"
 #include "co_odaccess.h"
@@ -50,6 +51,7 @@ static RET_T indices_I_STORE_PARAMETERS(UNSIGNED8 subIndex)
     RET_T retVal = RET_OK;
     uint16_t startIdx, lastIdx;
     uint32_t nrOfObj;
+    uint32_t serNumberCMD;
 
     Serial_debug(DEBUG_INFO, &cli_serial, "Store Params indication 0x%x -- ", subIndex);
 
@@ -80,6 +82,12 @@ static RET_T indices_I_STORE_PARAMETERS(UNSIGNED8 subIndex)
         lastIdx = 0x5fff;
         break;
 
+    case S_SAVE_SERIAL_NUMBER:
+        retVal = coOdGetObj_u32(I_STORE_PARAMETERS, S_SAVE_SERIAL_NUMBER, &serNumberCMD);
+
+        Serial_debug(DEBUG_INFO, &cli_serial, "S_SAVE_SERIAL_NUMBER CMD:%08p\r\n", serNumberCMD);
+        SaveSerialNumberToFlash(serNumberCMD);
+        break;
     default:
         Serial_debug(DEBUG_ERROR, &cli_serial, "UNKNOWN CAN OD SUBINDEX!\r\n");
         // Setting these to the same value will skip the for loop below.
@@ -91,62 +99,62 @@ static RET_T indices_I_STORE_PARAMETERS(UNSIGNED8 subIndex)
 
     // Get number of saved objects.
 //    nrOfObj = sizeof(saveObj) / sizeof(save_od_t);
-    nrOfObj = get_num_saved_objs();
-
-    savedCnt = 0;
-
-    // First we read all objects saved in external flash, excluding the ones to be updated.
-    od_range_t excluding = { .begin = startIdx, .end = lastIdx };
-    int read_result = read_params_from_ext_flash(savedData, &excluding);
-    if (read_result >= 0) {
-        savedCnt = read_result;
-    }
-
-    // For all saveable objects.
-    for (uint16_t i = 0; i < nrOfObj; ++i) {
-        uint16_t index = saveObj[i].index;
-        uint8_t subIndex = saveObj[i].subIndex;
-
-        if (index >= startIdx && index <= lastIdx) {
-            const CO_OBJECT_DESC_T *pDesc;
-
-            // Get object description.
-            if (coOdGetObjDescPtr(index, subIndex, &pDesc) != RET_OK) {
-                continue;
-            }
-
-            // Get size of object from object description.
-            uint32_t size = coOdGetObjSize(pDesc);
-
-            // Get pointer to object.
-            void *pObj = coOdGetObjAddr(index, subIndex);
-            if (pObj == NULL) {
-                Serial_debug(DEBUG_ERROR, &cli_serial, "%x not found\r\n", index);
-                return RET_IDX_NOT_FOUND;
-            }
-
-            Serial_debug(DEBUG_ERROR, &cli_serial, "Store %x:%d, size %ld\r\n", index, subIndex, size);
-
-            // Get data type of this index.
-            switch (size) {
-            case 1:
-            case 2:
-            case 4:
-                savedData[savedCnt].index = index;
-                savedData[savedCnt].subIndex = subIndex;
-                savedData[savedCnt].size = size;
-                coNumMemcpy(&savedData[savedCnt].value, pObj, size, CO_ATTR_NUM);
-                savedCnt++;
-                break;
-
-            default:
-                Serial_debug(DEBUG_ERROR, &cli_serial, "SDO invalid value (size)\r\n");
-                return RET_SDO_INVALID_VALUE;
-            }
-        }
-    }
-
-    write_params_to_ext_flash(savedData, savedCnt);
+//    nrOfObj = get_num_saved_objs();
+//
+//    savedCnt = 0;
+//
+//    // First we read all objects saved in external flash, excluding the ones to be updated.
+//    od_range_t excluding = { .begin = startIdx, .end = lastIdx };
+//    int read_result = read_params_from_ext_flash(savedData, &excluding);
+//    if (read_result >= 0) {
+//        savedCnt = read_result;
+//    }
+//
+//    // For all saveable objects.
+//    for (uint16_t i = 0; i < nrOfObj; ++i) {
+//        uint16_t index = saveObj[i].index;
+//        uint8_t subIndex = saveObj[i].subIndex;
+//
+//        if (index >= startIdx && index <= lastIdx) {
+//            const CO_OBJECT_DESC_T *pDesc;
+//
+//            // Get object description.
+//            if (coOdGetObjDescPtr(index, subIndex, &pDesc) != RET_OK) {
+//                continue;
+//            }
+//
+//            // Get size of object from object description.
+//            uint32_t size = coOdGetObjSize(pDesc);
+//
+//            // Get pointer to object.
+//            void *pObj = coOdGetObjAddr(index, subIndex);
+//            if (pObj == NULL) {
+//                Serial_debug(DEBUG_ERROR, &cli_serial, "%x not found\r\n", index);
+//                return RET_IDX_NOT_FOUND;
+//            }
+//
+//            Serial_debug(DEBUG_ERROR, &cli_serial, "Store %x:%d, size %ld\r\n", index, subIndex, size);
+//
+//            // Get data type of this index.
+//            switch (size) {
+//            case 1:
+//            case 2:
+//            case 4:
+//                savedData[savedCnt].index = index;
+//                savedData[savedCnt].subIndex = subIndex;
+//                savedData[savedCnt].size = size;
+//                coNumMemcpy(&savedData[savedCnt].value, pObj, size, CO_ATTR_NUM);
+//                savedCnt++;
+//                break;
+//
+//            default:
+//                Serial_debug(DEBUG_ERROR, &cli_serial, "SDO invalid value (size)\r\n");
+//                return RET_SDO_INVALID_VALUE;
+//            }
+//        }
+//    }
+//
+//    write_params_to_ext_flash(savedData, savedCnt);
 
     return retVal;
 }
@@ -167,29 +175,29 @@ static RET_T indices_I_RESTORE_DEFAULT_PARAMETERS(UNSIGNED8 sIndex)
     switch (sIndex)
     {
     case S_RESTORE_ALL_DEFAULT_PARAMETERS:
-        startIdx = 0x1000;
-        lastIdx = 0xffff;
+//        startIdx = 0x1000;
+//        lastIdx = 0xffff;
         retVal = coOdGetObj_u32(I_RESTORE_DEFAULT_PARAMETERS, S_RESTORE_ALL_DEFAULT_PARAMETERS, &value);
         Serial_debug(DEBUG_INFO, &cli_serial, "S_RESTORE_ALL_DEFAULT_PARAMETERS: 0x%x\r\n", value);
         break;
 
     case S_RESTORE_COMMUNICATION_DEFAULT_PARAMETERS:
-        startIdx = 0x1000;
-        lastIdx = 0x1fff;
+//        startIdx = 0x1000;
+//        lastIdx = 0x1fff;
         retVal = coOdGetObj_u32(I_RESTORE_DEFAULT_PARAMETERS, S_RESTORE_COMMUNICATION_DEFAULT_PARAMETERS, &value);
         Serial_debug(DEBUG_INFO, &cli_serial, "S_RESTORE_COMMUNICATION_DEFAULT_PARAMETERS: 0x%x\r\n", value);
         break;
 
     case S_RESTORE_APPLICATION_DEFAULT_PARAMETERS:
-        startIdx = 0x6000;
-        lastIdx = 0x9FFF;
+//        startIdx = 0x6000;
+//        lastIdx = 0x9FFF;
         retVal = coOdGetObj_u32(I_RESTORE_DEFAULT_PARAMETERS, S_RESTORE_APPLICATION_DEFAULT_PARAMETERS, &value);
         Serial_debug(DEBUG_INFO, &cli_serial, "S_RESTORE_APPLICATION_DEFAULT_PARAMETERS: 0x%x\r\n", value);
         break;
 
     case S_RESTORE_MANUFACTURER_DEFINED_DEFAULT_PARAMETERS:
-        startIdx = 0x2000;
-        lastIdx = 0x5fff;
+//        startIdx = 0x2000;
+//        lastIdx = 0x5fff;
         retVal = coOdGetObj_u32(I_RESTORE_DEFAULT_PARAMETERS, S_RESTORE_MANUFACTURER_DEFINED_DEFAULT_PARAMETERS, &value);
         Serial_debug(DEBUG_INFO, &cli_serial, "S_RESTORE_MANUFACTURER_DEFINED_DEFAULT_PARAMETERS: 0x%x\r\n", value);
         break;
@@ -197,50 +205,50 @@ static RET_T indices_I_RESTORE_DEFAULT_PARAMETERS(UNSIGNED8 sIndex)
     default:
         Serial_debug(DEBUG_ERROR, &cli_serial, "UNKNOWN CAN OD SUBINDEX: 0x%x\r\n", sIndex);
         // Setting these to the same value will skip the for loop below.
-        startIdx = 0x1000;
-        lastIdx = 0x1000;
+//        startIdx = 0x1000;
+//        lastIdx = 0x1000;
         retVal = RET_SUBIDX_NOT_FOUND;
     }
 
-    savedCnt = read_params_from_ext_flash(savedData, NULL);
-
-    for (int i = 0; i < savedCnt; i++) {
-        uint16_t index = savedData[i].index;
-        uint8_t subIndex = savedData[i].subIndex;
-        uint32_t size = savedData[i].size;
-        uint32_t value = savedData[i].value;
-
-        if (index >= startIdx && index <= lastIdx) {
-            const CO_OBJECT_DESC_T *pDesc;
-
-
-            /* get object description */
-            retVal = coOdGetObjDescPtr(index, subIndex, &pDesc);
-            if (retVal != RET_OK)  {
-                return retVal;
-            }
-
-            /* get pointer to object */
-            void *pObj = coOdGetObjAddr(index, subIndex);
-            if (pObj == NULL)  {
-                return RET_IDX_NOT_FOUND;
-            }
-
-            Serial_debug(DEBUG_ERROR, &cli_serial, "Load %x:%d, size %ld\r\n", index, subIndex, size);
-
-            /* get data type of this index */
-            switch (size)  {
-                case 1:
-                case 2:
-                case 4:
-                    coNumMemcpy(pObj, &value, size, CO_ATTR_NUM);
-                    break;
-
-                default:
-                    return RET_SDO_INVALID_VALUE;
-            }
-        }
-    }
+//    savedCnt = read_params_from_ext_flash(savedData, NULL);
+//
+//    for (int i = 0; i < savedCnt; i++) {
+//        uint16_t index = savedData[i].index;
+//        uint8_t subIndex = savedData[i].subIndex;
+//        uint32_t size = savedData[i].size;
+//        uint32_t value = savedData[i].value;
+//
+//        if (index >= startIdx && index <= lastIdx) {
+//            const CO_OBJECT_DESC_T *pDesc;
+//
+//
+//            /* get object description */
+//            retVal = coOdGetObjDescPtr(index, subIndex, &pDesc);
+//            if (retVal != RET_OK)  {
+//                return retVal;
+//            }
+//
+//            /* get pointer to object */
+//            void *pObj = coOdGetObjAddr(index, subIndex);
+//            if (pObj == NULL)  {
+//                return RET_IDX_NOT_FOUND;
+//            }
+//
+//            Serial_debug(DEBUG_ERROR, &cli_serial, "Load %x:%d, size %ld\r\n", index, subIndex, size);
+//
+//            /* get data type of this index */
+//            switch (size)  {
+//                case 1:
+//                case 2:
+//                case 4:
+//                    coNumMemcpy(pObj, &value, size, CO_ATTR_NUM);
+//                    break;
+//
+//                default:
+//                    return RET_SDO_INVALID_VALUE;
+//            }
+//        }
+//    }
 
     return retVal;
 }

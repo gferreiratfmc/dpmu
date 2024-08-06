@@ -10,6 +10,7 @@
 
 #include <stdint.h>
 #include <stddef.h>
+#include <stdbool.h>
 
 // Start of memory area selected by EMIF1 CS3.
 #define EXT_FLASH_START_ADDRESS_CS3 0x00300000U
@@ -28,11 +29,19 @@
 #define CAN_LOG_ADDRESS_END     (EXT_FLASH_START_ADDRESS_CS3 + EXT_FLASH_SIZE_CS3)
 
 // Application variables logging area
-#define APP_VARS_EXT_FLASH_SIZE 0x100
-#define APP_VARS_EXT_FLASH_ADDRESS_START   ( EXT_FLASH_START_ADDRESS_CS3 )
+//#define APP_VARS_EXT_FLASH_SIZE 0x2000
+#define APP_VARS_EXT_FLASH_SIZE 0x200
+//#define APP_VARS_EXT_FLASH_ADDRESS_START   ( EXT_FLASH_START_ADDRESS_CS3 )
+#define APP_VARS_EXT_FLASH_ADDRESS_START   ( EXT_FLASH_START_ADDRESS_CS3 ) + 0x100
 #define APP_VARS_EXT_FLASH_ADDRESS_END     ( APP_VARS_EXT_FLASH_ADDRESS_START + (APP_VARS_EXT_FLASH_SIZE - 1) )
 
 
+typedef enum {
+    EXT_FLASH_BUF_WRITE_DONE = 0,
+    EXT_FLASH_BUF_WAITING,
+    EXT_FLASH_BUF_WRITE_ONGOING,
+    EXT_FLASH_BUF_WRITE_TIME_OUT
+} ext_flash_buff_write_status_t;
 
 typedef enum {
     EXT_FLASH_SA0 = 0,
@@ -90,26 +99,7 @@ typedef struct ext_flash_desc_s
  */
 void look_up_start_address_of_sector(ext_flash_desc_t *sector_desc);
 
-#if 0
-static void look_up_sector_from_address(uint16_t address)
-{
-    ext_flash_desc_t sector_compare;
 
-    /* start value */
-    sector_compare.sector = 0;
-
-    do {
-        look_up_start_address_of_sector(&sector_compare);
-
-        if(sector_compare.addr + sector_compare.size > address)
-            break;
-
-        sector_compare.sector += 1;
-    } while(sector_compare.sector < EXT_FLASH_SA_LAST);
-
-    return sector_compare.sector;
-}
-#endif
 
 /**
  * Converts address to flash sector.
@@ -178,10 +168,38 @@ bool ext_flash_ready(void);
  */
 void ext_command_flash_chip_erase(void);
 
+/**
+ * Initialize the parameters for the non ext_flash_non_blocking_read_buf function
+ */
+void ext_flash_init_non_blocking_read(uint32_t addr, uint16_t *bufferAddr, size_t len);
+
+
+/**
+ * Initialize the parameters for the non ext_flash_non_blocking_write_buf function
+ */
+void ext_flash_init_non_blocking_write(uint32_t addr, uint16_t *bufferAddr, size_t len);
+
+/**
+ * Reads buffer of 16b words from flash address without blocking in a while loop.
+ */
+bool ext_flash_non_blocking_read_buf();
+
+/**
+ * Write buffer of 16b words from flash address without blocking in a while loop.
+ * Returns status of the writing.
+ *      EXT_FLASH_BUF_WAITING,
+ *      EXT_FLASH_BUF_WRITE_ONGOING,
+ * When done OK returns EXT_FLASH_BUF_WRITE_DONE
+ * When done NOT OK returns EXT_FLASH_BUF_WRITE_TIME_OUT
+ */
+ext_flash_buff_write_status_t ext_flash_non_blocking_write_buf();
+
 // Information base describing the external flash.
 extern const ext_flash_desc_t ex_flash_info[];
 
 // Data buffer mapped to external flash. (CS3 area is max 1MB.)
 extern uint16_t g_ext_flash_data[EXT_FLASH_SIZE_CS3];
+
+
 
 #endif /* APP_INC_EXT_FLASH_H_ */

@@ -27,6 +27,7 @@
 #define DPMU_SHORT_CIRCUIT_CURRENT (MAX_DPMU_OUTPUT_CURRENT * 1.25)
 #define DPMU_SUPERCAP_SHORT_CIRCUIT_CURRENT 25.0
 #define MAGIC_NUMBER 0xDEADFACE
+#define SERIAL_NUMBER_SIZE_IN_CHARS 30
 
 enum Operating_state
 {
@@ -59,6 +60,17 @@ enum Operating_state
     ChargeRamp,                 // 22
     PreInitialized = 255
 };
+
+
+
+typedef struct app_vars
+{
+    uint32_t MagicNumber;
+    float initialCapacitance;
+    float currentCapacitance;
+    unsigned char serialNumber[SERIAL_NUMBER_SIZE_IN_CHARS];
+
+} app_vars_t;
 
 typedef struct debug_log
 {
@@ -116,8 +128,7 @@ typedef struct PI_Parameters
 } PI_Parameters_t;
 
 
-// ADC Values shall not be stored in this struct. Now it is sotred in the sensorVector updated by interrupts. See sensor.c
-// All control related variables shall be done in real values not in counts. *_Raw values should be removed from this Structure
+// All control related variables shall be done in real values not in counts.
 typedef struct DCDC_Parameters
 {
     float I_Ref_Real;

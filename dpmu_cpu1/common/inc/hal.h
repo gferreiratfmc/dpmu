@@ -20,7 +20,6 @@
 
 
 
-static volatile uint16_t EPWM_BEG_1_2_StopedBySW_Flag = 1;
 
 
 static inline void HAL_PWM_setPhaseShift(uint32_t PWMBase, uint16_t Phase_shiftcount)
@@ -81,14 +80,11 @@ static inline void HAL_StartPwmCllcCellDischarge2(void)
 static inline void HAL_StopPwmDCDC(void)
 {
 
-    EPWM_BEG_1_2_StopedBySW_Flag = 1;
     EPWM_forceTripZoneEvent(BEG_1_2_BASE, EPWM_TZ_FORCE_EVENT_OST);
 }
 
 static inline void HAL_StartPwmDCDC(void)
 {
-    //EPWM_BEG_1_2_StopedBySW_Flag = 1;
-    //Enable interrupt for PWM when a trip occurs from on of the EFUSEs
     //Interrupt_clearACKGroup(INTERRUPT_ACK_GROUP1 ); /* INT_eFuseBB_XINT_INTERRUPT_ACK_GROUP = INTERRUPT_ACK_GROUP1 defined in CPU2*/
     EPWM_clearTripZoneFlag(BEG_1_2_BASE, EPWM_TZ_FORCE_EVENT_OST );
 }

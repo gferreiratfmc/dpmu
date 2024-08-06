@@ -10,6 +10,7 @@
 #include <stdint.h>
 #include <stdio.h>
 
+#include "application_vars.h"
 #include "co_canopen.h"
 #include "common.h"
 #include "convert.h"
@@ -36,19 +37,23 @@ static bool check_SoH(void)
     static uint16_t currState = 0;
     static uint16_t nextState = 0;
 
-    //Save caoacitances recived from CPU2 to flash
+    //Save capacitances received from CPU2 to flash
     switch( currState ) {
         case 0:
             sharedVars_cpu1toCpu2.newCapacitanceSaved = false;
             if( sharedVars_cpu2toCpu1.newCapacitanceAvailable == true ) {
+                RequestSaveNewCapacitanceToExtFlash(sharedVars_cpu2toCpu1.initialCapacitance, sharedVars_cpu2toCpu1.currentCapacitance );
                 nextState = 1;
             }
             break;
 
         case 1:
-            saveCapacitanceToFlash( sharedVars_cpu2toCpu1.initialCapacitance, sharedVars_cpu2toCpu1.currentCapacitance );
-            sharedVars_cpu1toCpu2.newCapacitanceSaved = true;
-            nextState  = 2;
+            if( AppVarsSaveRequestReady()  == true) {
+                sharedVars_cpu1toCpu2.newCapacitanceSaved = true;
+                nextState  = 2;
+            } else {
+                nextState  = 1;
+            }
             break;
 
         case 2:

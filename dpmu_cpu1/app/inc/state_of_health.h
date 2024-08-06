@@ -8,7 +8,7 @@
 #ifndef APP_INC_STATE_OF_HEALTH_H_
 #define APP_INC_STATE_OF_HEALTH_H_
 
-void saveCapacitanceToFlash(float initialCapacitance, float currentCapacitance );
+void RequestSaveNewCapacitanceToExtFlash(float initialCapacitance, float currentCapacitance );
 void retrieveInitalCapacitanceFromFlash( float *initialCapacitance, float *currentCapacitance  );
 
 

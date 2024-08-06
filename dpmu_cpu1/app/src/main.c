@@ -14,6 +14,7 @@
 
 // Application includes.
 #include "app/pt-1.4/pt.h"
+#include "application_vars.h"
 #include "board.h"
 #include "check_CPU2.h"
 #include "cli_cpu1.h"
@@ -215,8 +216,9 @@ void main(void)
     Serial_debug(DEBUG_INFO, &cli_serial, "IPC_PUMPREQUEST_REG %08X\r\n", IPC_PUMPREQUEST_REG);
     Serial_debug(DEBUG_INFO, &cli_serial, "Started\r\n");
 
-    for (;;) {
+    AppVarsReadRequest();
 
+    for (;;) {
 
         cli_check_for_new_commands_from_UART();
 
@@ -242,6 +244,8 @@ void main(void)
 //        }
         readAlltemperatures();
 
+        HandleAppVarsOnExternalFlashSM();
+
         /* check changes from controlling algorithm in CPU2 */
         check_changes_from_CPU2();
 
@@ -256,7 +260,6 @@ void main(void)
          * window functionality of the WD
          * */
         watchdog_feed();
-
     }
 }
 

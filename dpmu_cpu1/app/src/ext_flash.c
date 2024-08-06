@@ -12,6 +12,7 @@
 #include "device.h"
 #include "emif.h"
 #include "serial.h"
+#include "GlobalV.h"
 #include "gpio.h"
 #include "ext_flash.h"
 
@@ -21,10 +22,12 @@
 #define MEM_RW_ITER                 0x1U
 #define BUFFER_WORDS                256
 #define EXT_FLASH_RESET_DELAY       50      // 50 us delay for active low RESET
-#define EXT_FLASH_BUSY_DELAY        1       // 1 us delay between Flash Command and Read/Busy# valid
+#define EXT_FLASH_BUSY_DELAY        5       // 1 us delay between Flash Command and Read/Busy# valid
 #define EXT_FLASH_RESET             33      // GPIO pin connected to external flash RESET pin
 #define EXT_FLASH_READY             36      // GPIO pin connected to external flash RDY/BSY pin
 #define EXT_FLASH_A19               91
+
+#define EXT_FLASH_WRITE_MAX_COUNT_TIME_OUT 10
 
 /**
  * Macro definitions.
@@ -35,6 +38,17 @@
  * External references.
  */
 extern struct Serial cli_serial;
+
+uint32_t non_blocking_read_addr;
+uint16_t *non_blocking_read_buff_ptr;
+size_t non_blocking_read_count;
+size_t   non_blocking_read_len;
+
+uint32_t non_blocking_write_addr;
+uint16_t *non_blocking_write_buff_ptr;
+size_t non_blocking_write_count;
+size_t   non_blocking_write_len;
+bool non_blocking_write_buff_start_flag;
 
 /**
  * Global data.
@@ -180,6 +194,48 @@ void ext_flash_read_buf(uint32_t addr, uint16_t *buf, size_t len)
 }
 
 /**
+ * Initialize the parameters for the non ext_flash_non_blocking_read_buf function
+ */
+void ext_flash_init_non_blocking_read(uint32_t addr, uint16_t *bufferAddr, size_t len)
+{
+    non_blocking_read_count = 0;
+    non_blocking_read_addr = addr;
+    non_blocking_read_len = len;
+    non_blocking_read_buff_ptr = bufferAddr;
+}
+
+/**
+ * Reads buffer of 16b words from flash address without blocking in a while loop.
+ * Function should be used in external loop like a state machine.
+ * Before calling this funciton it shall be initialized calling ext_flash_init_non_blocking_read
+ */
+bool ext_flash_non_blocking_read_buf()
+{
+    uint16_t data;
+    bool ret = false;
+    if( non_blocking_read_len == 0 || non_blocking_read_buff_ptr == 0 || non_blocking_read_addr == 0) {
+        return false;
+    }
+    if( non_blocking_read_count  < non_blocking_read_len ) {
+        data = ext_flash_read_word(non_blocking_read_addr);
+//        Serial_debug(DEBUG_INFO, &cli_serial, "Non block flash read addr:[0x%08p] data:[0x%04X]\r\n", non_blocking_read_addr, data);
+        *non_blocking_read_buff_ptr = data;
+        non_blocking_read_count++;
+        non_blocking_read_buff_ptr++;
+        non_blocking_read_addr++;
+    } else {
+        non_blocking_read_buff_ptr = 0;
+        non_blocking_read_len = 0;
+        non_blocking_read_addr = 0;
+        ret = true;
+    }
+    return ret;
+}
+
+
+
+
+/**
  * ext_flash_write_word - Program single 16b word to Flash address
  */
 void ext_flash_write_word(uint32_t addr, uint16_t data)
@@ -204,6 +260,28 @@ void ext_flash_write_word(uint32_t addr, uint16_t data)
         // Wait for Flash to complete command
         //TODO locking
     }
+}
+
+
+/**
+ * ext_flash_write_word - Program single 16b word to Flash address
+ */
+void ext_flash_non_blocking_write_word(uint32_t addr, uint16_t data)
+{
+    // Make sure the flash is erased, otherwise function will hang during write.
+    if (ext_flash_read_word(addr) != 0xffff) {
+        return;
+    }
+    set_a19(0);
+
+    FLASH_SEQ(0x555, 0xAA);
+    FLASH_SEQ(0x2AA, 0x55);
+    FLASH_SEQ(0X555, 0xA0);
+
+    set_a19(addr);
+
+    *(uint16_t* ) addr = data;
+
 }
 
 void ext_command_flash_chip_erase(void) {
@@ -241,6 +319,111 @@ void ext_flash_write_buf(uint32_t addr, uint16_t *buf, size_t len)
 }
 
 /**
+ * Initialize the parameters for the non ext_flash_non_blocking_w_buf function
+ */
+void ext_flash_init_non_blocking_write(uint32_t addr, uint16_t *bufferAddr, size_t len)
+{
+    non_blocking_write_count = 0;
+    non_blocking_write_addr = addr;
+    non_blocking_write_len = len;
+    non_blocking_write_buff_ptr = bufferAddr;
+    non_blocking_write_buff_start_flag = true;
+
+    Serial_debug(DEBUG_INFO, &cli_serial, "non_blocking_write_count=[%d], non_blocking_write_addr=[0x%08p], non_blocking_write_len=[%d], "
+            "non_blocking_write_buff_ptr=[0x%08p], non_blocking_write_buff_start_flag = [%d]",
+    non_blocking_write_count, non_blocking_write_addr, non_blocking_write_len = len, non_blocking_write_buff_ptr , non_blocking_write_buff_start_flag);
+}
+
+ext_flash_buff_write_status_t ext_flash_non_blocking_write_buf()
+{
+    static ext_flash_buff_write_status_t retVal = EXT_FLASH_BUF_WAITING;
+    static uint16_t timeout_count=0;
+    enum EFWStates { EFWWaitStart = 0, EFWInit,
+                     EFWWrite, EFWIncrement, EFWWaitExtFlashReady,
+                     EFWEndOk, EFWEndError};
+
+
+    static States_t EFWSM = { 0 };
+
+
+    switch( EFWSM.State_Current ) {
+
+        case EFWWaitStart:
+            retVal = EXT_FLASH_BUF_WAITING;
+            if( non_blocking_write_buff_start_flag == true ) {
+                retVal = EXT_FLASH_BUF_WRITE_ONGOING;
+                EFWSM.State_Next = EFWInit;
+            }
+            break;
+
+        case EFWInit:
+                if( non_blocking_write_len == 0 ||
+                    non_blocking_write_buff_ptr == 0 ||
+                    non_blocking_write_addr == 0 ) {
+
+                    EFWSM.State_Next = EFWEndOk;
+                } else {
+                    EFWSM.State_Next = EFWWrite;
+                }
+            break;
+
+        case EFWWrite:
+            Serial_debug(DEBUG_INFO, &cli_serial,"ext_flash write addr[0x%08p] data[0x%04X]\r\n",
+                         non_blocking_write_addr, *non_blocking_write_buff_ptr );
+            ext_flash_non_blocking_write_word(non_blocking_write_addr, (*non_blocking_write_buff_ptr) );
+            timeout_count=0;
+            EFWSM.State_Next = EFWWaitExtFlashReady;
+            break;
+
+        case EFWWaitExtFlashReady:
+            DEVICE_DELAY_US(EXT_FLASH_BUSY_DELAY); // Wait for Ready/Busy# signal to become valid
+
+            if( ext_flash_ready() == true ) {
+                EFWSM.State_Next = EFWIncrement;
+            } else {
+                timeout_count++;
+                if( timeout_count >= EXT_FLASH_WRITE_MAX_COUNT_TIME_OUT ) {
+                    EFWSM.State_Next = EFWEndError;
+                } else {
+                    EFWSM.State_Next = EFWWaitExtFlashReady;
+                }
+            }
+            break;
+
+        case EFWIncrement:
+            non_blocking_write_count++;
+            if( non_blocking_write_count < non_blocking_write_len ) {
+                non_blocking_write_addr++;
+                non_blocking_write_buff_ptr++;
+                EFWSM.State_Next = EFWWrite;
+            } else {
+                EFWSM.State_Next = EFWEndOk;
+            }
+            break;
+
+        case EFWEndOk:
+            non_blocking_write_buff_start_flag = false;
+            EFWSM.State_Next = EFWWaitStart;
+            retVal = EXT_FLASH_BUF_WRITE_DONE;
+        break;
+
+        case EFWEndError:
+            non_blocking_write_buff_start_flag = false;
+            EFWSM.State_Next = EFWWaitStart;
+            retVal = EXT_FLASH_BUF_WRITE_TIME_OUT;
+        break;
+
+    }
+    if( EFWSM.State_Current != EFWSM.State_Next ) {
+        Serial_debug(DEBUG_INFO, &cli_serial, "EFWSM.State_Current[%d] -> EFWSM.State_Next[%d]\r\n", EFWSM.State_Current, EFWSM.State_Next );
+    }
+    EFWSM.State_Current = EFWSM.State_Next;
+    return retVal;
+
+
+}
+
+/**
  * ext_flash_chip_erase - Erase entire Flash memory space
  */
 void ext_flash_chip_erase(void)
@@ -273,7 +456,9 @@ void ext_flash_erase_sector_by_descriptor(ext_flash_desc_t *sector_desc)
     DEVICE_DELAY_US(EXT_FLASH_BUSY_DELAY); // Wait for Ready/Busy# signal to become valid
 
     while (GPIO_readPin(EXT_FLASH_READY) == 0) {
+        Serial_printf( &cli_serial, "Waiting GPIO_readPin(EXT_FLASH_READY)=[%d]\r\n",GPIO_readPin(EXT_FLASH_READY) );
         // Wait for Flash to complete command
+        DEVICE_DELAY_US( EXT_FLASH_BUSY_DELAY * 1000 );
     }
 }
 

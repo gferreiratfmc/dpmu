@@ -483,7 +483,7 @@ void readAlltemperatures(){
                     //Serial_printf(&cli_serial,"temperatureSensorVector[TEMPERATURE_SENSOR_BASE]:=[%d]\r\n", temperatureSensorVector[TEMPERATURE_SENSOR_BASE]);
                 } else {
                     temperature_sensor_reset(0);
-                    Serial_printf(&cli_serial,"Error reading TEMPERATURE_SENSOR_BASE status:=[0x%04X]\r\n", status);
+                    //Serial_printf(&cli_serial,"Error reading TEMPERATURE_SENSOR_BASE status:=[0x%04X]\r\n", status);
                     errorI2CFlag = true;
                 }
                 sensorNumber = 1;
@@ -499,7 +499,7 @@ void readAlltemperatures(){
                     //Serial_printf(&cli_serial,"temperatureSensorVector[TEMPERATURE_SENSOR_MAIN]:=[%d]\r\n", temperatureSensorVector[TEMPERATURE_SENSOR_MAIN]);
                 } else {
                     temperature_sensor_reset(0);
-                    Serial_printf(&cli_serial,"Error reading TEMPERATURE_SENSOR_MAIN status:=[0x%04X]\r\n", status);
+                    //Serial_printf(&cli_serial,"Error reading TEMPERATURE_SENSOR_MAIN status:=[0x%04X]\r\n", status);
                     errorI2CFlag = true;
                 }
                 sensorNumber = 2;
@@ -515,7 +515,7 @@ void readAlltemperatures(){
                     //Serial_printf(&cli_serial,"temperatureSensorVector[TEMPERATURE_SENSOR_MEZZANINE]:=[%d]\r\n", temperatureSensorVector[TEMPERATURE_SENSOR_MEZZANINE]);
                 } else {
                     temperature_sensor_reset(0);
-                    Serial_printf(&cli_serial,"Error reading TEMPERATURE_SENSOR_MEZZANINE status:=[0x%04X]\r\n", status);
+                    //Serial_printf(&cli_serial,"Error reading TEMPERATURE_SENSOR_MEZZANINE status:=[0x%04X]\r\n", status);
                     errorI2CFlag = true;
                 }
                 sensorNumber = 3;
@@ -534,29 +534,29 @@ void readAlltemperatures(){
                     //Serial_printf(&cli_serial, "temperatureSensorVector[TEMPERATURE_SENSOR_PWR_BANK]:=[%d]\r\n", temperatureSensorVector[TEMPERATURE_SENSOR_PWR_BANK]);
                 } else {
                     temperature_sensor_reset(0);
-                    Serial_printf(&cli_serial,"Error reading TEMPERATURE_SENSOR_PWR_BANK status:=[0x%04X]\r\n", status);
+                    //Serial_printf(&cli_serial,"Error reading TEMPERATURE_SENSOR_PWR_BANK status:=[0x%04X]\r\n", status);
                     errorI2CFlag = true;
                 }
                 if( errorI2CFlag == true) {
                     sensorNumber = 4;
                 }
-//                Serial_printf(&cli_serial, "Temperatures:BASE[%d], MAIN:[%d], MEZZ:[%d], SC:[%d]\r",
-//                                      temperatureSensorVector[TEMPERATURE_SENSOR_BASE], temperatureSensorVector[TEMPERATURE_SENSOR_MAIN],
-//                                      temperatureSensorVector[TEMPERATURE_SENSOR_MEZZANINE], temperatureSensorVector[TEMPERATURE_SENSOR_PWR_BANK] );
+                //Serial_printf(&cli_serial, "Temperatures:BASE[%d], MAIN:[%d], MEZZ:[%d], SC:[%d]\r",
+                //                      temperatureSensorVector[TEMPERATURE_SENSOR_BASE], temperatureSensorVector[TEMPERATURE_SENSOR_MAIN],
+                //                      temperatureSensorVector[TEMPERATURE_SENSOR_MEZZANINE], temperatureSensorVector[TEMPERATURE_SENSOR_PWR_BANK] );
                 break;
 
             case 4:
                 busStatus = checkBusStatus(I2C_BUS_BASE);
-                Serial_printf(&cli_serial,"checkBusStatus bus [0x%04X]\r\n", busStatus);
+                //Serial_printf(&cli_serial,"checkBusStatus bus [0x%04X]\r\n", busStatus);
                 if( busStatus ==  ERROR_BUS_BUSY) {
-                    Serial_printf(&cli_serial,"Send stop to I2C bus\r\n");
-//                    I2C_sendStopCondition(I2C_BUS_BASE);
+                    //Serial_printf(&cli_serial,"Send stop to I2C bus\r\n");
+                    //I2C_sendStopCondition(I2C_BUS_BASE);
                     I2C_clearStatus(I2C_BUS_BASE, I2C_STS_STOP_CONDITION);
                     sensorNumber = 0;
                 } else if( busStatus ==  ERROR_STOP_NOT_READY) {
-                    Serial_printf(&cli_serial,"Wait for stop no I2C bus\r\n");
-//                    I2C_sendStartCondition(I2C_BUS_BASE);
-//                    I2C_sendStopCondition(I2C_BUS_BASE);
+                    //Serial_printf(&cli_serial,"Wait for stop no I2C bus\r\n");
+                    //I2C_sendStartCondition(I2C_BUS_BASE);
+                    //I2C_sendStopCondition(I2C_BUS_BASE);
                     I2C_clearStatus(I2C_BUS_BASE, 0xFFFF);
                     sensorNumber = 0;
                 } else {

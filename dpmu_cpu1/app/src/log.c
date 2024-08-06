@@ -218,7 +218,7 @@ void log_debug_log_reset(uint8_t resetType)
     // reset number of entries
     // reset position in memory to beginning of RAM portion ???
 
-    switch( resetType ) {
+    switch( (LogResetType_e)resetType ) {
         case LOG_RESET_REWIND:
             debug_log_last_read_address          = EXT_RAM_START_ADDRESS_CS2;
             break;
