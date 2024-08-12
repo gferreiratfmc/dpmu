@@ -66,7 +66,7 @@ void StateMachine(void)
     static float I_Ref_Real_Final = 0.0;
     static bool EPMWStarted = false;
 
-    ConvertCountsToRealOfAllSensors();
+    ConvertSensorsCountsToReal();
     CalculateAvgVStore();
     CalculateAvgVBus();
 
