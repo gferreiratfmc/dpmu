@@ -32,9 +32,6 @@
 #include "temperature_sensor.h"
 #include "timer.h"
 
-//static save_od_t savedData[sizeof(saveObj) / sizeof(save_od_t)];
-static uint16_t savedCnt;
-
 /* one CAN/CANopen message */
 #pragma DATA_ALIGN(log_received_data, 4)
 unsigned char log_received_data[8];

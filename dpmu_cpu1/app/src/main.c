@@ -239,9 +239,6 @@ void main(void)
 
 
         /* check every second */
-//        if( (timer_get_ticks()%1000) < 1) {
-//            temperature_sensor_read_all_temperatures();
-//        }
         readAlltemperatures();
 
         HandleAppVarsOnExternalFlashSM();

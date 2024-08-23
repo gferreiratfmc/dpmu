@@ -23,6 +23,7 @@ typedef enum {
     AllAppVars
 } app_vars_type_t;
 
+void ResetHandleAppVarsOnExternalFlashSM();
 void AppVarsReadRequest();
 bool AppVarsReadRequestReady();
 void AppVarsSaveRequest(app_vars_t *newAppVarsToSave, app_vars_type_t appVarType);

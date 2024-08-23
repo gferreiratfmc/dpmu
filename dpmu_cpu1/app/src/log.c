@@ -7,6 +7,7 @@
 
 #include <string.h>
 
+#include "application_vars.h"
 #include "board.h"
 #include "co_canopen.h"
 #include "co_common.h"
@@ -599,8 +600,8 @@ void log_can_state_machine(void) {
             Serial_debug(DEBUG_INFO, &cli_serial, "Entire Flash erase start\r\n");
             timeStart = timer_get_ticks();
             sharedVars_cpu1toCpu2.debug_log_disable_flag = true;
-
             ext_command_flash_chip_erase();
+            AppVarsInformEntireFlashResetInitiated();
             canLogState.State_Next = WaitingEntireEraseDone;
 
             break;
@@ -610,6 +611,7 @@ void log_can_state_machine(void) {
                 log_can_init();
                 Serial_debug(DEBUG_INFO, &cli_serial, "External Flash erase stop. Time:[%lu]\r\n", timer_get_ticks() - timeStart);
                 sharedVars_cpu1toCpu2.debug_log_disable_flag = false;
+                AppVarsInformEntireFlashResetReady();
                 canLogState.State_Next = Logging;
             }
             break;

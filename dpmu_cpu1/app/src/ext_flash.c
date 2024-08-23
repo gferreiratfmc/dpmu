@@ -456,7 +456,7 @@ void ext_flash_erase_sector_by_descriptor(ext_flash_desc_t *sector_desc)
     DEVICE_DELAY_US(EXT_FLASH_BUSY_DELAY); // Wait for Ready/Busy# signal to become valid
 
     while (GPIO_readPin(EXT_FLASH_READY) == 0) {
-        Serial_printf( &cli_serial, "Waiting GPIO_readPin(EXT_FLASH_READY)=[%d]\r\n",GPIO_readPin(EXT_FLASH_READY) );
+        // Serial_printf( &cli_serial, "Waiting GPIO_readPin(EXT_FLASH_READY)=[%d]\r\n",GPIO_readPin(EXT_FLASH_READY) );
         // Wait for Flash to complete command
         DEVICE_DELAY_US( EXT_FLASH_BUSY_DELAY * 1000 );
     }

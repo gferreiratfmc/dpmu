@@ -11,6 +11,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#include "application_vars.h"
 #include "common.h"
 #include "cli_cpu1.h"
 #include "hal.h"
@@ -70,7 +71,7 @@ static void cli_pwm_set_phase(void);
 static void cli_test_inrush_limiter(void);
 static void cli_ext_flash(void);
 static void cli_ext_flash_chip_erase(void);
-//static void cli_ext_flash_sector_erase(void);
+static void cli_test_capacitance_in_flash(void);
 static void cli_lfs_test(void);
 static void cli_debug_level(void);
 static void cli_i2c_test(void);
@@ -141,6 +142,7 @@ static const struct CliCmd cmds[] = {
     {"cpu2",        "subcommand",               &cli_cpu2_cmd,              "forward sub-command to CPU2"                   },
     {"  swmatrix",  "[1..30]",                  &cli_switch_matrix,         "select a energy cell in external energy storage"},
     {"  swmatcont", "[turns]",                  &cli_switch_matrix_cont,    "continually iterate over energy cells in external energy storage (0 -> infinity)"},
+    {"caps",        "[initialCap] [currentCap]",&cli_test_capacitance_in_flash,     "Write then read capacitances from flash"},
     {"",            "",                         NULL,                       ""                                              },
     {"",            "",                         NULL,          "  !!        WARNING - USE THESE AT YOU OWN RISK         !!" },
     {"",            "",                         NULL,          "  !!  PREFEREABLE WITHOUT ANY ENERGY STORAGE CONNECTED  !!" },
@@ -302,6 +304,64 @@ static void cli_set_switch_state_err_msg(void)
     Serial_debug(DEBUG_INFO, &cli_serial, " 2 [0|1] turn switch LOAD on/off\r\n");
     Serial_debug(DEBUG_INFO, &cli_serial, " 3 [0|1] turn switch SHARE on/off\r\n");
     Serial_debug(DEBUG_INFO, &cli_serial, " 4 [0|1] turn switch INBUS on/off\r\n");
+}
+
+static void cli_test_capacitance_in_flash(void)
+{
+    bool foundSavedAppVars = false;
+    bool appVarsSaved = false;
+    static app_vars_t newAppVars;
+    static app_vars_t *savedAppVars;
+    newAppVars.initialCapacitance = 0.0;
+    newAppVars.currentCapacitance = 0.0;
+    uint16_t nArgs;
+
+    nArgs = cli_nargs(&cli);
+    switch ( nArgs ) {
+        case 0:
+            newAppVars.initialCapacitance = newAppVars.initialCapacitance + 1.0;
+            newAppVars.currentCapacitance = newAppVars.initialCapacitance * 0.9;
+            break;
+        case 1:
+            sscanf(cli_args(&cli), "%f", &newAppVars.initialCapacitance );
+            break;
+        case 2:
+            sscanf(cli_args(&cli), "%f %f", &newAppVars.initialCapacitance, &newAppVars.currentCapacitance );
+            break;
+        default:
+            newAppVars.initialCapacitance = newAppVars.initialCapacitance + 1.0;
+            newAppVars.currentCapacitance = newAppVars.initialCapacitance * 0.9;
+    }
+
+
+    Serial_printf(&cli_serial, "Saving capacitances to flash initialCapacitance:[%6.2f], currentCapacitance[%6.2f]\r\n",
+                  newAppVars.initialCapacitance, newAppVars.currentCapacitance);
+    AppVarsSaveRequest( &newAppVars, CapacitanceAppVar );
+    appVarsSaved = false;
+    do {
+        HandleAppVarsOnExternalFlashSM();
+        if( AppVarsSaveRequestReady() == true ) {
+            appVarsSaved = true;
+            Serial_printf(&cli_serial, "Initial capacitance saved\r\n");
+        }
+    } while( appVarsSaved != true );
+    Serial_printf(&cli_serial, "Retrieving initial Capacitance from flash\r\n");
+
+    for(int i=0;i<10000;i++) {
+        HandleAppVarsOnExternalFlashSM();
+        if( AppVarsReadRequestReady() == true) {
+            savedAppVars = GetCurrentAppVars();
+            Serial_printf(&cli_serial, "savedAppVars add:[%08p]\r\n", savedAppVars);
+            foundSavedAppVars = true;
+            break;
+        }
+    }
+    if( foundSavedAppVars==true ) {
+        Serial_printf(&cli_serial, "Capacitances read from flash initialCapacitance:[%5.2f], currentCapacitance[%5.2f]\r\n",
+                      savedAppVars->initialCapacitance, savedAppVars->currentCapacitance);
+    } else {
+        Serial_printf(&cli_serial, "Can't read capacitances from flash. Something went wrong!\r\n");
+    }
 }
 
 static void cli_set_switch_state(void)
