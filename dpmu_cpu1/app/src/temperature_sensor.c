@@ -210,10 +210,10 @@ void temperature_sensor_read_all_temperatures(void)
     /* store maximum measured temperature */
 
     if ( read_temperature_max > temperature_absolute_max_limit ){
-        Serial_printf(&cli_serial, "read_temperature_max:[%d] > temperature_absolute_max_limit:[%d]\r\n", read_temperature_max, temperature_absolute_max_limit );
+        Serial_debug(DEBUG_INFO, &cli_serial, "read_temperature_max:[%d] > temperature_absolute_max_limit:[%d]\r\n", read_temperature_max, temperature_absolute_max_limit );
         global_error_code |= (1 << ERROR_OVER_TEMPERATURE);
     } else {
-        Serial_printf(&cli_serial, "read_temperature_max:[%d] <= temperature_absolute_max_limit:[%d]\r\n", read_temperature_max, temperature_absolute_max_limit );
+        Serial_debug(DEBUG_INFO, &cli_serial, "read_temperature_max:[%d] <= temperature_absolute_max_limit:[%d]\r\n", read_temperature_max, temperature_absolute_max_limit );
         global_error_code &= ~(1 << ERROR_OVER_TEMPERATURE);
     }
 
@@ -469,7 +469,6 @@ void readAlltemperatures(){
     if( (timer_get_ticks() - lastTimeTick) >= TEMPERATURE_READ_INTERVAL_TIME_IN_MILISECS ) {
         lastTimeTick = timer_get_ticks();
 
-        // Serial_printf(&cli_serial,"Temperature Reading state[%d] ====> ", sensorCount);
 
         switch( sensorNumber ) {
 
@@ -480,10 +479,9 @@ void readAlltemperatures(){
                     if( readValue > maxTemperature ) {
                         maxTemperature = readValue;
                     }
-                    //Serial_printf(&cli_serial,"temperatureSensorVector[TEMPERATURE_SENSOR_BASE]:=[%d]\r\n", temperatureSensorVector[TEMPERATURE_SENSOR_BASE]);
                 } else {
                     temperature_sensor_reset(0);
-                    Serial_printf(&cli_serial,"Error reading TEMPERATURE_SENSOR_BASE status:=[0x%04X]\r\n", status);
+                    Serial_debug(DEBUG_ERROR, &cli_serial,"Error reading TEMPERATURE_SENSOR_BASE status:=[0x%04X]\r\n", status);
                     errorI2CFlag = true;
                 }
                 sensorNumber = 1;
@@ -496,10 +494,9 @@ void readAlltemperatures(){
                     if( readValue > maxTemperature ) {
                         maxTemperature = readValue;
                     }
-                    //Serial_printf(&cli_serial,"temperatureSensorVector[TEMPERATURE_SENSOR_MAIN]:=[%d]\r\n", temperatureSensorVector[TEMPERATURE_SENSOR_MAIN]);
                 } else {
                     temperature_sensor_reset(0);
-                    Serial_printf(&cli_serial,"Error reading TEMPERATURE_SENSOR_MAIN status:=[0x%04X]\r\n", status);
+                    Serial_debug(DEBUG_ERROR, &cli_serial,"Error reading TEMPERATURE_SENSOR_MAIN status:=[0x%04X]\r\n", status);
                     errorI2CFlag = true;
                 }
                 sensorNumber = 2;
@@ -512,10 +509,9 @@ void readAlltemperatures(){
                     if( readValue > maxTemperature ) {
                         maxTemperature = readValue;
                     }
-                    //Serial_printf(&cli_serial,"temperatureSensorVector[TEMPERATURE_SENSOR_MEZZANINE]:=[%d]\r\n", temperatureSensorVector[TEMPERATURE_SENSOR_MEZZANINE]);
                 } else {
                     temperature_sensor_reset(0);
-                    Serial_printf(&cli_serial,"Error reading TEMPERATURE_SENSOR_MEZZANINE status:=[0x%04X]\r\n", status);
+                    Serial_debug(DEBUG_ERROR, &cli_serial,"Error reading TEMPERATURE_SENSOR_MEZZANINE status:=[0x%04X]\r\n", status);
                     errorI2CFlag = true;
                 }
                 sensorNumber = 3;
@@ -531,37 +527,25 @@ void readAlltemperatures(){
                     temperatureHotPoint = maxTemperature;
                     maxTemperature = -10000;
                     sensorNumber = 0;
-                    //Serial_printf(&cli_serial, "temperatureSensorVector[TEMPERATURE_SENSOR_PWR_BANK]:=[%d]\r\n", temperatureSensorVector[TEMPERATURE_SENSOR_PWR_BANK]);
                 } else {
                     temperature_sensor_reset(0);
-                    Serial_printf(&cli_serial,"Error reading TEMPERATURE_SENSOR_PWR_BANK status:=[0x%04X]\r\n", status);
+                    Serial_debug(DEBUG_ERROR, &cli_serial,"Error reading TEMPERATURE_SENSOR_PWR_BANK status:=[0x%04X]\r\n", status);
                     errorI2CFlag = true;
                 }
                 if( errorI2CFlag == true) {
                     sensorNumber = 4;
                 }
-//                Serial_printf(&cli_serial, "Temperatures:BASE[%d], MAIN:[%d], MEZZ:[%d], SC:[%d]\r",
-//                                      temperatureSensorVector[TEMPERATURE_SENSOR_BASE], temperatureSensorVector[TEMPERATURE_SENSOR_MAIN],
-//                                      temperatureSensorVector[TEMPERATURE_SENSOR_MEZZANINE], temperatureSensorVector[TEMPERATURE_SENSOR_PWR_BANK] );
                 break;
 
             case 4:
                 busStatus = checkBusStatus(I2C_BUS_BASE);
-                Serial_printf(&cli_serial,"checkBusStatus bus [0x%04X]\r\n", busStatus);
                 if( busStatus ==  ERROR_BUS_BUSY) {
-                    Serial_printf(&cli_serial,"Send stop to I2C bus\r\n");
-//                    I2C_sendStopCondition(I2C_BUS_BASE);
                     I2C_clearStatus(I2C_BUS_BASE, I2C_STS_STOP_CONDITION);
                     sensorNumber = 0;
                 } else if( busStatus ==  ERROR_STOP_NOT_READY) {
-                    Serial_printf(&cli_serial,"Wait for stop no I2C bus\r\n");
-//                    I2C_sendStartCondition(I2C_BUS_BASE);
-//                    I2C_sendStopCondition(I2C_BUS_BASE);
                     I2C_clearStatus(I2C_BUS_BASE, 0xFFFF);
                     sensorNumber = 0;
                 } else {
-                    //I2C_sendStartCondition(I2C_BUS_BASE);
-                    //I2C_clearStatus(I2C_BUS_BASE, I2C_STS_NO_ACK|I2C_STS_STOP_CONDITION|I2C_STS_NACK_SENT|I2C_STS_SLAVE_DIR);
                     errorI2CFlag = false;
                     sensorNumber = 0;
                 }
@@ -576,12 +560,8 @@ void readAlltemperatures(){
         if( VerifyAppInfoVarInitialized( IDX_DPMU_VAR_MAX_ALLOWED_DPMU_TEMPERATURE ) == true ) {
             if ( temperatureHotPoint > temperature_absolute_max_limit ){
                 error_code_CPU1 = error_code_CPU1 | (1 << ERROR_OVER_TEMPERATURE);
-                //Serial_printf(&cli_serial, "read_temperature_max:[%d] > temperature_absolute_max_limit:[%d] global_error_code:[0x%04p]\r\n",
-                //              temperatureHotPoint, temperature_absolute_max_limit, error_code_CPU1 );
             } else {
                 error_code_CPU1 = error_code_CPU1 & ~(1 << ERROR_OVER_TEMPERATURE);
-                //Serial_printf(&cli_serial, "read_temperature_max:[%d] <= temperature_absolute_max_limit:[%d] global_error_code:[0x%04p]\r\n",
-                //              temperatureHotPoint, temperature_absolute_max_limit, error_code_CPU1 );
 
             }
         }

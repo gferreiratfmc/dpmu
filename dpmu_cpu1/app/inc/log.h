@@ -11,6 +11,7 @@
 #include "driverlib.h"
 #include "co_odaccess.h"
 #include "co_datatype.h"
+#include "GlobalV.h"
 
 #define CAN_LOG_MAGIC       0x55AAu
 
@@ -22,7 +23,13 @@
 
 typedef enum  {
     Logging = 0,
-    StartEraseFlash,
+    EraseNextSector,
+    WaitEraseSectorDone,
+    WriteToFlash,
+    WaitWriteToFlashDone,
+    ReadBackLogFromFlash,
+    WaitReadLogFromFlashDone,
+    StartEraseAllCanLogFlash,
     EraseCANLogFlashSector,
     WaitingEraseDone,
     StartEraseEntireFlash,
@@ -105,5 +112,16 @@ void log_store_debug_log_to_flash(void);
 void log_debug_read_from_flash(void);
 void log_can_state_machine(void);
 void log_erase_entire_flash(void);
-
+bool verify_new_can_data_to_log();
+void log_can_store_non_blocking_start(uint32_t canLogFlashDestAddress,
+                                    unsigned char *pnt,
+                                    uint16_t size_in_words );
+bool log_can_store_non_blocking_done();
+void log_can_read_non_blocking_start(uint32_t canLogFlashSourceAddress,
+                                     unsigned char *dataBuffer,
+                                     uint16_t size_in_words );
+bool log_can_read_non_blocking_done();
+bool calc_next_free_addr_and_verify_erase_sector(uint32_t can_log_current_write_address,
+                                                 uint16_t log_size_in_words);
+void print_log_can_to_serial(debug_log_t *readBack );
 #endif /* COAPPL_LOG_H_ */

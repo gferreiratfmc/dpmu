@@ -229,6 +229,7 @@ bool ext_flash_ready() {
     }
 }
 
+
 /**
  * Programs buffer of 16b words to Flash address.
  */
@@ -297,6 +298,28 @@ void ext_flash_erase_sector(uint32_t sa)
         // Wait for Flash to complete command
     }
 }
+
+void start_ext_flash_erase_sector(uint32_t sa)
+{
+    uint32_t sector_offset = sa & 0xf8000;
+
+    set_a19(0);
+
+    FLASH_SEQ(0x555, 0xAA);
+    FLASH_SEQ(0x2AA, 0x55);
+    FLASH_SEQ(0x555, 0x80);
+    FLASH_SEQ(0x555, 0xAA);
+    FLASH_SEQ(0x2AA, 0x55);
+    FLASH_SEQ(sector_offset, 0x30);
+
+    DEVICE_DELAY_US(EXT_FLASH_BUSY_DELAY);
+
+}
+
+bool verify_ext_flash_erase_sector_done(){
+    return (GPIO_readPin(EXT_FLASH_READY) == 0);
+}
+
 
 /**
  * ext_flash_reset - RESET the external flash

@@ -27,6 +27,7 @@
 #define CAN_LOG_ADDRESS_START   (EXT_FLASH_START_ADDRESS_CS3 + 0x8000 /*ext_flash_info[FIRST_LOG_SECTOR].addr*/)
 #define CAN_LOG_ADDRESS_END     (EXT_FLASH_START_ADDRESS_CS3 + EXT_FLASH_SIZE_CS3)
 
+
 // Application variables logging area
 #define APP_VARS_EXT_FLASH_SIZE 0x100
 #define APP_VARS_EXT_FLASH_ADDRESS_START   ( EXT_FLASH_START_ADDRESS_CS3 )
@@ -152,6 +153,8 @@ void ext_flash_chip_erase(void);
 //void ext_flash_erase_sector(uint32_t addr);
 void ext_flash_erase_sector_by_descriptor(ext_flash_desc_t *sector_desc);
 void ext_flash_erase_sector(uint32_t sa);
+void start_ext_flash_erase_sector(uint32_t sa);
+bool verify_ext_flash_erase_sector_done();
 
 /**
  * Resets the external flash.
