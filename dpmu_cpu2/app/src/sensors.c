@@ -165,12 +165,12 @@ int CalibrateZeroVoltageOffsetOfSensors() {
     return calibrationComplete;
 }
 
-void ConvertCountsToRealOfAllSensors() {
-    static uint16_t sensorIdx = 0;
-    ConvertCountsToReal( &sensorVector[sensorIdx] );
+inline void ConvertSensorsCountsToReal() {
+    uint16_t sensorIdx = 0;
+
     sensorIdx++;
-    if(sensorIdx == NumOfSensors) {
-        sensorIdx = 0;
+    for(sensorIdx = 0; sensorIdx < NumOfSensors; sensorIdx++){
+        ConvertCountsToReal( &sensorVector[sensorIdx] );
     }
 }
 

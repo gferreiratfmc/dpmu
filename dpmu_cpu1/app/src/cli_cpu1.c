@@ -1136,7 +1136,8 @@ static void cli_write_testlog_can(void)
             teslog[i]   = value;
         }
 
-        log_store_can_log(sizeof(teslog), teslog);
+        log_can_store_non_blocking_start(CAN_LOG_ADDRESS_START, teslog, sizeof(teslog));
+        while( log_can_store_non_blocking_done() == false );
     }
 
     for(uint8_t j = 0; j < nr_of_log_entries; j++)

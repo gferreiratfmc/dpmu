@@ -77,6 +77,8 @@ int Serial_printf(struct Serial *dev, const char *fmt, ...);
 int Serial_debug(uint16_t debugLevel, struct Serial *dev, const char *fmt, ...);
 void Serial_set_debug_level(int requested_debug_level);
 
+
+
 void Serial_rx_isr(struct Serial *dev);
 void Serial_tx_isr(struct Serial *dev);
 #endif /* SERIAL_H_ */

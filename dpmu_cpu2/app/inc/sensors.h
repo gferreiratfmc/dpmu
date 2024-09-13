@@ -45,8 +45,9 @@ enum sensorIndex
 };
 
 
+
 void ConvertCountsToReal( Sensor_t *sensor);
-void ConvertCountsToRealOfAllSensors();
+inline void ConvertSensorsCountsToReal();
 void InitializeSensorParameters();
 void ReadVbusVstoreV24f();
 int CalibrateZeroVoltageOffsetOfSensors();
