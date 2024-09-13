@@ -442,6 +442,7 @@ bool calc_next_free_addr_and_verify_erase_sector(uint32_t can_log_current_write_
     const ext_flash_desc_t *next_sector_desc;
     const ext_flash_desc_t *last_read_addr_sector_desc;
     ext_flash_desc_t update_last_read_addr_sector_desc;
+    uint16_t update_last_read_addr_sector = 0;
 
     bool needToEraseNextSector = false;
 
@@ -472,17 +473,19 @@ bool calc_next_free_addr_and_verify_erase_sector(uint32_t can_log_current_write_
         //Update last_read_address to next sector initial address if it's current sector shall be erased
         last_read_addr_sector_desc = ext_flash_sector_from_address(can_log_last_read_address);
         if( last_read_addr_sector_desc->sector == next_sector_desc->sector ) {
-            update_last_read_addr_sector_desc.addr = last_read_addr_sector_desc->addr;
-            update_last_read_addr_sector_desc.sector = last_read_addr_sector_desc->sector+1;
-            if( update_last_read_addr_sector_desc.sector > EXT_FLASH_SA_LAST) {
+            update_last_read_addr_sector = (uint16_t)last_read_addr_sector_desc->sector + 1;
+            if(update_last_read_addr_sector > EXT_FLASH_SA_LAST) {
                 can_log_last_read_address = CAN_LOG_ADDRESS_START;
             } else {
+
+                update_last_read_addr_sector_desc.sector = update_last_read_addr_sector;
                 look_up_start_address_of_sector( &update_last_read_addr_sector_desc );
                 can_log_last_read_address = update_last_read_addr_sector_desc.addr;
             }
+            Serial_debug(DEBUG_INFO, &cli_serial, "%s:%d update_last_read_addr_sector:[%d]  can_log_last_read_address:[0x%08p]\r\n",
+                         __FUNCTION__,__LINE__,update_last_read_addr_sector, can_log_last_read_address );
         }
     }
-
     return needToEraseNextSector;
 }
 
