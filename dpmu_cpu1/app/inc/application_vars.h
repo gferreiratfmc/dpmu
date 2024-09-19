@@ -32,7 +32,7 @@ void HandleAppVarsOnExternalFlashSM();
 app_vars_t* GetCurrentAppVars();
 bool RetriveSerialNumberFromFlash( uint32_t serNumberCMD, uint32_t *serialNumber32bits );
 void SaveSerialNumberToFlash( uint32_t serNumberCMD );
-
-
+void AppVarsInformEntireFlashResetInitiated();
+void AppVarsInformEntireFlashResetReady();
 
 #endif /* APP_INC_APPLICATION_VARS_H_ */
