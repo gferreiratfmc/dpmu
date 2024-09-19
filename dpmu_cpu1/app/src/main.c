@@ -215,7 +215,6 @@ void main(void)
 
     Serial_debug(DEBUG_INFO, &cli_serial, "IPC_PUMPREQUEST_REG %08X\r\n", IPC_PUMPREQUEST_REG);
     Serial_debug(DEBUG_INFO, &cli_serial, "Started\r\n");
-
     AppVarsReadRequest();
 
     for (;;) {
@@ -276,7 +275,6 @@ static void check_cpu2_ind(void)
         switch (cmd32) {
             case IPC_SHORT_CIRCUIT:
                 Serial_printf(&cli_serial, "\r\n*** SHORT CIRCUIT #%lu ***\r\n\r\n->", cpu2_status.num_short_circ);
-                // TODO: set corresponding CANOpen object, and possibly log in external flash
                 // Acknowledge the flag.
                 IPC_ackFlagRtoL(IPC_CPU1_L_CPU2_R, IPC_FLAG_MESSAGE_CPU2_TO_CPU1);
                 break;

@@ -268,7 +268,6 @@ uint8_t log_can_log_read(
     )
 {
 
-
     uint32_t sizeToTransfer;
 
 
@@ -278,6 +277,9 @@ uint8_t log_can_log_read(
     } else {
         sizeToTransfer = 2 * (can_log_next_free_address - can_log_last_read_address);
     }
+    Serial_printf(&cli_serial, "DOWNLOAD ALL CAN LOG\r\n");
+    sizeToTransfer = 2 * (CAN_LOG_ADDRESS_END - CAN_LOG_ADDRESS_START);
+    can_log_last_read_address = CAN_LOG_ADDRESS_START;
 
     if(  sizeToTransfer > 0 ) {
 
@@ -473,6 +475,8 @@ bool calc_next_free_addr_and_verify_erase_sector(uint32_t can_log_current_write_
     if( needToEraseNextSector == true ) {
         //Update last_read_address to next sector initial address if it's current sector shall be erased
         last_read_addr_sector_desc = ext_flash_sector_from_address(can_log_last_read_address);
+        Serial_debug(DEBUG_INFO, &cli_serial, "BOGUS %s:%d last_read_addr_sector_desc->sector:[%d]  next_sector_desc->sector:[0x%d] can_log_last_read_address[0x%08p]\r\n",
+                                 __FUNCTION__,__LINE__,last_read_addr_sector_desc->sector, next_sector_desc->sector, can_log_last_read_address );
         if( last_read_addr_sector_desc->sector == next_sector_desc->sector ) {
             update_last_read_addr_sector = (uint16_t)last_read_addr_sector_desc->sector + 1;
             if(update_last_read_addr_sector > EXT_FLASH_SA_LAST) {
@@ -502,9 +506,6 @@ void log_can_store_non_blocking_start(uint32_t canLogFlashDestAddress, unsigned 
     log_store_size_in_words = size_in_words;
     log_store_data_buffer_pnt = dataBuffer;
     log_store_count_data = 0;
-
-    //Serial_debug(DEBUG_INFO,&cli_serial,"[%s:%d]:log_store_destination_address[0x%08p] log_store_data_buffer_pnt[0x%08p] log_store_size_in_words[%d]\r\n",
-    //        __FUNCTION__,__LINE__,log_store_destination_address, log_store_data_buffer_pnt, log_store_size_in_words );
 }
 
 void log_can_read_non_blocking_start(uint32_t canLogFlashSourceAddress, unsigned char *dataBuffer, uint16_t size_in_words ){
@@ -798,7 +799,7 @@ bool verify_new_can_data_to_log(void)
         debug_log_copy.MainBoardTemperature = temperatureSensorVector[TEMPERATURE_SENSOR_MAIN];
         debug_log_copy.MezzanineBoardTemperature = temperatureSensorVector[TEMPERATURE_SENSOR_MEZZANINE];
         debug_log_copy.PowerBankBoardTemperature = temperatureSensorVector[TEMPERATURE_SENSOR_PWR_BANK];
-
+        debug_log_copy.address = can_log_next_free_address;
 
         /* update last read counter value */
         last_debug_log_number = debug_log_copy.counter;
@@ -926,7 +927,7 @@ void log_debug_read_from_ram() {
         Serial_debug(DEBUG_INFO, &cli_serial, "Mezz:   [%02d] ", readBack.MezzanineBoardTemperature);
         Serial_debug(DEBUG_INFO, &cli_serial, "PWRBANK:[%02d] \r\n", readBack.PowerBankBoardTemperature);
         Serial_debug(DEBUG_INFO, &cli_serial, "\r\nOthers:\r\n");
-        Serial_debug(DEBUG_INFO, &cli_serial, "Counter:     [%05d] ", readBack.counter);
+        Serial_debug(DEBUG_INFO, &cli_serial, "Counter:     [%010lu] ", readBack.counter);
         Serial_debug(DEBUG_INFO, &cli_serial, "CurrentState:[%02d] ", readBack.CurrentState);
         Serial_debug(DEBUG_INFO, &cli_serial, "Elapsed_time:[%08d] ", readBack.elapsed_time);
         Serial_debug(DEBUG_INFO, &cli_serial, "Time:[%08lu] \r\n", readBack.CurrentTime);
@@ -971,7 +972,9 @@ void log_debug_read_from_flash() {
 }
 
 void print_log_can_to_serial(debug_log_t *readBack ) {
+        const ext_flash_desc_t *sector_desc;
         //Serial_debug(DEBUG_INFO, &cli_serial, "\033[2J");
+        //Serial_debug(DEBUG_INFO, &cli_serial, "\033[1;1H");
         Serial_debug(DEBUG_INFO, &cli_serial, "\r\nVoltages:\r\n");
         Serial_debug(DEBUG_INFO, &cli_serial, "Vbus:[%03d] ", readBack->Vbus);
         Serial_debug(DEBUG_INFO, &cli_serial, "AvgVbus:[%03d] ", readBack->AvgVbus);
@@ -996,7 +999,7 @@ void print_log_can_to_serial(debug_log_t *readBack ) {
         Serial_debug(DEBUG_INFO, &cli_serial, "Mezz:   [%02d] ", readBack->MezzanineBoardTemperature);
         Serial_debug(DEBUG_INFO, &cli_serial, "PWRBANK:[%02d] \r\n", readBack->PowerBankBoardTemperature);
         Serial_debug(DEBUG_INFO, &cli_serial, "\r\nOthers:\r\n");
-        Serial_debug(DEBUG_INFO, &cli_serial, "Counter:     [%05d] ", readBack->counter);
+        Serial_debug(DEBUG_INFO, &cli_serial, "Counter:     [%010lu] ", readBack->counter);
         Serial_debug(DEBUG_INFO, &cli_serial, "CurrentState:[%02d] ", readBack->CurrentState);
         Serial_debug(DEBUG_INFO, &cli_serial, "Elapsed_time:[%08d] ", readBack->elapsed_time);
         Serial_debug(DEBUG_INFO, &cli_serial, "Time:[%08lu] \r\n", readBack->CurrentTime);
@@ -1011,9 +1014,12 @@ void print_log_can_to_serial(debug_log_t *readBack ) {
             }
         }
 
-        Serial_debug(DEBUG_INFO, &cli_serial, "\r\ncan_log_next_free_address:[0x%08p] \r\n", can_log_next_free_address);
-        Serial_debug(DEBUG_INFO, &cli_serial, "can_log_last_read_address:[0x%08p] \r\n", can_log_last_read_address);
-        Serial_debug(DEBUG_INFO, &cli_serial, "can_log_start_address:    [0x%08p] \r\n", can_log_start_address);
+        sector_desc = ext_flash_sector_from_address(can_log_next_free_address);
+        Serial_debug(DEBUG_INFO, &cli_serial, "\r\ncan_log_next_free_address:[0x%08p] sector[%d]\r\n", can_log_next_free_address, sector_desc->sector);
+        sector_desc = ext_flash_sector_from_address(can_log_last_read_address);
+        Serial_debug(DEBUG_INFO, &cli_serial, "can_log_last_read_address:[0x%08p] sector[%d]\r\n", can_log_last_read_address, sector_desc->sector);
+        sector_desc = ext_flash_sector_from_address(can_log_start_address);
+        Serial_debug(DEBUG_INFO, &cli_serial, "can_log_start_address:    [0x%08p] sector[%d]\r\n", can_log_start_address, sector_desc->sector);
 
         Serial_debug(DEBUG_INFO, &cli_serial, "\r\n=============================\r\n");
 }

@@ -544,21 +544,22 @@ static inline uint8_t indices_I_DEBUG_LOG(BOOL_T execute, UNSIGNED8 sdoNr, UNSIG
 static inline uint8_t indices_I_CAN_LOG(BOOL_T execute, UNSIGNED8 sdoNr, UNSIGNED16  index, UNSIGNED8 subIndex)
 {
     uint8_t retVal = CO_FALSE;
+    uint16_t value;
 
-    Serial_debug(DEBUG_INFO, &cli_serial, "CAN_LOG  S 0x%0x  ", subIndex);
+
+    Serial_debug(DEBUG_INFO, &cli_serial, "CAN_LOG  subIndex 0x%0x  ", subIndex);
 
     switch (subIndex)
     {
-    case S_CAN_LOG_RESET:
-
-        log_can_log_reset();
-        retVal = CO_TRUE;
-        break;
-    case S_CAN_LOG_READ:
-        retVal = log_can_log_read(execute, sdoNr, index, subIndex);
-        break;
-    default:
-        Serial_debug(DEBUG_ERROR, &cli_serial, "UNKNOWN CAN OD SUBINDEX: 0x%02x\r\n", subIndex);
+        case S_CAN_LOG_RESET:
+            log_can_log_reset();
+            retVal = CO_TRUE;
+            break;
+        case S_CAN_LOG_READ:
+            retVal = log_can_log_read(execute, sdoNr, index, subIndex);
+            break;
+        default:
+            Serial_debug(DEBUG_ERROR, &cli_serial, "UNKNOWN CAN OD SUBINDEX: 0x%02x\r\n", subIndex);
     }
 
 

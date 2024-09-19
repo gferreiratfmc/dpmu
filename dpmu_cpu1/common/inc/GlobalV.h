@@ -96,9 +96,10 @@ typedef struct debug_log
     uint16_t ILoop_PiOutput;
     int16_t cellVoltage[NUMBER_OF_CELLS];
     int16_t CurrentState; // State of CPU2 state machine
-    uint16_t counter;
+    uint32_t counter;
     uint32_t CurrentTime;
     uint16_t elapsed_time;
+    uint32_t address;
 } debug_log_t;
 
 

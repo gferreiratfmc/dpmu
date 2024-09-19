@@ -111,7 +111,7 @@ void HandleAppVarsOnExternalFlashSM() {
 
         case HAVReadCurrentAppVars:
             if( RetriveAppVarsFromExtFlash() == true ) {
-                Serial_debug(DEBUG_INFO, &cli_serial, "HAVSM --> appVarsNextFreeAddress:[0x%08p]\r\n", appVarsNextFreeAddress);
+                //Serial_debug(DEBUG_INFO, &cli_serial, "HAVSM --> appVarsNextFreeAddress:[0x%08p]\r\n", appVarsNextFreeAddress);
                 HAVSM.State_Next = HAVWaitCommand;
             }
             break;
@@ -149,9 +149,9 @@ void HandleAppVarsOnExternalFlashSM() {
         default:
             HAVSM.State_Next = HAVWaitCommand;
     }
-    if( HAVSM.State_Current != HAVSM.State_Next ) {
-        Serial_debug(DEBUG_INFO, &cli_serial, "HAVSM.State_Current[%d] -> HAVSM.State_Next[%d]\r\n", HAVSM.State_Current, HAVSM.State_Next );
-    }
+    //if( HAVSM.State_Current != HAVSM.State_Next ) {
+    //    Serial_debug(DEBUG_INFO, &cli_serial, "HAVSM.State_Current[%d] -> HAVSM.State_Next[%d]\r\n", HAVSM.State_Current, HAVSM.State_Next );
+    //}
     if( CANLogEntireFlashResetInitiated == true){
         HAVSM.State_Next = HAVResetSM;
         CANLogEntireFlashResetReady = false;
@@ -236,9 +236,9 @@ bool SaveNewAppVarsToExtFlash( ) {
             SNASM.State_Next = SNAWaitStart;
 
     }
-    if( SNASM.State_Current != SNASM.State_Next ) {
-        Serial_debug(DEBUG_INFO, &cli_serial, "SNASM.State_Current[%d] -> SNASM.State_Next[%d]\r\n", SNASM.State_Current, SNASM.State_Next );
-    }
+    //if( SNASM.State_Current != SNASM.State_Next ) {
+    //    Serial_debug(DEBUG_INFO, &cli_serial, "SNASM.State_Current[%d] -> SNASM.State_Next[%d]\r\n", SNASM.State_Current, SNASM.State_Next );
+    //}
     SNASM.State_Current = SNASM.State_Next;
     return retVal;
 }
@@ -269,15 +269,15 @@ bool RetriveAppVarsFromExtFlash() {
 
         case RAVVerifyDataValidFromFlash:
             if( ext_flash_non_blocking_read_buf() == true ) {
-                Serial_debug(DEBUG_INFO, &cli_serial, "Read from flash addr:[0x%08p]\r\ncurrentAppVars MagicNumber[0x%08p]\r\n", addr, currentAppVars.MagicNumber );
-                Serial_debug(DEBUG_INFO, &cli_serial, "currentAppVars.initialCapacitance[%6.2f], currentAppVars.currentCapacitance:[%6.2f]\r\n",
-                             currentAppVars.initialCapacitance, currentAppVars.currentCapacitance);
+                //Serial_debug(DEBUG_INFO, &cli_serial, "Read from flash addr:[0x%08p]\r\ncurrentAppVars MagicNumber[0x%08p]\r\n", addr, currentAppVars.MagicNumber );
+                //Serial_debug(DEBUG_INFO, &cli_serial, "currentAppVars.initialCapacitance[%6.2f], currentAppVars.currentCapacitance:[%6.2f]\r\n",
+                //             currentAppVars.initialCapacitance, currentAppVars.currentCapacitance);
 
-                Serial_debug(DEBUG_INFO, &cli_serial, "currentAppVars.SerialNumber:[0..%d]:[", (SERIAL_NUMBER_SIZE_IN_CHARS-1) );
-                for(int i=0;i<SERIAL_NUMBER_SIZE_IN_CHARS;i++) {
-                    Serial_debug(DEBUG_INFO, &cli_serial, "%d ", currentAppVars.serialNumber[i]);
-                }
-                Serial_debug(DEBUG_INFO, &cli_serial, "]\r\n");
+                //Serial_debug(DEBUG_INFO, &cli_serial, "currentAppVars.SerialNumber:[0..%d]:[", (SERIAL_NUMBER_SIZE_IN_CHARS-1) );
+                //for(int i=0;i<SERIAL_NUMBER_SIZE_IN_CHARS;i++) {
+                //    Serial_debug(DEBUG_INFO, &cli_serial, "%d ", currentAppVars.serialNumber[i]);
+                //}
+                //Serial_debug(DEBUG_INFO, &cli_serial, "]\r\n");
 
                 if( currentAppVars.MagicNumber == MAGIC_NUMBER) {
                     validDataFound = true;
@@ -304,7 +304,7 @@ bool RetriveAppVarsFromExtFlash() {
 
         case RAVVerifyNextMemoryEmptyInFlash:
             if( ext_flash_non_blocking_read_buf() == true ) {
-                Serial_debug(DEBUG_INFO, &cli_serial, "RAVVerifyNextMemoryEmptyInFlash addr:[0x%08p]\r\ncurrentAppVars MagicNumber[0x%08p]\r\n", addr, currentAppVars.MagicNumber );
+                //Serial_debug(DEBUG_INFO, &cli_serial, "RAVVerifyNextMemoryEmptyInFlash addr:[0x%08p]\r\ncurrentAppVars MagicNumber[0x%08p]\r\n", addr, currentAppVars.MagicNumber );
                 if( emptyAppVars.MagicNumber == 0xFFFFFFFF) {
                         appVarsNextFreeAddress =  addr;
                         RAVSM.State_Next = RAVEnd;
@@ -324,9 +324,9 @@ bool RetriveAppVarsFromExtFlash() {
             RAVSM.State_Next = RAVWaitStart;
             break;
     }
-    if( RAVSM.State_Current != RAVSM.State_Next ) {
-        Serial_debug(DEBUG_INFO, &cli_serial, "RAVSM.State_Current[%d] -> RAVSM.State_Next[%d]\r\n", RAVSM.State_Current, RAVSM.State_Next );
-    }
+    //if( RAVSM.State_Current != RAVSM.State_Next ) {
+    //    Serial_debug(DEBUG_INFO, &cli_serial, "RAVSM.State_Current[%d] -> RAVSM.State_Next[%d]\r\n", RAVSM.State_Current, RAVSM.State_Next );
+    //}
     RAVSM.State_Current = RAVSM.State_Next;
 
     return retValue;
@@ -397,8 +397,7 @@ void SaveSerialNumberToFlash( uint32_t serNumberCMD ) {
 //        newAppVarsSerialNumber.serialNumber[idx+2] = (unsigned char)((serNumberCMD & 0x00FF0000) >> 16);
         for(int c = 0; c<3; c++){
             newAppVarsSerialNumber.serialNumber[idx+c] = (unsigned char)( ( serNumberCMD & (0x000000FF << (8*c) ) ) >> ( 8*c ) );
-            Serial_debug(DEBUG_INFO, &cli_serial, "serialNumber[%02d]=[%c]\r\n",
-                         idx+c, newAppVarsSerialNumber.serialNumber[idx+c]);
+            Serial_debug(DEBUG_INFO, &cli_serial, "serialNumber[%02d]=[%c]\r\n", idx+c, newAppVarsSerialNumber.serialNumber[idx+c]);
         }
     } else if( cmd == 255){
         AppVarsSaveRequest(&newAppVarsSerialNumber, SerialNumberAppVar);

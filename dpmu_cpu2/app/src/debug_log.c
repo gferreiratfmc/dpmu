@@ -20,7 +20,7 @@ extern float cellVoltagesVector[30];
 
 bool debug_log_enable_flag = false;
 bool debug_log_force_update_flag = false ;
-uint16_t debug_counter = 0;
+uint32_t debug_counter = 0;
 
 
 uint32_t SetDebugLogPeriod(void) {
