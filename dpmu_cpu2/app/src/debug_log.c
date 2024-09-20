@@ -6,12 +6,13 @@
  */
 
 #include <stdbool.h>
-
+#include "common.h"
 #include "debug_log.h"
 #include "GlobalV.h"
 #include "sensors.h"
 #include "shared_variables.h"
 #include "state_machine.h"
+#include "switches.h"
 #include "timer.h"
 
 
@@ -90,6 +91,7 @@ void UpdateDebugLog(void) {
     static uint32_t last_timer = 0;
     uint32_t current_timer, elapsed_time;
     static uint32_t debug_period_in_ms = LOG_PERIOD_IDLE;
+    uint16_t switches;
     debug_period_in_ms = SetDebugLogPeriod();
     if( debug_log_enable_flag == true ) {
         current_timer = timer_get_ticks();
@@ -121,6 +123,14 @@ void UpdateDebugLog(void) {
             for(int i=0; i<NUMBER_OF_CELLS; i++) {
                 sharedVars_cpu2toCpu1.debug_log.cellVoltage[i] = cellVoltagesVector[i]*100;
             }
+
+            //switches = 0;
+            //switches = (GPIO_readPin(Qinb)==SW_ON) ? (switches |= QINB_MASK) : (switches &= ~QINB_MASK);
+            //switches = (GPIO_readPin(Qlb)==SW_ON)  ? (switches |= QLB_MASK)  : (switches &= ~QLB_MASK);
+            //switches = (GPIO_readPin(Qsb)==SW_ON) ? (switches |= QSB_MASK) : (switches &= ~QSB_MASK);
+            //switches = (GPIO_readPin(168)==SW_ON) ? (switches |= QINRUSH_MASK) : (switches &= ~QINRUSH_MASK);
+
+            //sharedVars_cpu2toCpu1.debug_log.Switches = switches;
             last_timer = current_timer;
         }
     }

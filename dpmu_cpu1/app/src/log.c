@@ -465,7 +465,7 @@ bool calc_next_free_addr_and_verify_erase_sector(uint32_t can_log_current_write_
     // Get pointer to info on next sector.
     next_sector_desc = ext_flash_sector_from_address(can_log_next_free_address);
 
-    Serial_debug(DEBUG_INFO, &cli_serial, "current_sector_desc->sector[%d] == next_sector_desc->sector[%d]\r\n", current_sector_desc->sector, next_sector_desc->sector );
+    //Serial_debug(DEBUG_INFO, &cli_serial, "current_sector_desc->sector[%d] == next_sector_desc->sector[%d]\r\n", current_sector_desc->sector, next_sector_desc->sector );
     if (current_sector_desc->sector != next_sector_desc->sector) {
         // Return true to inform state machine to erase next sector.
         needToEraseNextSector = true;
@@ -475,8 +475,6 @@ bool calc_next_free_addr_and_verify_erase_sector(uint32_t can_log_current_write_
     if( needToEraseNextSector == true ) {
         //Update last_read_address to next sector initial address if it's current sector shall be erased
         last_read_addr_sector_desc = ext_flash_sector_from_address(can_log_last_read_address);
-        Serial_debug(DEBUG_INFO, &cli_serial, "BOGUS %s:%d last_read_addr_sector_desc->sector:[%d]  next_sector_desc->sector:[0x%d] can_log_last_read_address[0x%08p]\r\n",
-                                 __FUNCTION__,__LINE__,last_read_addr_sector_desc->sector, next_sector_desc->sector, can_log_last_read_address );
         if( last_read_addr_sector_desc->sector == next_sector_desc->sector ) {
             update_last_read_addr_sector = (uint16_t)last_read_addr_sector_desc->sector + 1;
             if(update_last_read_addr_sector > EXT_FLASH_SA_LAST) {
@@ -487,8 +485,6 @@ bool calc_next_free_addr_and_verify_erase_sector(uint32_t can_log_current_write_
                 look_up_start_address_of_sector( &update_last_read_addr_sector_desc );
                 can_log_last_read_address = update_last_read_addr_sector_desc.addr;
             }
-            Serial_debug(DEBUG_INFO, &cli_serial, "%s:%d update_last_read_addr_sector:[%d]  can_log_last_read_address:[0x%08p]\r\n",
-                         __FUNCTION__,__LINE__,update_last_read_addr_sector, can_log_last_read_address );
         }
     }
     return needToEraseNextSector;
@@ -547,84 +543,6 @@ bool log_can_store_non_blocking_done()
     }
     return false;
 }
-
-
-/**
- * @brief   Stores log message in external flash.
- *
- * @param   size    size of log message in bytes
- * @param   pnt     pointer to log message to be stored in flash
- */
-//void log_store_can_log(uint16_t size, unsigned char *pnt)
-//{
-//    // Beware of NULL pointer argument.
-//    if (NULL == pnt) {
-//        return;
-//    }
-//
-//    const ext_flash_desc_t *current_sector_desc;
-//    const ext_flash_desc_t *next_sector_desc;
-//
-//    uint16_t size_in_words = size;
-//
-//    uint32_t can_log_write_address = can_log_next_free_address;
-//
-//    sharedVars_cpu1toCpu2.debug_log_disable_flag = true;
-//
-//    // Get pointer to info on current sector.
-//    current_sector_desc = ext_flash_sector_from_address(can_log_write_address);
-//
-//    // Calculate next free address by adding size of log message.
-//    can_log_next_free_address += size_in_words;
-//
-//    // Get pointer to info on next sector.
-//    next_sector_desc = ext_flash_sector_from_address(can_log_next_free_address);
-//
-//    if (current_sector_desc->sector != next_sector_desc->sector) {
-//        // Check if next free address wraps around in memory.
-//        if (can_log_next_free_address > CAN_LOG_ADDRESS_END) {
-//            // Address wraps around.
-//            can_log_next_free_address = CAN_LOG_ADDRESS_START;
-//
-//            // Mark that at least one wrap around has occurred in external flash.
-//            can_log_address_has_wrapped_around = true;
-//
-//        }
-//
-//        // Erase next sector.
-//        ext_flash_erase_sector(can_log_next_free_address);
-//
-//        // Update 'can_log_size'according to erased sector.
-//        can_log_size -= next_sector_desc->size;
-//
-//        // Update start address of log.
-//        if (can_log_address_has_wrapped_around) {
-//
-//            can_log_start_address = CAN_LOG_ADDRESS_START;  /* sector 4 erased, use next sector sector 5 */
-//            can_log_write_address = can_log_start_address;
-//        }
-//
-//
-//        /* update size of log */
-//        if(!can_log_address_has_wrapped_around)
-//        {
-//            can_log_size += size_in_words;  /* size will not increase after log has wrapped around */
-//        }
-//    }
-//
-//    /* the data _must_ be stored in RAMGSx
-//     * message[] is located in RAMGS0
-//     */
-//    for (int i = 0; i < (size_in_words); i++) /* 2 words for time stamp and magic number */
-//    {
-//        message[i] = pnt[i];
-//    }
-//    message[size_in_words] = '\0';
-//
-//    ext_flash_write_buf(can_log_write_address, (uint16_t *)message, size_in_words);
-//    debug_log_last_writen_address = can_log_write_address;
-//    sharedVars_cpu1toCpu2.debug_log_disable_flag = false;
-//}
 
 
 
@@ -1001,6 +919,7 @@ void print_log_can_to_serial(debug_log_t *readBack ) {
         Serial_debug(DEBUG_INFO, &cli_serial, "\r\nOthers:\r\n");
         Serial_debug(DEBUG_INFO, &cli_serial, "Counter:     [%010lu] ", readBack->counter);
         Serial_debug(DEBUG_INFO, &cli_serial, "CurrentState:[%02d] ", readBack->CurrentState);
+        //Serial_debug(DEBUG_INFO, &cli_serial, "Switches:[0x%02X] ", readBack->Switches);
         Serial_debug(DEBUG_INFO, &cli_serial, "Elapsed_time:[%08d] ", readBack->elapsed_time);
         Serial_debug(DEBUG_INFO, &cli_serial, "Time:[%08lu] \r\n", readBack->CurrentTime);
 

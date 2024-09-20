@@ -111,7 +111,6 @@ void HandleAppVarsOnExternalFlashSM() {
 
         case HAVReadCurrentAppVars:
             if( RetriveAppVarsFromExtFlash() == true ) {
-                //Serial_debug(DEBUG_INFO, &cli_serial, "HAVSM --> appVarsNextFreeAddress:[0x%08p]\r\n", appVarsNextFreeAddress);
                 HAVSM.State_Next = HAVWaitCommand;
             }
             break;
@@ -163,7 +162,7 @@ void HandleAppVarsOnExternalFlashSM() {
 bool SaveNewAppVarsToExtFlash( ) {
 
     static bool retVal = false;
-    enum RAVSMStates { SNAWaitStart = 0, SNAInit, SNAEraseSector, SNAWaitSectorEraseDone,
+    enum SNASMStates { SNAWaitStart = 0, SNAInit, SNAEraseSector, SNAWaitSectorEraseDone,
         SNAPrepareForWrite, SNAWrite, SNAEnd};
     static States_t SNASM = { 0 };
     static ext_flash_desc_t appVarsExtFlashDescToErase;
@@ -208,22 +207,22 @@ bool SaveNewAppVarsToExtFlash( ) {
 
         case SNAPrepareForWrite:
             PrepareNewAppVarToSave();
-            Serial_debug(DEBUG_INFO, &cli_serial, "Saving to ext flash addr[0x%08p]\r\nnewAppVars.magicNumber:[0x%08p]\r\n",
-                         appVarsNextFreeAddress, newAppVars.MagicNumber);
-            Serial_debug(DEBUG_INFO, &cli_serial, "newAppVars.initialCapacitance[%6.2f], newAppVars.currentCapacitance:[%6.2f]\r\n",
-                         newAppVars.initialCapacitance, newAppVars.currentCapacitance);
-            Serial_debug(DEBUG_INFO, &cli_serial, "newAppVars.SerialNumber:[0..%d]:[", (SERIAL_NUMBER_SIZE_IN_CHARS-1) );
-            for(int i=0;i<SERIAL_NUMBER_SIZE_IN_CHARS;i++) {
-                Serial_debug(DEBUG_INFO, &cli_serial, "%d ", newAppVars.serialNumber[i]);
-            }
-            Serial_debug(DEBUG_INFO, &cli_serial, "]\r\n");
+//            Serial_debug(DEBUG_INFO, &cli_serial, "Saving to ext flash addr[0x%08p]\r\nnewAppVars.magicNumber:[0x%08p]\r\n",
+//                         appVarsNextFreeAddress, newAppVars.MagicNumber);
+//            Serial_debug(DEBUG_INFO, &cli_serial, "newAppVars.initialCapacitance[%6.2f], newAppVars.currentCapacitance:[%6.2f]\r\n",
+//                         newAppVars.initialCapacitance, newAppVars.currentCapacitance);
+//            Serial_debug(DEBUG_INFO, &cli_serial, "newAppVars.SerialNumber:[0..%d]:[", (SERIAL_NUMBER_SIZE_IN_CHARS-1) );
+//            for(int i=0;i<SERIAL_NUMBER_SIZE_IN_CHARS;i++) {
+//                Serial_debug(DEBUG_INFO, &cli_serial, "%d ", newAppVars.serialNumber[i]);
+//            }
+//            Serial_debug(DEBUG_INFO, &cli_serial, "]\r\n");
             ext_flash_init_non_blocking_write( appVarsNextFreeAddress, (uint16_t *)&newAppVars, sizeof(app_vars_t) );
             SNASM.State_Next = SNAWrite;
             break;
 
         case SNAWrite:
             status = ext_flash_non_blocking_write_buf();
-            Serial_debug(DEBUG_INFO, &cli_serial, "ext_flash_non_blocking_write_buf status=[%d]\r\n", status);
+            //Serial_debug(DEBUG_INFO, &cli_serial, "ext_flash_non_blocking_write_buf status=[%d]\r\n", status);
             if( status ==  EXT_FLASH_BUF_WRITE_DONE || status == EXT_FLASH_BUF_WRITE_TIME_OUT) {
                 SNASM.State_Next = SNAEnd;
             }
@@ -333,50 +332,71 @@ bool RetriveAppVarsFromExtFlash() {
 }
 
 
-bool RetriveSerialNumberFromFlash( uint32_t serNumberCMD, uint32_t *serialNumber32bits ){
+bool RetriveSerialNumberFromFlash( uint32_t *serialNumber32bits ){
 
-    app_vars_t *appVars;
-    static bool retVal;
-    static uint16_t state = 0;
-    static uint16_t timeoutCount = 0;
-    uint8_t cmd, idx = 0;
-
+    enum RSNStates { RSNInit, RSNRetriveFromFlash, RSNReturnPartialSerialNumber, RSNIncremetIdx };
+    static States_t RSNSM = { 0 };
+    static app_vars_t *appVars;
+    static bool retVal = false;
+    uint32_t mask[]={0x000000FF, 0x0000FF00, 0x00FF0000};
+    uint32_t charTemp;
+    uint32_t serNumberCMD;
+    static uint32_t serialNumberIdx =0;
+    uint16_t auxIdx = 0;
 
     retVal = false;
-    switch( state ) {
-        case 0:
+    switch( RSNSM.State_Current ) {
+        case RSNInit:
             AppVarsReadRequest();
-            timeoutCount = 0;
-            state = 1;
+            RSNSM.State_Next = RSNRetriveFromFlash;
+            serialNumberIdx = 0;
             break;
-        case 1:
+        case RSNRetriveFromFlash:
+            HandleAppVarsOnExternalFlashSM();
             if( AppVarsReadRequestReady() ) {
                 appVars = GetCurrentAppVars();
-                *serialNumber32bits = 0x00000000;
-                cmd=(serNumberCMD & 0x000000FF);
-                if( cmd <= SERIAL_NUMBER_SIZE_IN_CHARS/3 ) {
-                    idx = cmd * 3;
-                    for( int i=0; i<3; i++) {
-                        idx=idx+i;
-                        if( idx < SERIAL_NUMBER_SIZE_IN_CHARS ){
-                            *serialNumber32bits = *serialNumber32bits | ( (uint32_t)( appVars->serialNumber[idx] ) & ( 0x000000FF << (i*8) ) );
-                        }
-                    }
-                }
-                *serialNumber32bits = *serialNumber32bits | ( (uint32_t)cmd  << 24 );
-                state = 0;
-                retVal = true;
-            } else {
-                timeoutCount++;
-                retVal = false;
-                if( timeoutCount == 20) {
-                    *serialNumber32bits = 0x00000000;
-                    state = 0;
-                    retVal = true;
-                }
+                //Serial_debug(DEBUG_INFO, &cli_serial, "Retrieved appVars->serialNumber = [");
+                //for(int i = 0; i<SERIAL_NUMBER_SIZE_IN_CHARS;i++) {
+                //    Serial_debug(DEBUG_INFO, &cli_serial, "0x%02X, ", appVars->serialNumber[i]);
+                //}
+                //Serial_debug(DEBUG_INFO, &cli_serial, "]\r\n");
+                RSNSM.State_Next = RSNReturnPartialSerialNumber;
             }
             break;
+        case RSNReturnPartialSerialNumber:
+            serNumberCMD = (serialNumberIdx & 0x000000FF) << 24;
+            *serialNumber32bits = serNumberCMD;
+            //Serial_debug(DEBUG_INFO, &cli_serial, "RetriveSerialNumberFromFlash serialNumberIdx=[%d] serNumberCMD=[0x%08p]\r\n", serialNumberIdx, serNumberCMD );
+            auxIdx = serialNumberIdx * 3;
+            for( int i=0; i<3; i++) {
+                charTemp = appVars->serialNumber[auxIdx+i];
+                //Serial_debug(DEBUG_INFO, &cli_serial, "charTemp=[0x%08p]\r\n", charTemp );
+                charTemp = charTemp << (8*i);
+                //Serial_debug(DEBUG_INFO, &cli_serial, "charTemp << (8*i)=[0x%08p]\r\n", charTemp );
+                charTemp = charTemp & mask[i];
+                //Serial_debug(DEBUG_INFO, &cli_serial, "charTemp & mask[i]=[0x%08p]\r\n", charTemp );
+                *serialNumber32bits = *serialNumber32bits | charTemp;
+                //Serial_debug(DEBUG_INFO, &cli_serial, "auxIdx=[%d] charTemp=[0x%08p] serialNumber32bits=[0x%08p]\r\n",auxIdx, charTemp, *serialNumber32bits);
+            }
+            retVal = true;
+            RSNSM.State_Next = RSNIncremetIdx;
+            break;
+        case RSNIncremetIdx:
+            serialNumberIdx++;
+            if( serialNumberIdx < SERIAL_NUMBER_SIZE_IN_CHARS/3){
+                RSNSM.State_Next = RSNReturnPartialSerialNumber;
+            } else {
+                RSNSM.State_Next = RSNInit;
+            }
+            break;
+        default:
+            RSNSM.State_Next = 0;
     }
+    //if( RSNSM.State_Current != RSNSM.State_Next ) {
+    //    Serial_debug(DEBUG_INFO,&cli_serial,"RSNSM.State_Current[%d] = RSNSM.State_Next[%d]\r\n",RSNSM.State_Current, RSNSM.State_Next);
+    //}
+    RSNSM.State_Current = RSNSM.State_Next;
+
     return retVal;
 }
 
@@ -384,22 +404,22 @@ bool RetriveSerialNumberFromFlash( uint32_t serNumberCMD, uint32_t *serialNumber
 void SaveSerialNumberToFlash( uint32_t serNumberCMD ) {
 
     static app_vars_t newAppVarsSerialNumber;
-    uint8_t cmd, idx;
+    uint8_t cmd, idx, decodedChar;
+    uint32_t mask[]={0x000000FF, 0x0000FF00, 0x00FF0000};
 
     cmd = (unsigned char)((serNumberCMD & 0xFF000000) >> 24);
 
-    Serial_debug(DEBUG_INFO, &cli_serial, "Received serialNumberCmd[%08p] decoded CMD:[%02d]\r\n", serNumberCMD, cmd);
+    //Serial_debug(DEBUG_INFO, &cli_serial, "Received serialNumberCmd[%08p] decoded CMD:[%02d]\r\n", serNumberCMD, cmd);
 
     if( cmd < (SERIAL_NUMBER_SIZE_IN_CHARS/3) ) {
         idx = 3*cmd;
-//        newAppVarsSerialNumber.serialNumber[idx] = (unsigned char)(serNumberCMD & 0x000000FF) ;
-//        newAppVarsSerialNumber.serialNumber[idx+1] = (unsigned char)((serNumberCMD & 0x0000FF00) >> 8);
-//        newAppVarsSerialNumber.serialNumber[idx+2] = (unsigned char)((serNumberCMD & 0x00FF0000) >> 16);
         for(int c = 0; c<3; c++){
-            newAppVarsSerialNumber.serialNumber[idx+c] = (unsigned char)( ( serNumberCMD & (0x000000FF << (8*c) ) ) >> ( 8*c ) );
-            Serial_debug(DEBUG_INFO, &cli_serial, "serialNumber[%02d]=[%c]\r\n", idx+c, newAppVarsSerialNumber.serialNumber[idx+c]);
+            decodedChar = (serNumberCMD & mask[c]) >> (8*c);
+            newAppVarsSerialNumber.serialNumber[idx+c] = decodedChar;
+            //Serial_debug(DEBUG_INFO, &cli_serial, "serialNumber[%02d]=[%c] mask=0x%08p\r\n", idx+c, newAppVarsSerialNumber.serialNumber[idx+c], mask[c]);
         }
-    } else if( cmd == 255){
+
+    } else if( cmd == 0xFF ) {
         AppVarsSaveRequest(&newAppVarsSerialNumber, SerialNumberAppVar);
         Serial_debug(DEBUG_INFO, &cli_serial, "saveRequest received\r\n");
     } else {
@@ -408,50 +428,6 @@ void SaveSerialNumberToFlash( uint32_t serNumberCMD ) {
 }
 
 
-//void SaveSerialNumberToFlash( uint32_t serNumberCMD ) {
-//
-//    static app_vars_t newAppVarsSerialNumber;
-//    unsigned char cmd;
-//
-//    cmd = (unsigned char)((serNumberCMD & 0xFF000000) >> 24);
-//
-//    Serial_debug(DEBUG_INFO, &cli_serial, "Received serialNumberCmd[%08p] decoded CMD:[%02d]\r\n", serNumberCMD, cmd);
-//
-//    switch ( cmd ) {
-//
-//        case 00:
-//            newAppVarsSerialNumber.serialNumber[0] = (unsigned char)(serNumberCMD & 0x000000FF) ;
-//            newAppVarsSerialNumber.serialNumber[1] = (unsigned char)((serNumberCMD & 0x0000FF00) >> 8);
-//            newAppVarsSerialNumber.serialNumber[2] = (unsigned char)((serNumberCMD & 0x00FF0000) >> 16);
-//            Serial_debug(DEBUG_INFO, &cli_serial, "serialNumber[0,1,2]=[%02X, %02X, %02X]\r\n",
-//                          newAppVarsSerialNumber.serialNumber[0],
-//                          newAppVarsSerialNumber.serialNumber[1],
-//                          newAppVarsSerialNumber.serialNumber[2]);
-//            break;
-//        case 01:
-//            newAppVarsSerialNumber.serialNumber[3] = (unsigned char)(serNumberCMD & 0x000000FF) ;
-//            newAppVarsSerialNumber.serialNumber[4] = (unsigned char)((serNumberCMD & 0x0000FF00) >> 8);
-//            newAppVarsSerialNumber.serialNumber[5] = (unsigned char)((serNumberCMD & 0x00FF0000) >> 16);
-//            Serial_debug(DEBUG_INFO, &cli_serial, "serialNumber[3,4,5]=[%02X, %02X, %02X]\r\n",
-//                          newAppVarsSerialNumber.serialNumber[3],
-//                          newAppVarsSerialNumber.serialNumber[4],
-//                          newAppVarsSerialNumber.serialNumber[5]);
-//            break;
-//        case 02:
-//            newAppVarsSerialNumber.serialNumber[6] = (unsigned char)(serNumberCMD & 0x000000FF) ;
-//            newAppVarsSerialNumber.serialNumber[7] = (unsigned char)((serNumberCMD & 0x0000FF00) >> 8);
-//            Serial_debug(DEBUG_INFO, &cli_serial, "serialNumber[6,7]=[%02X, %02X]\r\n",
-//                          newAppVarsSerialNumber.serialNumber[6],
-//                          newAppVarsSerialNumber.serialNumber[7]);
-//            break;
-//        case 255:
-//            AppVarsSaveRequest(&newAppVarsSerialNumber, SerialNumberAppVar);
-//            Serial_debug(DEBUG_INFO, &cli_serial, "saveRequest received\r\n");
-//            break;
-//        default:
-//            Serial_debug(DEBUG_INFO, &cli_serial, "Invalid serialNumberCmd\r\n");
-//    }
-//}
 
 void PrepareNewAppVarToSave() {
     app_vars_t auxAppVarsToSave;

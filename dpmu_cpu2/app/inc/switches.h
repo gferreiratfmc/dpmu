@@ -22,6 +22,10 @@
 #define Qsb     GLOAD_4_3_EPWMB_GPIO    /* sharing bus  - switch pin, 162 D9 */
 #define Qinb    GLOAD_4_3_EPWMA_GPIO    /* input DC bus - switch pin, 161 C9 */
 
+#define QINRUSH_MASK 0x0008   //0b00001000
+#define QLB_MASK     0x0004   //0b00000100
+#define QSB_MASK     0x0002   //0b00000010
+#define QINB_MASK    0x0001   //0b00000001
 
 void switches_Qinrush_digital(uint8_t state);   /* in-rush current limiter */
 bool switches_Qinrush(uint8_t state);           /* execute in-rush current limiter to charge DC bus up to Voltage_at_DC_Bus */

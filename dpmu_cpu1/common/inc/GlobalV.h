@@ -100,6 +100,7 @@ typedef struct debug_log
     uint32_t CurrentTime;
     uint16_t elapsed_time;
     uint32_t address;
+    //uint16_t Switches;
 } debug_log_t;
 
 

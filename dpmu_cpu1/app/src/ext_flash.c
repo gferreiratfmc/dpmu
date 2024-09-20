@@ -218,7 +218,6 @@ bool ext_flash_non_blocking_read_buf()
     }
     if( non_blocking_read_count  < non_blocking_read_len ) {
         data = ext_flash_read_word(non_blocking_read_addr);
-//        Serial_debug(DEBUG_INFO, &cli_serial, "Non block flash read addr:[0x%08p] data:[0x%04X]\r\n", non_blocking_read_addr, data);
         *non_blocking_read_buff_ptr = data;
         non_blocking_read_count++;
         non_blocking_read_buff_ptr++;
@@ -329,10 +328,6 @@ void ext_flash_init_non_blocking_write(uint32_t addr, uint16_t *bufferAddr, size
     non_blocking_write_len = len;
     non_blocking_write_buff_ptr = bufferAddr;
     non_blocking_write_buff_start_flag = true;
-
-    Serial_debug(DEBUG_INFO, &cli_serial, "non_blocking_write_count=[%d], non_blocking_write_addr=[0x%08p], non_blocking_write_len=[%d], "
-            "non_blocking_write_buff_ptr=[0x%08p], non_blocking_write_buff_start_flag = [%d]",
-    non_blocking_write_count, non_blocking_write_addr, non_blocking_write_len = len, non_blocking_write_buff_ptr , non_blocking_write_buff_start_flag);
 }
 
 ext_flash_buff_write_status_t ext_flash_non_blocking_write_buf()
@@ -369,8 +364,6 @@ ext_flash_buff_write_status_t ext_flash_non_blocking_write_buf()
             break;
 
         case EFWWrite:
-            Serial_debug(DEBUG_INFO, &cli_serial,"ext_flash write addr[0x%08p] data[0x%04X]\r\n",
-                         non_blocking_write_addr, *non_blocking_write_buff_ptr );
             ext_flash_non_blocking_write_word(non_blocking_write_addr, (*non_blocking_write_buff_ptr) );
             timeout_count=0;
             EFWSM.State_Next = EFWWaitExtFlashReady;
@@ -415,9 +408,7 @@ ext_flash_buff_write_status_t ext_flash_non_blocking_write_buf()
         break;
 
     }
-    if( EFWSM.State_Current != EFWSM.State_Next ) {
-        Serial_debug(DEBUG_INFO, &cli_serial, "EFWSM.State_Current[%d] -> EFWSM.State_Next[%d]\r\n", EFWSM.State_Current, EFWSM.State_Next );
-    }
+
     EFWSM.State_Current = EFWSM.State_Next;
     return retVal;
 

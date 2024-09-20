@@ -216,81 +216,6 @@ void temperature_sensor_read_all_temperatures(void)
         Serial_debug(DEBUG_INFO, &cli_serial, "read_temperature_max:[%d] <= temperature_absolute_max_limit:[%d]\r\n", read_temperature_max, temperature_absolute_max_limit );
         global_error_code &= ~(1 << ERROR_OVER_TEMPERATURE);
     }
-
-//    if( read_temperature_max > temperature_high_limit ) {
-//        global_error_code |= (1 << ERROR_HIGH_TEMPERATURE);
-//    } else {
-//        global_error_code &= ~(1 << ERROR_HIGH_TEMPERATURE);
-//    }
-
-
-    /* check if to high temperature */
-//    if(read_temperature_max >= temperature_absolute_max_limit)
-//    {   /* critical state, turn off everything and cool down */
-//
-//
-//
-//        if(!absolute_max_limit_reached_flag)
-//        {
-//            /* send error */
-//            canopen_emcy_send_temperature_error(read_temperature_max);
-//            Serial_debug(DEBUG_ERROR, &cli_serial, "DEVICE_TEMPERATURE_MAX\r\n");
-//
-//        }
-//
-//        /* mark event so we can handle it elsewhere */
-//        global_error_code |= (1 << ERROR_OVER_TEMPERATURE);
-//
-//        /* mark it happened so we do not continuous send errors */
-//        absolute_max_limit_reached_flag = true;
-//
-//        /* mark it false so we can send an warning if temperature reaches
-//         * high_limit <= read_temperature_max < absolute_max_limit */
-//        high_limit_reached = false;
-//
-//        /* mark it false so we can send a clear message if temperature reaches
-//         * read_temperature_max < high_limit */
-//        normal_reached = false;
-//    } else if(read_temperature_max >= temperature_high_limit)
-//    {   /* non critical state, send warning to IOP */
-//        if(!high_limit_reached)
-//        {
-//            /* send warning */
-//            canopen_emcy_send_temperature_warning(read_temperature_max);
-//            Serial_debug(DEBUG_ERROR, &cli_serial, "DEVICE_TEMPERATURE_HIGH\r\n");
-//        }
-//
-//        /* keep commented
-//         * use this temperature range as hysteresis
-//         * */
-////        global_error_code &= ~(1 << ERROR_OVER_TEMPERATURE);
-//
-//        /* mark it happened so we do not continuous send warnings
-//         *
-//         * clear/set markings
-//         * no high temperature warning
-//         * max temperature error */
-//        absolute_max_limit_reached_flag = false;
-//        high_limit_reached = true;
-//        normal_reached = false;
-//    } else
-//    {
-//        if(!normal_reached)
-//        {
-//            /* send OK */
-//            canopen_emcy_send_temperature_ok(read_temperature_max);
-//            Serial_debug(DEBUG_ERROR, &cli_serial, "DEVICE_TEMPERATURE_OK\r\n");
-//        }
-//
-//        /* clear markings
-//         * no high temperature warning
-//         * no max temperature error */
-//        global_error_code &= ~(1 << ERROR_OVER_TEMPERATURE);
-//        absolute_max_limit_reached_flag = false;
-//        high_limit_reached = false;
-//        normal_reached = true;
-//    }
-
 }
 
 
@@ -496,7 +421,7 @@ void readAlltemperatures(){
                     }
                 } else {
                     temperature_sensor_reset(0);
-                    Serial_debug(DEBUG_ERROR, &cli_serial,"Error reading TEMPERATURE_SENSOR_MAIN status:=[0x%04X]\r\n", status);
+                    //Serial_debug(DEBUG_ERROR, &cli_serial,"Error reading TEMPERATURE_SENSOR_MAIN status:=[0x%04X]\r\n", status);
                     errorI2CFlag = true;
                 }
                 sensorNumber = 2;
@@ -511,7 +436,7 @@ void readAlltemperatures(){
                     }
                 } else {
                     temperature_sensor_reset(0);
-                    Serial_debug(DEBUG_ERROR, &cli_serial,"Error reading TEMPERATURE_SENSOR_MEZZANINE status:=[0x%04X]\r\n", status);
+                    //Serial_debug(DEBUG_ERROR, &cli_serial,"Error reading TEMPERATURE_SENSOR_MEZZANINE status:=[0x%04X]\r\n", status);
                     errorI2CFlag = true;
                 }
                 sensorNumber = 3;
@@ -529,7 +454,7 @@ void readAlltemperatures(){
                     sensorNumber = 0;
                 } else {
                     temperature_sensor_reset(0);
-                    Serial_debug(DEBUG_ERROR, &cli_serial,"Error reading TEMPERATURE_SENSOR_PWR_BANK status:=[0x%04X]\r\n", status);
+                    //Serial_debug(DEBUG_ERROR, &cli_serial,"Error reading TEMPERATURE_SENSOR_PWR_BANK status:=[0x%04X]\r\n", status);
                     errorI2CFlag = true;
                 }
                 if( errorI2CFlag == true) {

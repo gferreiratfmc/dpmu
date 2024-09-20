@@ -59,7 +59,7 @@ static inline uint8_t indices_I_STORE_PARAMETERS(UNSIGNED8 subIndex)
 static inline uint8_t indices_I_RESTORE_DEFAULT_PARAMETERS(UNSIGNED8 subIndex)
 {
     uint8_t retVal = CO_FALSE;
-    uint32_t value;
+    static uint32_t value;
     static uint32_t serialNumber32bits;
 
 
@@ -81,12 +81,10 @@ static inline uint8_t indices_I_RESTORE_DEFAULT_PARAMETERS(UNSIGNED8 subIndex)
         retVal = coOdGetObj_u32(I_RESTORE_DEFAULT_PARAMETERS, S_RESTORE_MANUFACTURER_DEFINED_DEFAULT_PARAMETERS, &value);
         Serial_debug(DEBUG_INFO, &cli_serial, "S_RESTORE_MANUFACTURER_DEFINED_DEFAULT_PARAMETERS: 0x%x\r\n", value);
         break;
-
     case S_RESTORE_SERIAL_NUMBER:
         retVal = coOdGetObj_u32(I_RESTORE_DEFAULT_PARAMETERS, S_RESTORE_SERIAL_NUMBER, &value);
-        while( RetriveSerialNumberFromFlash( value, &serialNumber32bits ) != true );
+        while( RetriveSerialNumberFromFlash( &serialNumber32bits ) != true );
         coOdPutObj_u32(I_RESTORE_DEFAULT_PARAMETERS, S_RESTORE_SERIAL_NUMBER, serialNumber32bits);
-        Serial_debug(DEBUG_INFO, &cli_serial, "S_RESTORE_SERIAL_NUMBER CMD:%08p\r\n", value, serialNumber32bits);
         break;
     default:
         Serial_debug(DEBUG_ERROR, &cli_serial, "UNKNOWN CAN OD SUBINDEX: 0x%x\r\n", subIndex);
@@ -544,7 +542,6 @@ static inline uint8_t indices_I_DEBUG_LOG(BOOL_T execute, UNSIGNED8 sdoNr, UNSIG
 static inline uint8_t indices_I_CAN_LOG(BOOL_T execute, UNSIGNED8 sdoNr, UNSIGNED16  index, UNSIGNED8 subIndex)
 {
     uint8_t retVal = CO_FALSE;
-    uint16_t value;
 
 
     Serial_debug(DEBUG_INFO, &cli_serial, "CAN_LOG  subIndex 0x%0x  ", subIndex);
@@ -667,21 +664,6 @@ RET_T co_usr_sdo_ul_indices(
         coOdGetObjDescPtr(index, subIndex, &pObjDesc);
         getObjData(pObjDesc, &log_sent_data[4], index, subIndex);
         //log_store_can_log(8, log_sent_data);
-    } else
-    {
-//        Serial_debug(DEBUG_ERROR, &cli_serial, "SDO <- ");
-//
-//        switch (index)
-//        {
-//        case I_DEBUG_LOG:
-//            retVal = indices_I_DEBUG_LOG(execute, sdoNr, index, subIndex);
-//            break;
-//        case I_CAN_LOG:
-//            retVal = indices_I_CAN_LOG(execute, sdoNr, index, subIndex);
-//            break;
-//        default:
-//            Serial_debug(DEBUG_ERROR, &cli_serial, "EXEC = FALSE : UNKNOWN CAN OD INDEX: 0x%x 0x%x\r\n", index, subIndex);
-//        }
     }
 
     return (RET_T)retVal;

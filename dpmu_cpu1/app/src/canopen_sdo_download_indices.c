@@ -47,7 +47,6 @@ static RET_T indices_I_STORE_PARAMETERS(UNSIGNED8 subIndex)
 {
     RET_T retVal = RET_OK;
     uint16_t startIdx, lastIdx;
-    uint32_t nrOfObj;
     uint32_t serNumberCMD;
 
     Serial_debug(DEBUG_INFO, &cli_serial, "Store Params indication 0x%x -- ", subIndex);
@@ -166,7 +165,6 @@ static RET_T indices_I_STORE_PARAMETERS(UNSIGNED8 subIndex)
 static RET_T indices_I_RESTORE_DEFAULT_PARAMETERS(UNSIGNED8 sIndex)
 {
     RET_T retVal = RET_OK;
-    uint16_t startIdx, lastIdx;
     uint32_t value;
 
     switch (sIndex)

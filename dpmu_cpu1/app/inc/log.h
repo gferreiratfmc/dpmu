@@ -48,6 +48,11 @@ typedef enum{
 }LogType_e;
 
 typedef enum {
+    CanLogUploadLastSegment,
+    CanLogUploadAllFlash,
+}CanLogUploadType_t;
+
+typedef enum {
     LOG_RESET_FULL = 0,
     LOG_RESET_REWIND,
 } LogResetType_e;
