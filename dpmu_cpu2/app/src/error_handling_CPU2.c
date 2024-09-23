@@ -118,15 +118,6 @@ void HandleDCBusShortCircuit()
     } else {
         sharedVars_cpu2toCpu1.error_code &= ~(1UL << ERROR_BUS_SHORT_CIRCUIT);
     }
-
-    // Original DCBUS ShortCircuit Handler
-    //    if (sensorVector[VBusIdx].realValue
-    //            < (float) sharedVars_cpu1toCpu2.vdc_bus_short_circuit_limit)
-    //        sharedVars_cpu2toCpu1.error_code |= (1UL << ERROR_BUS_SHORT_CIRCUIT);
-    //    else
-    //        sharedVars_cpu2toCpu1.error_code &= ~(1UL << ERROR_BUS_SHORT_CIRCUIT);
-
-
 }
 
 
@@ -186,11 +177,63 @@ void HandleDCBusOverVoltage() {
 }
 
 void HandleDCBusUnderVoltage() {
-    if (DCDC_VI.avgVBus < (float) sharedVars_cpu1toCpu2.min_allowed_dc_bus_voltage) {
-        sharedVars_cpu2toCpu1.error_code |= (1UL << ERROR_BUS_UNDER_VOLTAGE);
-    } else {
-        sharedVars_cpu2toCpu1.error_code &= ~(1UL << ERROR_BUS_UNDER_VOLTAGE);
+
+    enum { BUVInit, BUVWait, BUVStopMainStateMachine, BUVEnd };
+
+    static uint32_t lastTime = 0;
+    static States_t stateBUV = {0};
+    static uint16_t BUVWaitCount = 0;
+
+    switch ( stateBUV.State_Current) {
+        case BUVInit:
+            lastTime = timer_get_ticks();
+            if( DPMUInitialized() == true ) {
+                if (DCDC_VI.avgVBus < (float) sharedVars_cpu1toCpu2.min_allowed_dc_bus_voltage) {
+                    sharedVars_cpu2toCpu1.error_code |= (1UL << ERROR_BUS_UNDER_VOLTAGE);
+                    BUVWaitCount = 0;
+                    stateBUV.State_Next = BUVWait;
+                } else {
+                    sharedVars_cpu2toCpu1.error_code &= ~(1UL << ERROR_BUS_UNDER_VOLTAGE);
+                    stateBUV.State_Next = BUVInit;
+                }
+            }
+            break;
+        case BUVWait:
+            if( ( timer_get_ticks() - lastTime ) > 10) {
+                if (DCDC_VI.avgVBus < ( (float) sharedVars_cpu1toCpu2.min_allowed_dc_bus_voltage / 2.0) ) {
+                    switches_Qinb( SW_OFF );
+                    StopAllEPWMs();
+                    stateBUV.State_Next = BUVStopMainStateMachine;
+                } else {
+                    BUVWaitCount++;
+                    if( BUVWaitCount > 100 ) {
+                        stateBUV.State_Next = BUVInit;
+                    }
+                }
+                lastTime = timer_get_ticks();
+            }
+            break;
+        case BUVStopMainStateMachine:
+            PRINT("DCDC_VI.avgVBus[%5.2f] < min_allowed_dc_bus_voltage:[%5.2f]\r\n ",
+                  DCDC_VI.avgVBus,
+                  sharedVars_cpu1toCpu2.min_allowed_dc_bus_voltage/2);
+            // Sends main state_machine to Fault state
+            //dpmuErrorOcurredFlag = true;
+            stateBUV.State_Next = BUVEnd;
+            break;
+        case BUVEnd:
+            stateBUV.State_Next = BUVInit;
+            //if( dpmuErrorOcurredFlag == false ) {
+            //    stateBUV.State_Next = BUVInit;
+            //}
+            break;
+        default:
+            stateBUV.State_Next = BUVInit;
     }
+    if( stateBUV.State_Current != stateBUV.State_Next ) {
+        PRINT("stateBUV.State_Current[%02d] -> stateBUV.State_Next[%02d]\r\n", stateBUV.State_Current, stateBUV.State_Next);
+    }
+    stateBUV.State_Current = stateBUV.State_Next;
 }
 
 void HandleOverTemperature() {

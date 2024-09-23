@@ -272,11 +272,12 @@ void StateMachine(void)
             if( sensorVector[VStoreIdx].realValue < energy_bank_settings.min_voltage_applied_to_energy_bank ) {
                 StateVector.State_Next = RegulateStop;
             }
-            if( DCDC_VI.avgVBus < REG_MIN_DC_BUS_VOLTAGE_RATIO * DCDC_VI.target_Voltage_At_DCBus ) {
-                if( sensorVector[ISen1fIdx].realValue >= MIN_OUTPUT_CURRENT_TO_REGULATE_VOLTAGE ) {
-                        StateVector.State_Next = RegulateVoltageInit;
-                }
-            }
+            // *** Removed for ENDURANCE only.
+            //if( DCDC_VI.avgVBus < REG_MIN_DC_BUS_VOLTAGE_RATIO * DCDC_VI.target_Voltage_At_DCBus ) {
+            //    if( sensorVector[ISen1fIdx].realValue >= MIN_OUTPUT_CURRENT_TO_REGULATE_VOLTAGE ) {
+            //            StateVector.State_Next = RegulateVoltageInit;
+            //    }
+            //}
             break;
 
         case RegulateStop:
@@ -364,7 +365,7 @@ void StateMachine(void)
     /* print next state then state changes */
     if(StateVector.State_Current  != StateVector.State_Next) {
         ForceUpdateDebugLog();
-        PRINT("Next state %02d\r\n", StateVector.State_Next);
+        PRINT("StateVector.State_Current %02d -> Next state %02d\r\n",StateVector.State_Current, StateVector.State_Next);
     }
 
     if( DpmuErrorOcurred() == true ) {

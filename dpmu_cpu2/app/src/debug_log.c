@@ -91,7 +91,7 @@ void UpdateDebugLog(void) {
     static uint32_t last_timer = 0;
     uint32_t current_timer, elapsed_time;
     static uint32_t debug_period_in_ms = LOG_PERIOD_IDLE;
-    uint16_t switches;
+    //uint16_t switches;
     debug_period_in_ms = SetDebugLogPeriod();
     if( debug_log_enable_flag == true ) {
         current_timer = timer_get_ticks();
