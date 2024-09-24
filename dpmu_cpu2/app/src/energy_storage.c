@@ -42,6 +42,7 @@ bool newEnergyBankConditionAvailable;
 
 float cellVoltagesVector[30];
 
+bool VerifyCapacitanceValueFromFlashValid(float capacitance);
 
 
 void calcAccumlatedCharge( void ) {
@@ -237,7 +238,13 @@ void energy_storage_check(void) {
             break;
 
         case verifySoHFromFlash:
-            if( sharedVars_cpu1toCpu2.initialCapacitance == 0.0 ) {
+            if( VerifyCapacitanceValueFromFlashValid( sharedVars_cpu1toCpu2.initialCapacitance ) == false ) {
+                PRINT("Capacitance invalid\r\n");
+            } else {
+                PRINT("Capacitance valid\r\n");
+            }
+            if( ( VerifyCapacitanceValueFromFlashValid( sharedVars_cpu1toCpu2.initialCapacitance ) == false ) ||
+                    ( sharedVars_cpu1toCpu2.initialCapacitance == 0.0 ) ) {
                 PRINT("SOH FIRST CALC OF INITIAL CAPACITANCE \r\n");
 
                 sharedVars_cpu2toCpu1.soh_energy_bank = 100.0;
@@ -292,6 +299,20 @@ void energy_storage_check(void) {
 
 }
 
+bool VerifyCapacitanceValueFromFlashValid(float capacitance){
+    bool retVal = false;
+    uint16_t *memValCapacitance;
+    memValCapacitance = (uint16_t*)&capacitance;
 
+    for( int i=0; i<sizeof(float); i++) {
+        PRINT("memValCapacitance[%d]:[0x%04X] ",i, memValCapacitance[i]);
+        if( memValCapacitance[i] != 0xFFFF ) {
+            retVal = true;
+            break;
+        }
+    }
+    PRINT("\r\n");
+    return retVal;
+}
 
 

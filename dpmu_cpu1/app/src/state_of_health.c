@@ -19,6 +19,7 @@
 #include "state_of_health.h"
 #include "timer.h"
 
+extern struct Serial cli_serial;
 
 #define SIZE_OF_BUFFER 32
 uint16_t buff[SIZE_OF_BUFFER];
@@ -41,8 +42,9 @@ void RequestSaveNewCapacitanceToExtFlash( float initialCapacitance, float curren
 //
 //}
 
-void retrieveInitalCapacitanceFromFlash( float *initialCapacitance, float *currentCapacitance ) {
+void RetrieveInitalCapacitanceFromFlash( float *initialCapacitance, float *currentCapacitance ) {
     app_vars_t *appVars;
+
     if( AppVarsReadRequestReady() ) {
         appVars = GetCurrentAppVars();
         *initialCapacitance = appVars->initialCapacitance;
@@ -52,7 +54,11 @@ void retrieveInitalCapacitanceFromFlash( float *initialCapacitance, float *curre
         *currentCapacitance = 0.0;
     }
 }
-//void retrieveInitalCapacitanceFromFlash( float *initialCapacitance, float *currentCapacitance ) {
+
+
+
+
+//void RetrieveInitalCapacitanceFromFlash( float *initialCapacitance, float *currentCapacitance ) {
 //    uint16_t invalidInfoCount = 0;
 //    memset( buff, 0, SIZE_OF_BUFFER );
 //    ext_flash_read_buf(APP_VARS_EXT_FLASH_ADDRESS_START, buff, 2*sizeof(float) );

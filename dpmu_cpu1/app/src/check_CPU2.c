@@ -64,7 +64,7 @@ static bool check_SoH(void)
     }
     currState = nextState;
 
-    retrieveInitalCapacitanceFromFlash( &sharedVars_cpu1toCpu2.initialCapacitance, &sharedVars_cpu1toCpu2.currentCapacitance );
+    RetrieveInitalCapacitanceFromFlash( &sharedVars_cpu1toCpu2.initialCapacitance, &sharedVars_cpu1toCpu2.currentCapacitance );
 
     return values_updated;
 }
