@@ -230,9 +230,6 @@ void HandleDCBusUnderVoltage() {
         default:
             stateBUV.State_Next = BUVInit;
     }
-    if( stateBUV.State_Current != stateBUV.State_Next ) {
-        PRINT("stateBUV.State_Current[%02d] -> stateBUV.State_Next[%02d]\r\n", stateBUV.State_Current, stateBUV.State_Next);
-    }
     stateBUV.State_Current = stateBUV.State_Next;
 }
 
