@@ -131,7 +131,6 @@ void StateMachine(void)
                 HAL_PWM_setCounterCompareValue(InrushCurrentLimit_BASE, EPWM_COUNTER_COMPARE_A, 1);
                 HAL_StopPwmInrushCurrentLimit();
                 DPMUInitializedFlag = true;
-                //EnableContinuousReadCellVoltages();
                 StateVector.State_Next = Idle;
             }
             break;
@@ -222,7 +221,6 @@ void StateMachine(void)
             if( ReadCellVoltagesDone() == true) {
                 if( cellVoltageOverThreshold == true ) {
                     StateVector.State_Next = BalancingInit; //Normal operation
-    //                StateVector.State_Next = ChargeStop;   // Endurance operation. Balancing not completely implemented
                 }
             }
 
@@ -272,12 +270,11 @@ void StateMachine(void)
             if( sensorVector[VStoreIdx].realValue < energy_bank_settings.min_voltage_applied_to_energy_bank ) {
                 StateVector.State_Next = RegulateStop;
             }
-            // *** Removed for ENDURANCE only.
-            //if( DCDC_VI.avgVBus < REG_MIN_DC_BUS_VOLTAGE_RATIO * DCDC_VI.target_Voltage_At_DCBus ) {
-            //    if( sensorVector[ISen1fIdx].realValue >= MIN_OUTPUT_CURRENT_TO_REGULATE_VOLTAGE ) {
-            //            StateVector.State_Next = RegulateVoltageInit;
-            //    }
-            //}
+            if( DCDC_VI.avgVBus < REG_MIN_DC_BUS_VOLTAGE_RATIO * DCDC_VI.target_Voltage_At_DCBus ) {
+                if( sensorVector[ISen1fIdx].realValue >= MIN_OUTPUT_CURRENT_TO_REGULATE_VOLTAGE ) {
+                        StateVector.State_Next = RegulateVoltageInit;
+                }
+            }
             break;
 
         case RegulateStop:
@@ -289,8 +286,6 @@ void StateMachine(void)
             break;
 
         case RegulateVoltageInit:
-//            DCDC_VI.I_Ref_Real = 0.0;
-//            DCDC_current_boost_loop_float();
             switches_Qinb( SW_OFF );
             DCDCInitializePWMForRegulateVoltage();
             StateVector.State_Next = RegulateVoltage;
