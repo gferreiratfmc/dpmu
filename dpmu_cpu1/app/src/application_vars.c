@@ -360,8 +360,7 @@ bool RetriveSerialNumberFromFlash( uint32_t *serialNumber32bits ){
                 appVars = GetCurrentAppVars();
                 Serial_debug(DEBUG_INFO, &cli_serial, "Retrieved appVars->serialNumber = [");
                 for(int i = 0; i<SERIAL_NUMBER_SIZE_IN_CHARS;i++) {
-                    Serial_debug(DEBUG_INFO, &cli_serial, "%c0x%02X, ", appVars->serialNumber[i],appVars->serialNumber[i]);
-                    if(i%10==0) { Serial_debug(DEBUG_INFO,&cli_serial,"\r\n"); }
+                    Serial_debug(DEBUG_INFO, &cli_serial, "%c ", appVars->serialNumber[i]);
                 }
                 Serial_debug(DEBUG_INFO, &cli_serial, "]\r\n");
                 RSNSM.State_Next = RSNReturnPartialSerialNumber;
@@ -384,6 +383,7 @@ bool RetriveSerialNumberFromFlash( uint32_t *serialNumber32bits ){
                 charTemp = charTemp & mask[i];
                 *serialNumber32bits = *serialNumber32bits | charTemp;
             }
+            Serial_debug(DEBUG_CRITICAL, &cli_serial, "Partial SN[%lu]:[0x%08p]\r\n", serialNumberIdx, *serialNumber32bits );
             retVal = true;
             RSNSM.State_Next = RSNIncremetIdx;
             break;
