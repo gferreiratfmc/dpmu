@@ -67,10 +67,7 @@ extern volatile bool eFuseInputCurrentOcurred;
 extern volatile bool eFuseBuckBoostOcurred;
 
 extern uint16_t trickleChargeRangeState;
-//
-//extern uint32_t INT_BEG_1_2Counter;
-//extern uint32_t INT_BEG_1_2CounterSW;
-//extern uint32_t INT_BEG_1_2CounterHW;
+
 extern uint32_t INT_GLOAD_4_3Counter;
 
 #endif /* APP_INC_DCDC_H_ */

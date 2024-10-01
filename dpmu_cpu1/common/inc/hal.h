@@ -183,7 +183,7 @@ static inline void HAL_DcdcNormalModePwmSettingOri(void)
     EPWM_setDeadBandOutputSwapMode(BEG_1_2_BASE, EPWM_DB_OUTPUT_B, true);
 }
 
-static inline void HAL_DcdcRegulateModePwmSetting(void)
+static inline void HAL_DcdcRegulateVoltageAndCurrentModePwmSetting(void)
 {
     HAL_PWM_setTimeBasePeriod(BEG_1_2_BASE, 100000 / BEG_1_2_NORMAL_MODE_FREQ_KHZ); /* fsys[KHz] / fpwm[kHz] */
     //HAL_PWM_setCounterCompareValue(BEG_1_2_BASE, EPWM_COUNTER_COMPARE_A, 100000 / BEG_1_2_NORMAL_MODE_FREQ_KHZ * 0.1); /* fsys[KHz] / fpwm[kHz] */
@@ -206,6 +206,34 @@ static inline void HAL_DcdcRegulateModePwmSetting(void)
     EPWM_setDeadBandOutputSwapMode(BEG_1_2_BASE, EPWM_DB_OUTPUT_A, false);
     EPWM_setDeadBandOutputSwapMode(BEG_1_2_BASE, EPWM_DB_OUTPUT_B, false);
 }
+
+static inline void HAL_DcdcRegulateVoltageSyncModePwmSetting(void)
+{
+    HAL_PWM_setTimeBasePeriod(BEG_1_2_BASE, 100000 / BEG_1_2_NORMAL_MODE_FREQ_KHZ); /* fsys[KHz] / fpwm[kHz] */
+    //HAL_PWM_setCounterCompareValue(BEG_1_2_BASE, EPWM_COUNTER_COMPARE_A, 100000 / BEG_1_2_NORMAL_MODE_FREQ_KHZ * 0.1); /* fsys[KHz] / fpwm[kHz] */
+    HAL_PWM_setCounterCompareValue(BEG_1_2_BASE, EPWM_COUNTER_COMPARE_A, ( 100000 / BEG_1_2_PULSE_MODE_FREQ_KHZ ) + 2);
+    EPWM_setActionQualifierAction(BEG_1_2_BASE, EPWM_AQ_OUTPUT_A, EPWM_AQ_OUTPUT_HIGH, EPWM_AQ_OUTPUT_ON_TIMEBASE_ZERO);
+    EPWM_setActionQualifierAction(BEG_1_2_BASE, EPWM_AQ_OUTPUT_A, EPWM_AQ_OUTPUT_NO_CHANGE, EPWM_AQ_OUTPUT_ON_TIMEBASE_PERIOD);
+    EPWM_setActionQualifierAction(BEG_1_2_BASE, EPWM_AQ_OUTPUT_A, EPWM_AQ_OUTPUT_LOW, EPWM_AQ_OUTPUT_ON_TIMEBASE_UP_CMPA);
+    EPWM_setActionQualifierAction(BEG_1_2_BASE, EPWM_AQ_OUTPUT_A, EPWM_AQ_OUTPUT_NO_CHANGE, EPWM_AQ_OUTPUT_ON_TIMEBASE_DOWN_CMPA);
+    EPWM_setActionQualifierAction(BEG_1_2_BASE, EPWM_AQ_OUTPUT_A, EPWM_AQ_OUTPUT_NO_CHANGE, EPWM_AQ_OUTPUT_ON_TIMEBASE_UP_CMPB);
+    EPWM_setActionQualifierAction(BEG_1_2_BASE, EPWM_AQ_OUTPUT_A, EPWM_AQ_OUTPUT_NO_CHANGE, EPWM_AQ_OUTPUT_ON_TIMEBASE_DOWN_CMPB);
+
+    EPWM_setActionQualifierShadowLoadMode(BEG_1_2_BASE, EPWM_ACTION_QUALIFIER_B, EPWM_AQ_LOAD_ON_CNTR_PERIOD);
+
+    EPWM_setActionQualifierAction(BEG_1_2_BASE, EPWM_AQ_OUTPUT_B, EPWM_AQ_OUTPUT_LOW, EPWM_AQ_OUTPUT_ON_TIMEBASE_ZERO);
+    EPWM_setActionQualifierAction(BEG_1_2_BASE, EPWM_AQ_OUTPUT_B, EPWM_AQ_OUTPUT_NO_CHANGE, EPWM_AQ_OUTPUT_ON_TIMEBASE_PERIOD);
+    EPWM_setActionQualifierAction(BEG_1_2_BASE, EPWM_AQ_OUTPUT_B, EPWM_AQ_OUTPUT_HIGH, EPWM_AQ_OUTPUT_ON_TIMEBASE_UP_CMPA);
+    EPWM_setActionQualifierAction(BEG_1_2_BASE, EPWM_AQ_OUTPUT_B, EPWM_AQ_OUTPUT_NO_CHANGE, EPWM_AQ_OUTPUT_ON_TIMEBASE_DOWN_CMPA);
+    EPWM_setActionQualifierAction(BEG_1_2_BASE, EPWM_AQ_OUTPUT_B, EPWM_AQ_OUTPUT_NO_CHANGE, EPWM_AQ_OUTPUT_ON_TIMEBASE_UP_CMPB);
+    EPWM_setActionQualifierAction(BEG_1_2_BASE, EPWM_AQ_OUTPUT_B, EPWM_AQ_OUTPUT_NO_CHANGE, EPWM_AQ_OUTPUT_ON_TIMEBASE_DOWN_CMPB);
+
+    HAL_PWM_setDeadBandDelayMode(BEG_1_2_BASE, EPWM_DB_RED, true);
+    HAL_PWM_setDeadBandDelayMode(BEG_1_2_BASE, EPWM_DB_FED, true);
+    EPWM_setDeadBandOutputSwapMode(BEG_1_2_BASE, EPWM_DB_OUTPUT_A, true);
+    EPWM_setDeadBandOutputSwapMode(BEG_1_2_BASE, EPWM_DB_OUTPUT_B, true);
+}
+
 
 static inline void HAL_StartPwmCounters(void)
 {

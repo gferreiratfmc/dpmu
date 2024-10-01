@@ -251,14 +251,6 @@ void InitializeSensorParameters() {
     sensorVector[VStoreIdx].differentialADC = true;
     sensorVector[VStoreIdx].name = "VStore";
 
-//    sensorVector[V_24fIdx].maxCounts = 65535;
-//    sensorVector[V_24fIdx].zeroVoltageOffset = 24.0;
-//    sensorVector[V_24fIdx].adcReference = 3.0;
-//    sensorVector[V_24fIdx].gain = (22.1+3.24)/3.24;
-//    sensorVector[V_24fIdx].invertedGain = false;
-//    sensorVector[V_24fIdx].differentialADC = true;
-//    sensorVector[V_24fIdx].name = "V_24f";
-
 }
 
 

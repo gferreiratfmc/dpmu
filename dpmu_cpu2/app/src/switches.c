@@ -15,20 +15,6 @@
 #include "state_machine.h"
 #include "switches.h"
 
-/*** 26.15.1.5.3 Duty Cycle Range Limitation
- *
- * When using DBREDHR or DBFEDHR, DBRED and/or DBFED (the register corresponding
- * to the edge with hi-resolution displacement) must be greater than or equal to 7
-***/
-//bool switches_Qinrush(uint8_t state)
-//{
-//    int return_value = 1;
-//
-//    start_inrush_current_limiter(state);
-//
-//    return return_value;
-//}
-
 void switches_Qlb(uint8_t state)
 {
     GPIO_writePin(Qlb, (state == SW_ON ? 1: 0));
@@ -70,19 +56,4 @@ void switches_test_cont_toggling(void)
     }
 }
 
-//uint8_t switches_read_state(void)
-//{
-//    uint8_t pinValues = 0;
-//    uint8_t tmp;
-//
-//    tmp = GPIO_readPin(Qinrush);    // enkel pinne, på pinnen
-//    pinValues |= tmp << 0;
-//    tmp = GPIO_readPin(Qinb);       // enkel pinne, på pinnen
-//    pinValues |= tmp << 1;
-//    tmp = GPIO_readPin(Qlb);        // enkel pinne, på pinnen
-//    pinValues |= tmp << 2;
-//    tmp = GPIO_readPin(Qsb);        // enkel pinne, på pinnen
-//    pinValues |= tmp << 3;
-//
-//    return pinValues;
-//}
+

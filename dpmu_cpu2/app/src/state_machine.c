@@ -56,7 +56,6 @@ void DefineDPMUSafeState(void);
 int DoneWithInrush(void);
 void TrackStatesForDEBUG(void);
 void EnableOrDisblePWM();
-uint16_t ConvCellNrToIdx(uint16_t celNr);
 inline void EnableEFuseBBToStopDCDC_EPWM();
 void update_debug_log(void);
 
@@ -73,6 +72,7 @@ void StateMachine(void)
     switch (StateVector.State_Current)
     {
         case PreInitialized:
+            HandleFaultStateAckFromCPU1();
             break;
 
         case Initialize: /* Initial state, initialization of the parameters*/
@@ -84,7 +84,7 @@ void StateMachine(void)
                     switches_Qinb( SW_OFF );
                     switches_Qlb( SW_OFF );
                     switches_Qsb( SW_OFF );
-
+                    sharedVars_cpu2toCpu1.faultOccured = false;
                     if( sharedVars_cpu1toCpu2.dpmu_default_flag == true ) {
                         StateVector.State_Next = SoftstartInitDefault;
                     } else {
@@ -260,7 +260,7 @@ void StateMachine(void)
             DCDC_VI.I_Ref_Real = 0.0;
             StateVector.State_Next = Regulate;
             HAL_StopPwmDCDC();
-            HAL_DcdcRegulateModePwmSetting();
+            HAL_DcdcRegulateVoltageAndCurrentModePwmSetting();
             break;
 
         case Regulate:
@@ -307,6 +307,38 @@ void StateMachine(void)
             StateVector.State_Next = StopEPWMs;
             break;
 
+        case RegulateVoltageSyncInit:
+                    switches_Qinb( SW_OFF );
+                    HAL_StopPwmDCDC();
+                    HAL_DcdcRegulateVoltageSyncModePwmSetting();
+                    DCDCInitializePWMForRegulateVoltage();
+                    StateVector.State_Next = RegulateVoltageSync;
+                    break;
+
+        case RegulateVoltageSync:
+            DCDC_voltage_boost_loop_float();
+            if( DCDC_VI.avgVStore < energy_bank_settings.min_voltage_applied_to_energy_bank ) {
+                StateVector.State_Next = RegulateVoltageStopSync;
+
+            }
+            if(  DCDC_VI.avgVBus > REG_MIN_DC_BUS_VOLTAGE_RATIO * sharedVars_cpu1toCpu2.max_allowed_dc_bus_voltage ) {
+                HAL_StopPwmDCDC();
+                StateVector.State_Next = RegulateVoltageWaitSync;
+            }
+            break;
+
+        case RegulateVoltageWaitSync:
+            if( DCDC_VI.avgVBus < REG_MIN_DC_BUS_VOLTAGE_RATIO * DCDC_VI.target_Voltage_At_DCBus ) {
+                DCDCInitializePWMForRegulateVoltage();
+                StateVector.State_Next = RegulateVoltageSync;
+            }
+            break;
+
+        case RegulateVoltageStopSync:
+            DPMUInitializedFlag = false;
+            StateVector.State_Next = StopEPWMs;
+            break;
+
         case Fault:
             HAL_StopPwmDCDC();
 
@@ -323,6 +355,8 @@ void StateMachine(void)
             StopAllEPWMs();
 
             ResetDpmuErrorOcurred();
+
+            SignalFaultStateToCPU1();
 
             StateVector.State_Next = PreInitialized;
 

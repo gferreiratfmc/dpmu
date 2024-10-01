@@ -84,7 +84,8 @@ static bool check_current_state(void)
         coOdPutObj_u8(I_DPMU_STATE, S_DPMU_OPERATION_CURRENT_STATE,
                       last_read_values.current_state);
 
-        if(last_read_values.current_state == Fault ) {
+        //if( last_read_values.current_state == Fault  ) {
+        if( sharedVars_cpu2toCpu1.faultOccured == true ) {
             ResetDPMUAppInfoInitializeVars();
         }
 

@@ -62,38 +62,7 @@ void error_check_for_errors(void)
         error_dcbus_over_voltage();
         error_dcbus_under_voltage();
         error_system_temperature();
-
-        //    error_check_error_flag_generic(ERROR_BUS_OVER_VOLTAGE,
-//                                   EMCY_ERROR_CODE_VOLTAGE,
-//                                   2,
-//                                   canopen_emcy_send_generic,
-//                                   EMCY_ERROR_BUS_OVER_VOLTAGE,
-//                                   payload_gen_bus_voltage);
-//
-////    error_check_error_flag_generic(ERROR_BUS_UNDER_VOLTAGE,
-////                                   EMCY_ERROR_CODE_VOLTAGE,
-////                                   0,
-////                                   canopen_emcy_send_generic,
-////                                   EMCY_ERROR_BUS_OVER_VOLTAGE,
-////                                   payload_gen_bus_over_voltage);
-//
-
-
-//
-//    error_operational();
-//
-//    error_power_line_failure();
-//
-//    error_state_of_charge();
-//
-//    error_check_error_flag_generic(ERROR_LOAD_OVER_CURRENT,
-//                                   EMCY_ERROR_CODE_CURRENT,
-//                                   2,
-//                                   canopen_emcy_send_generic,
-//                                   EMCY_ERROR_OVER_CURRENT_LOAD,
-//                                   payload_gen_load_current);
-//
-    error_no_error();
+        error_no_error();
     }
 }
 
@@ -297,81 +266,6 @@ static void error_system_temperature(void)
 }
 
 
-/* brief: check if temperatures are above thresholds
- *
- * details: checks error flag
- *          turns off switches and DCDC
- *
- * requirements:
- *
- * argument: none
- *
- * return: none
- *
- * note: EMCY messages are handled in
- *       temperature_sensor_read_all_temperatures()
- *       non-blocking
- *
- * presumptions:
- *
- */
-//static void error_system_temperature(void)
-//{
-//    static bool timer_started = false;
-//    static uint32_t time_start;
-//
-//    /* !!! EMCY messages is handled in temperature_sensor_read_all_temperatures() !!! */
-//    if(global_error_code & (1UL << ERROR_OVER_TEMPERATURE))
-//    {
-//        /* According to specification:
-//         * Only inform IOP (done in temperature_sensor_read_all_temperatures())
-//         * Do not do anything more
-//         * IOP takes decision on what to do next
-//         * */
-//        if(!(global_error_code_handled & (1UL << ERROR_OVER_TEMPERATURE)))
-//        {
-//            if(!timer_started)
-//            {
-//                time_start = timer_get_ticks() & 0x7fffffff;
-//                timer_started = true;
-//            }
-//
-//            /* ms ticks, enough with 127 ms */
-//            int16_t elapsed_time = (timer_get_ticks() & 0x7fffffff) - time_start;
-//            //TODO - Time does not handle wrap around
-//
-//            /* check timeout */
-//            if(2 < elapsed_time)
-//            {
-////                static bool message_sent = false;
-//
-//                /* disconnect all switches
-//                 * turn off regulation */
-//                IPC_setFlagLtoR(IPC_CPU1_L_CPU2_R, IPC_CPU1_REQUIERS_EMERGECY_SHUT_DOWN);
-//
-//                global_error_code_handled |= (1UL << ERROR_OVER_TEMPERATURE);
-//
-//                /* clear the timer */
-//                timer_started = false;
-//            }
-//        } else
-//        {
-//            /* there is nothing more we can do
-//             * let IOP decide next step
-//             * */
-//
-//            /* clear the timer */
-//            timer_started = false;
-//        }
-//    } else
-//    {
-//        /* mark as unhandled - nothing need to be done  */
-//        global_error_code_handled &= ~(1UL << ERROR_OVER_TEMPERATURE);
-//
-//        /* clear the timer */
-//        timer_started = false;
-//    }
-//}
 
 /* brief: check if there are any internal operational errors
  *
@@ -390,51 +284,51 @@ static void error_system_temperature(void)
  * presumptions:
  *
  */
-static void error_operational(void)
-{
-    if(global_error_code & (1UL << ERROR_OPERATIONAL))
-    {
-        if(!(global_error_code_handled & (1UL << ERROR_OPERATIONAL)))
-        {
-            bool error_persist = false;
-
-            /* test error */
-            //TODO Test if error persist
-
-            if(error_persist)
-            {
-                /* disconnect all switches
-                 * turn off regulation */
-                IPC_setFlagLtoR(IPC_CPU1_L_CPU2_R, IPC_CPU1_REQUIERS_EMERGECY_SHUT_DOWN);
-
-                /* mark handled */
-                global_error_code_handled |= (1UL << ERROR_OPERATIONAL);
-
-                /* send EMCY
-                 * can change argument to any meaningful code != '0'
-                 * */
-                canopen_emcy_send_operational_error(1);
-
-                /* mark it sent */
-                global_error_code_sent |= (1UL << ERROR_OPERATIONAL);
-            }
-        } else
-        {
-            /* there is nothing more we can do
-             * let IOP decide next step
-             * */
-        }
-    } else
-    {
-        /* send EMCY CLEAR - send it once */
-        if(global_error_code_sent & (1UL << ERROR_OPERATIONAL))
-            canopen_emcy_send_operational_error(0);
-
-        /* mark as unhandled - nothing need to be done  */
-        global_error_code_sent    &= ~(1UL << ERROR_OPERATIONAL);
-        global_error_code_handled &= ~(1UL << ERROR_OPERATIONAL);
-    }
-}
+//static void error_operational(void)
+//{
+//    if(global_error_code & (1UL << ERROR_OPERATIONAL))
+//    {
+//        if(!(global_error_code_handled & (1UL << ERROR_OPERATIONAL)))
+//        {
+//            bool error_persist = false;
+//
+//            /* test error */
+//            //TODO Test if error persist
+//
+//            if(error_persist)
+//            {
+//                /* disconnect all switches
+//                 * turn off regulation */
+//                IPC_setFlagLtoR(IPC_CPU1_L_CPU2_R, IPC_CPU1_REQUIERS_EMERGECY_SHUT_DOWN);
+//
+//                /* mark handled */
+//                global_error_code_handled |= (1UL << ERROR_OPERATIONAL);
+//
+//                /* send EMCY
+//                 * can change argument to any meaningful code != '0'
+//                 * */
+//                canopen_emcy_send_operational_error(1);
+//
+//                /* mark it sent */
+//                global_error_code_sent |= (1UL << ERROR_OPERATIONAL);
+//            }
+//        } else
+//        {
+//            /* there is nothing more we can do
+//             * let IOP decide next step
+//             * */
+//        }
+//    } else
+//    {
+//        /* send EMCY CLEAR - send it once */
+//        if(global_error_code_sent & (1UL << ERROR_OPERATIONAL))
+//            canopen_emcy_send_operational_error(0);
+//
+//        /* mark as unhandled - nothing need to be done  */
+//        global_error_code_sent    &= ~(1UL << ERROR_OPERATIONAL);
+//        global_error_code_handled &= ~(1UL << ERROR_OPERATIONAL);
+//    }
+//}
 
 
 
@@ -487,83 +381,6 @@ static void error_copy_error_codes_from_CPU1_and_CPU2()
 }
 
 
-
-//static bool disconnect_other_dpmu_from_shared_bus(void)
-//{
-//    uint32_t cmd = CANB_DISCONNECT_SHARED_BUS;
-//    uint32_t addr = 0;
-//    uint32_t data = (uint32_t)sharedVars_cpu2toCpu1.voltage_at_dc_bus;
-//
-//    return IPC_sendCommand(IPC_CPU1_L_CPU2_R, IPC_CANB_OUTGOING, false, cmd, addr, data);
-//}
-
-//static int8_t disconnect_other_dpmu_from_shared_bus_answer(void)
-//{
-//    uint32_t cmd;
-//    uint32_t addr;
-//    uint32_t data;
-//    int8_t return_value = -1;   /* command not received */
-//
-//    if(IPC_readCommand(IPC_CPU1_L_CPU2_R, IPC_CANB_INCOMING, false, &cmd, &addr, &data) != false)
-//    {
-//        /* 0 disconnected
-//         * 1 connected
-//         */
-//        switch (cmd) {
-//            case CANB_DISCONNECT_SHARED_BUS:
-//                return_value = 0;
-//                break;
-//            case CANB_CONNECT_SHARED_BUS:
-//                return_value = 1;
-//                break;
-//            default:
-//                break;
-//        }
-//        IPC_ackFlagRtoL(IPC_CPU1_L_CPU2_R, IPC_CANB_INCOMING);
-//    }
-//
-//    return return_value;
-//}
-//
-//bool connect_other_dpmu_to_shared_bus(void)
-//{
-//    uint32_t cmd = CANB_CONNECT_SHARED_BUS;
-//    uint32_t addr = 0;
-//    uint32_t data = (uint32_t)sharedVars_cpu2toCpu1.voltage_at_dc_bus;
-//
-//    return IPC_sendCommand(IPC_CPU1_L_CPU2_R, IPC_CANB_OUTGOING, false, cmd, addr, data);
-//}
-//
-//int8_t connect_other_dpmu_to_shared_bus_answer(float *remote_bus_voltage)
-//{
-//    uint32_t cmd;
-//    uint32_t addr;
-//    uint32_t data;
-//    int8_t return_value = -1;   /* command not received */
-//
-//    if(IPC_readCommand(IPC_CPU1_L_CPU2_R, IPC_CANB_INCOMING, false, &cmd, &addr, &data) != false)
-//    {
-//        /* 0 disconnected
-//         * 1 connected
-//         */
-//        switch (cmd) {
-//            case CANB_DISCONNECT_SHARED_BUS:
-//                return_value = 0;
-//                *remote_bus_voltage = (float)data;
-//                break;
-//            case CANB_CONNECT_SHARED_BUS:
-//                return_value = 1;
-//                *remote_bus_voltage = (float)data;
-//                break;
-//            default:
-//                break;
-//        }
-//
-//        IPC_ackFlagRtoL(IPC_CPU1_L_CPU2_R, IPC_CANB_INCOMING);
-//    }
-//
-//    return return_value;
-//}
 
 
 ///* brief: check if error_flag is set
@@ -680,292 +497,4 @@ static void error_copy_error_codes_from_CPU1_and_CPU2()
 //}
 
 
-///* brief: check if there are external power failures
-// *
-// * details: checks error flags
-// *          turns off switches and DCDC
-// *          signal IOP with EMCY
-// *          one power line failure
-// *          two power line failures
-// *
-// * requirements:
-// *
-// * argument: none
-// *
-// * return: none
-// *
-// * note: non-blocking
-// *
-// * presumptions:
-// *
-// * Skriv om så att man:
-// *  - testar ena linan för sig
-// *      och subtraherar dess effekt från tillgänglig effekt
-// *      vid återgång återställer man effekten
-// *  - testar andra linan för sig
-// *      och subtraherar dess effekt från tillgänglig effekt
-// *      vid återgång återställer man effekten
-// *  - om båda är kaputt går man till nödläge
-// */
-//static void error_power_line_failure(void)
-//{
-//    uint16_t pwr_loss_error = 0;
-//
-//    if(global_error_code & (1UL << ERROR_EXT_PWR_LOSS_MAIN))
-//        pwr_loss_error |= 0b01;
-//    if(global_error_code & (1UL << ERROR_EXT_PWR_LOSS_OTHER))
-//        pwr_loss_error |= 0b10;
-//
-//    switch(pwr_loss_error)
-//    {
-//    case 0: /* no pwr loss error */
-//        sharedVars_cpu1toCpu2.use_power_budget_dc_input = 1;
-//        sharedVars_cpu1toCpu2.use_power_budget_dc_shared = 1;
-//        sharedVars_cpu1toCpu2.safe_parking_allowed = 0;
-//
-//        /* clear flag */
-//        global_error_code &= ~(1UL << ERROR_EXT_PWR_LOSS_BOTH);
-//        break;
-//
-//    case 1: /* we have lost power from our INPUT bus */
-//        sharedVars_cpu1toCpu2.use_power_budget_dc_input = 0;
-//        sharedVars_cpu1toCpu2.use_power_budget_dc_shared = 1;
-//        sharedVars_cpu1toCpu2.safe_parking_allowed = 0;
-//
-//        /* clear flag */
-//        global_error_code &= ~(1UL << ERROR_EXT_PWR_LOSS_BOTH);
-//        break;
-//
-//    case 2: /* the other DPMU have lost power from its INPUT bus */
-//        sharedVars_cpu1toCpu2.use_power_budget_dc_input = 1;
-//        sharedVars_cpu1toCpu2.use_power_budget_dc_shared = 0;
-//        sharedVars_cpu1toCpu2.safe_parking_allowed = 0;
-//
-//        /* clear flag */
-//        global_error_code &= ~(1UL << ERROR_EXT_PWR_LOSS_BOTH);
-//        break;
-//
-//    case 3: /* both  we and the other DPMU have lost power from our INPUT buses */
-//        sharedVars_cpu1toCpu2.use_power_budget_dc_input = 0;
-//        sharedVars_cpu1toCpu2.use_power_budget_dc_shared = 0;
-//        sharedVars_cpu1toCpu2.safe_parking_allowed = 1;
-//
-//        /* set flag */
-//        global_error_code |= (1UL << ERROR_EXT_PWR_LOSS_BOTH);
-//        break;
-//    }
-//
-//    if(pwr_loss_error == 0b01)
-//    {
-//        if(!(global_error_code_handled & (1UL << ERROR_EXT_PWR_LOSS_MAIN)))
-//        {
-//            /* send EMCY - send it once */
-//            canopen_emcy_send_power_line_failure(1);
-//
-//            /* mark it sent */
-//            global_error_code_sent |= (1UL << ERROR_EXT_PWR_LOSS_MAIN);
-//
-//            /* mark handled */
-//            global_error_code_handled |= (1UL << ERROR_EXT_PWR_LOSS_MAIN);
-//        } else
-//        {
-//            /* there is nothing more we can do
-//             * let IOP decide next step
-//             * till then, continue as normal, but with reduced effect
-//             * */
-//        }
-//    } else
-//    {
-//        /* send EMCY CLEAR - send it once */
-//        if(global_error_code_sent & (1UL << ERROR_EXT_PWR_LOSS_MAIN))
-//            canopen_emcy_send_power_line_failure(0);
-//
-//        global_error_code_sent    &= ~(1UL << ERROR_EXT_PWR_LOSS_MAIN);
-//        global_error_code_handled &= ~(1UL << ERROR_EXT_PWR_LOSS_MAIN);
-//    }
-//
-//    if(pwr_loss_error == 0b10)
-//    {
-//        if(!(global_error_code_handled & (1UL << ERROR_EXT_PWR_LOSS_OTHER)))
-//        {
-//            /* send EMCY - send it once */
-//            canopen_emcy_send_power_line_failure(1);
-//
-//            /* mark it sent */
-//            global_error_code_sent |= (1UL << ERROR_EXT_PWR_LOSS_OTHER);
-//
-//            /* mark handled */
-//            global_error_code_handled |= (1UL << ERROR_EXT_PWR_LOSS_OTHER);
-//        } else
-//        {
-//            /* there is nothing more we can do
-//             * let IOP decide next step
-//             * till then, continue as normal, but with reduced effect
-//             * */
-//        }
-//    } else
-//    {
-//        /* send EMCY CLEAR - send it once */
-//        if(global_error_code_sent & (1UL << ERROR_EXT_PWR_LOSS_OTHER))
-//            canopen_emcy_send_power_line_failure(0);
-//
-//        global_error_code_sent    &= ~(1UL << ERROR_EXT_PWR_LOSS_OTHER);
-//        global_error_code_handled &= ~(1UL << ERROR_EXT_PWR_LOSS_OTHER);
-//    }
-//
-//    if(pwr_loss_error == 0b11)
-//    {
-//        if(!(global_error_code_handled & (1UL << ERROR_EXT_PWR_LOSS_BOTH)))
-//        {
-//            /* send EMCY - send it once */
-//            canopen_emcy_send_power_line_failure_both(1);
-//
-//            /* mark it sent */
-//            global_error_code_sent |= (1UL << ERROR_EXT_PWR_LOSS_BOTH);
-//
-//            /* mark handled */
-//            global_error_code_handled |= (1UL << ERROR_EXT_PWR_LOSS_BOTH);
-//        } else
-//        {
-//            ;
-//            /* there is nothing more we can do
-//             * let IOP decide next step
-//             * */
-//        }
-//    } else
-//    {
-//        /* send EMCY CLEAR - send it once */
-//        if(global_error_code_sent & (1UL << ERROR_EXT_PWR_LOSS_BOTH))
-//            canopen_emcy_send_power_line_failure_both(0);
-//
-//        /* mark as unhandled - nothing need to be done  */
-//        global_error_code_sent    &= ~(1UL << ERROR_EXT_PWR_LOSS_BOTH);
-//        global_error_code_handled &= ~(1UL << ERROR_EXT_PWR_LOSS_BOTH);
-//    }
-//}
 
-
-///* brief: check State of Charge error
-// *
-// * details: checks error flag
-// *          turns off switches and DCDC
-// *          signal IOP with EMCY
-// *
-// * requirements:
-// *
-// * argument: none
-// *
-// * return: none
-// *
-// * note: non-blocking
-// *
-// * presumptions:
-// *
-// */
-//static void error_state_of_charge(void)
-//{
-//    static bool timer_started = false;
-//    static uint32_t time_start;
-//
-//    if(global_error_code & (1UL << ERROR_SOC_BELOW_SAFETY_THRESHOLD))
-//    {
-//        if(!(global_error_code_handled & (1UL << ERROR_SOC_BELOW_SAFETY_THRESHOLD)))
-//        {
-//            if(!timer_started)
-//            {
-//                time_start = timer_get_ticks() & 0x7fffffff;
-//                timer_started = true;
-//            }
-//
-//            /* ms ticks, enough with 127 ms */
-//            int16_t elapsed_time = (timer_get_ticks() & 0x7fffffff) - time_start;
-//            //TODO - Time does not handle wrap around
-//
-//            /* a short timeout might be needed
-//             * in the meaning or inaccuracy of measurement
-//             * send if enough measurements/mean value is giving this error */
-//
-//            if(100 < elapsed_time)
-//            {
-//                /* mark handled */
-//                global_error_code_handled |= (1UL << ERROR_SOC_BELOW_SAFETY_THRESHOLD);
-//
-//                /* send EMCY */
-//                canopen_emcy_send_state_of_charge_safety_error(1, sharedVars_cpu2toCpu1.remaining_energy_to_min_soc_energy_bank);
-//
-//                /* mark it sent */
-//                global_error_code_sent |= (1UL << ERROR_SOC_BELOW_SAFETY_THRESHOLD);
-//
-//                /* mark handled */
-//                global_error_code_handled |= (1UL << ERROR_SOC_BELOW_SAFETY_THRESHOLD);
-//
-//                /* clear the timer */
-//                timer_started = false;
-//            }
-//        } else
-//        {
-//            /* there is nothing more we can do
-//             * let IOP decide next step
-//             * */
-//
-//            /* clear the timer */
-//            timer_started = false;
-//        }
-//    } else
-//    {
-//        /* send EMCY CLEAR - send it once */
-//        if(global_error_code_sent & (1UL << ERROR_SOC_BELOW_SAFETY_THRESHOLD))
-//            canopen_emcy_send_state_of_charge_safety_error(0, sharedVars_cpu2toCpu1.soc_energy_bank);
-//
-//        /* mark as unhandled - nothing need to be done  */
-//        global_error_code_sent    &= ~(1UL << ERROR_SOC_BELOW_SAFETY_THRESHOLD);
-//        global_error_code_handled &= ~(1UL << ERROR_SOC_BELOW_SAFETY_THRESHOLD);
-//
-//        /* clear the timer */
-//        timer_started = false;
-//    }
-//
-//    /* ERROR_SOC_BELOW_LIMIT
-//     * not enough Voltage for boosting to S_TARGET_VOLTAGE_AT_DC_BUS
-//     * */
-//    if(global_error_code & (1UL << ERROR_SOC_BELOW_LIMIT))
-//    {
-//        if(!(global_error_code_handled & (1UL << ERROR_SOC_BELOW_LIMIT)))
-//        {
-//            bool error_persist = false;
-//
-//            /* test error */
-//            /*TODO Test if error persist
-//             * in the meaning or inaccuracy of measurement
-//             * send if enough measurements/mean value is giving this error
-//             * */
-//
-//            if(error_persist)
-//            {
-//                /* mark handled */
-//                global_error_code_handled |= (1UL << ERROR_SOC_BELOW_LIMIT);
-//
-//                /* send EMCY */
-//                //TODO change to Voltage over energy bank
-//                canopen_emcy_send_state_of_charge_min_error(1, sharedVars_cpu2toCpu1.soc_energy_bank);
-//
-//                /* mark it sent */
-//                global_error_code_sent |= (1UL << ERROR_SOC_BELOW_LIMIT);
-//            }
-//        } else
-//        {
-//            /* there is nothing more we can do
-//             * let IOP decide next step
-//             * */
-//        }
-//    } else
-//    {
-//        /* send EMCY CLEAR - send it once */
-//        if(global_error_code_sent & (1UL << ERROR_SOC_BELOW_LIMIT))
-//            canopen_emcy_send_state_of_charge_min_error(0, sharedVars_cpu2toCpu1.soc_energy_bank);
-//
-//        /* mark as unhandled - nothing need to be done  */
-//        global_error_code_sent    &= ~(1UL << ERROR_SOC_BELOW_LIMIT);
-//        global_error_code_handled &= ~(1UL << ERROR_SOC_BELOW_LIMIT);
-//    }
-//}

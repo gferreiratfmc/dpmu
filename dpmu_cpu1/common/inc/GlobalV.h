@@ -50,6 +50,10 @@ enum Operating_state
     RegulateVoltageInit = 140,
     RegulateVoltage = 141,
     RegulateVoltageStop = 142,
+    RegulateVoltageSyncInit= 240,
+    RegulateVoltageSync,
+    RegulateVoltageWaitSync,
+    RegulateVoltageStopSync,
     Fault = 15,                      // 15
     FaultDelay,                 // 16
     BalancingInit = 18,              // 18

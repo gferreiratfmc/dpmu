@@ -15,5 +15,7 @@ void HandleDCBusShortCircuit();
 void HandleDCBusOverVoltage();
 void HandleDCBusUnderVoltage();
 void HandleOverTemperature();
+void SignalFaultStateToCPU1();
+void HandleFaultStateAckFromCPU1();
 
 #endif /* APP_INC_ERROR_HANDLING_CPU2_H_ */

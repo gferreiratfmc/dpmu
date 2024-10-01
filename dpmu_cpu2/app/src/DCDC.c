@@ -123,7 +123,6 @@ void DCDCInitializePWMForRegulateVoltage()
 {
     uint16_t dutyCycle;
 
-    DCDC_VI.avgVStore / DCDC_VI.avgVBus;
 
     dutyCycle = BOOST_TIME_BASE_PERIOD * ( DCDC_VI.avgVStore / DCDC_VI.avgVBus );
 

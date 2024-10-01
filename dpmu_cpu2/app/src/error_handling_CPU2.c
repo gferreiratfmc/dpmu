@@ -254,4 +254,14 @@ void HandleOverTemperature() {
     stateTemp.State_Current = stateTemp.State_Next;
 }
 
+void SignalFaultStateToCPU1() {
+    sharedVars_cpu2toCpu1.faultOccured = true;
+}
+
+void HandleFaultStateAckFromCPU1(){
+    if(sharedVars_cpu1toCpu2.DPMUAppInfoInitializedFlag == false) {
+        sharedVars_cpu2toCpu1.faultOccured = false;
+    }
+
+}
 

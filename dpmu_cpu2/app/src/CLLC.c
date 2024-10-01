@@ -84,12 +84,7 @@ void CllcControlLoop(uint16_t cellNr ) {
         HAL_PWM_setPhaseShift(QABPWM_14_15_BASE, PhaseshiftCount);
 
     }
-    //    if( ( timer_get_ticks()%250 ) == 0) {
-    //        PRINT( "PhaseshiftCount[%3d], CllcPIout.calculated_error[%8.2f], [I_Dab2fIdx]:[%8.2f] [I_Dab3fIdx]:[%8.2f]\r\n",
-    //               PhaseshiftCount, CllcPIout.calculated_error,
-    //               -sensorVector[I_Dab2fIdx].realValue,
-    //               -sensorVector[I_Dab3fIdx].realValue );
-    //    }
+
 }
 
 PiOutput_t Pi_ControllerCllCFloat(PI_Parameters_t PI, PiOutput_t PIout, float Ref, float ValueRead)

@@ -117,6 +117,8 @@ typedef struct sharedVars_cpu2toCpu1_t // commonCpu2ToCpu1
     float current_load_current;              /* last measured load current */
     float current_input_current;
     shared_energy_bank_t energy_bank;
+
+    bool faultOccured;
 } sharedVars_cpu2toCpu1_t;
 
 
