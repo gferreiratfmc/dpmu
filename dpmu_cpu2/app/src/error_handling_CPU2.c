@@ -84,15 +84,6 @@ void HandleLoadOverCurrent(float max_allowed_load_current, uint16_t efuse_top_ha
     }
     stateLOC.State_Current = stateLOC.State_Next;
 
-    // Original OLC Handler
-    //    /* check for DC bus load current */
-    //    if (sensorVector[ISen1fIdx].realValue > (float) max_allowed_load_current|| efuse_top_half_flag == true) {
-    //        PRINT("sensorVector[ISen1fIdx]:[%5.2f] max_allowed_load_current:[%5.2f] ",sensorVector[ISen1fIdx].realValue, max_allowed_load_current);
-    //        sharedVars_cpu2toCpu1.error_code |= (1UL << ERROR_LOAD_OVER_CURRENT);
-    //        dpmuErrorOcurredFlag = true;
-    //    } else {
-    //        sharedVars_cpu2toCpu1.error_code &= ~(1UL << ERROR_LOAD_OVER_CURRENT);
-    //    }
 }
 
 
@@ -102,12 +93,12 @@ void HandleDCBusShortCircuit()
 
     if (    fabsf(sensorVector[ISen1fIdx].realValue) > DPMU_SHORT_CIRCUIT_CURRENT ||
             sensorVector[ISen2fIdx].realValue > DPMU_SUPERCAP_SHORT_CIRCUIT_CURRENT ||
-            fabsf(sensorVector[IF_1fIdx].realValue) > DPMU_SHORT_CIRCUIT_CURRENT ||
-            efuse_top_half_flag == true) {
-        switches_Qlb( SW_OFF );
-        switches_Qsb( SW_OFF );
-        switches_Qinb( SW_OFF );
-        StopAllEPWMs();
+            fabsf(sensorVector[IF_1fIdx].realValue) > DPMU_SHORT_CIRCUIT_CURRENT ) {
+            //efuse_top_half_flag == true) {
+//        switches_Qlb( SW_OFF );
+//        switches_Qsb( SW_OFF );
+//        switches_Qinb( SW_OFF );
+//        StopAllEPWMs();
         sharedVars_cpu2toCpu1.error_code |= (1UL << ERROR_BUS_SHORT_CIRCUIT);
         dpmuErrorOcurredFlag = true;
         PRINT("ISen1f:[%5.2f]  or ISen2f:[%5.2f] or IF_1fIdx:[%5.2f] > SHORT_CIRCUIT_CURRENT:[%5.2f]\r\n",

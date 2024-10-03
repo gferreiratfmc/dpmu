@@ -53,6 +53,7 @@ bool cellVoltageOverThreshold;
 
 void CheckCommandFromIOP(void);
 void DefineDPMUSafeState(void);
+void DefineDPMUErrorSafeState( void );
 int DoneWithInrush(void);
 void TrackStatesForDEBUG(void);
 void EnableOrDisblePWM();
@@ -331,7 +332,11 @@ void StateMachine(void)
         case StopEPWMs:
 
             StopAllEPWMs();
-            StateVector.State_Next = Idle;
+            if( DpmuErrorOcurred() == true ) {
+                StateVector.State_Next = Fault;
+            } else {
+                StateVector.State_Next = Idle;
+            }
             break;
 
         case Idle:
@@ -351,8 +356,6 @@ void StateMachine(void)
     /* check if IOP request for  a change of state */
     CheckCommandFromIOP();
 
-
-
     if( !DPMUSwitchesStatesOK ) {
         DefineDPMUSafeState();
     }
@@ -364,7 +367,8 @@ void StateMachine(void)
     }
 
     if( DpmuErrorOcurred() == true ) {
-        StateVector.State_Next = Fault;
+        //StateVector.State_Next = Fault;
+        DefineDPMUErrorSafeState();
     }
 
     /* update current state */
@@ -427,6 +431,37 @@ void DefineDPMUSafeState( void ) {
         default:
             break;
     }
+}
+
+
+void DefineDPMUErrorSafeState( void ) {
+
+    switch( StateVector.State_Current ) {
+        case Idle:
+            break;
+        case TrickleChargeInit:
+        case TrickleChargeDelay:
+        case TrickleCharge:
+        case ChargeInit:
+        case ChargeRamp:
+        case Charge:
+            StateVector.State_Next = ChargeStop;
+            break;
+
+        case RegulateInit:
+        case Regulate:
+            StateVector.State_Next = RegulateStop;
+            break;
+
+        case RegulateVoltageInit:
+        case RegulateVoltage:
+            StateVector.State_Next = RegulateStop;
+            break;
+
+        default:
+            break;
+    }
+    DPMUInitializedFlag = false;
 }
 
 bool DPMUInitialized() {
