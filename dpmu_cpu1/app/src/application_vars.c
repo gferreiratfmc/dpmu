@@ -316,9 +316,7 @@ bool RetriveAppVarsFromExtFlash() {
             break;
 
         case RAVEnd:
-            if( validDataFound == true) {
-                currentAppVarsValid = true;
-            }
+            currentAppVarsValid = true;
             retValue = true;
             RAVSM.State_Next = RAVWaitStart;
             break;
@@ -343,6 +341,8 @@ bool RetriveSerialNumberFromFlash( uint32_t *serialNumber32bits ){
     uint32_t serNumberCMD;
     static uint32_t serialNumberIdx =0;
     uint16_t auxIdx = 0;
+    static uint16_t timeOutCount;
+    static app_vars_t appVarsTimeout;
 
     retVal = false;
     switch( RSNSM.State_Current ) {
@@ -350,34 +350,39 @@ bool RetriveSerialNumberFromFlash( uint32_t *serialNumber32bits ){
             AppVarsReadRequest();
             RSNSM.State_Next = RSNRetriveFromFlash;
             serialNumberIdx = 0;
+            timeOutCount = 0;
             break;
         case RSNRetriveFromFlash:
             HandleAppVarsOnExternalFlashSM();
+            timeOutCount++;
             if( AppVarsReadRequestReady() ) {
                 appVars = GetCurrentAppVars();
-                //Serial_debug(DEBUG_INFO, &cli_serial, "Retrieved appVars->serialNumber = [");
-                //for(int i = 0; i<SERIAL_NUMBER_SIZE_IN_CHARS;i++) {
-                //    Serial_debug(DEBUG_INFO, &cli_serial, "0x%02X, ", appVars->serialNumber[i]);
-                //}
-                //Serial_debug(DEBUG_INFO, &cli_serial, "]\r\n");
+                Serial_debug(DEBUG_INFO, &cli_serial, "Retrieved appVars->serialNumber = [");
+                for(int i = 0; i<SERIAL_NUMBER_SIZE_IN_CHARS;i++) {
+                    Serial_debug(DEBUG_INFO, &cli_serial, "%c ", appVars->serialNumber[i]);
+                }
+                Serial_debug(DEBUG_INFO, &cli_serial, "]\r\n");
                 RSNSM.State_Next = RSNReturnPartialSerialNumber;
+                Serial_debug(DEBUG_CRITICAL, &cli_serial, "RetriveSerialNumberFromFlash ended with timeOutCount=[%d]\r\n", timeOutCount );
+            }
+            if(timeOutCount==65535){
+                strncpy( (char *)appVarsTimeout.serialNumber, "TIME OUT READING SERIAL NUMBER", SERIAL_NUMBER_SIZE_IN_CHARS);
+                appVars = &appVarsTimeout;
+                RSNSM.State_Next = RSNReturnPartialSerialNumber;
+                Serial_debug(DEBUG_CRITICAL, &cli_serial, "RetriveSerialNumberFromFlash ended with timeOutCount=[%d]\r\n", timeOutCount );
             }
             break;
         case RSNReturnPartialSerialNumber:
             serNumberCMD = (serialNumberIdx & 0x000000FF) << 24;
             *serialNumber32bits = serNumberCMD;
-            //Serial_debug(DEBUG_INFO, &cli_serial, "RetriveSerialNumberFromFlash serialNumberIdx=[%d] serNumberCMD=[0x%08p]\r\n", serialNumberIdx, serNumberCMD );
             auxIdx = serialNumberIdx * 3;
             for( int i=0; i<3; i++) {
                 charTemp = appVars->serialNumber[auxIdx+i];
-                //Serial_debug(DEBUG_INFO, &cli_serial, "charTemp=[0x%08p]\r\n", charTemp );
                 charTemp = charTemp << (8*i);
-                //Serial_debug(DEBUG_INFO, &cli_serial, "charTemp << (8*i)=[0x%08p]\r\n", charTemp );
                 charTemp = charTemp & mask[i];
-                //Serial_debug(DEBUG_INFO, &cli_serial, "charTemp & mask[i]=[0x%08p]\r\n", charTemp );
                 *serialNumber32bits = *serialNumber32bits | charTemp;
-                //Serial_debug(DEBUG_INFO, &cli_serial, "auxIdx=[%d] charTemp=[0x%08p] serialNumber32bits=[0x%08p]\r\n",auxIdx, charTemp, *serialNumber32bits);
             }
+            Serial_debug(DEBUG_CRITICAL, &cli_serial, "Partial SN[%lu]:[0x%08p]\r\n", serialNumberIdx, *serialNumber32bits );
             retVal = true;
             RSNSM.State_Next = RSNIncremetIdx;
             break;
