@@ -19,13 +19,15 @@
 #define BUCK_NORMAL_MODE_TIME_BASE_PERIOD 714
 #define BUCK_PULSE_MODE_TIME_BASE_PERIOD 5000
 #define MAX_INDUCTOR_BUCK_CURRENT 5.0
-#define MAX_INDUCTOR_BOOST_CURRENT 19.0
+//#define MAX_INDUCTOR_BOOST_CURRENT 17.0
+#define MAX_INDUCTOR_BOOST_CURRENT 3.0
 #define NUMBER_OF_CELLS 30
 #define MAX_VOLTAGE_ENERGY_BANK 90.0
 #define MAX_VOLTAGE_ENERGY_CELL 3.0
 #define MAX_DPMU_OUTPUT_CURRENT 20.0
 #define DPMU_SHORT_CIRCUIT_CURRENT (MAX_DPMU_OUTPUT_CURRENT * 1.75)
-#define DPMU_SUPERCAP_SHORT_CIRCUIT_CURRENT (MAX_INDUCTOR_BOOST_CURRENT * 1.75)
+//#define DPMU_SUPERCAP_SHORT_CIRCUIT_CURRENT 25.0
+#define DPMU_SUPERCAP_SHORT_CIRCUIT_CURRENT 4.0
 #define MAGIC_NUMBER 0xDEADFACE
 #define SERIAL_NUMBER_SIZE_IN_CHARS 30
 
@@ -47,9 +49,11 @@ enum Operating_state
     RegulateInit,               // 12
     Regulate,                   // 13
     RegulateStop,               // 14
+    RegulateLoadShortCircuitStop = 100,
     RegulateVoltageInit = 140,
     RegulateVoltage = 141,
     RegulateVoltageStop = 142,
+    RegulateVoltageLoadShortCircuitStop = 150,
     Fault = 15,                      // 15
     FaultDelay,                 // 16
     BalancingInit = 18,              // 18

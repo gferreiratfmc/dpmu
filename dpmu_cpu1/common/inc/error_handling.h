@@ -80,6 +80,7 @@ typedef enum error_codes {
     ERROR_EXT_PWR_LOSS_MAIN,
     ERROR_EXT_PWR_LOSS_OTHER,
     ERROR_EXT_PWR_LOSS_BOTH,
+    ERROR_SUPERCAP_SHORT_CIRCUIT,
     NR_OF_ERROR_CODES   /* MUST BE THE LAST ONE */
 } error_codes_t;
 

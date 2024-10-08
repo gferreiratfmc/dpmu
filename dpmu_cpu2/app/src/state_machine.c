@@ -52,7 +52,7 @@ bool cellVoltageOverThreshold;
 
 
 void CheckCommandFromIOP(void);
-void DefineDPMUSafeState(void);
+void DefineDPMUSwitchesSafeState(void);
 int DoneWithInrush(void);
 void TrackStatesForDEBUG(void);
 void EnableOrDisblePWM();
@@ -288,6 +288,14 @@ void StateMachine(void)
             }
             break;
 
+        case RegulateLoadShortCircuitStop:
+            DCDC_VI.I_Ref_Real = 0.0;
+            DCDC_current_boost_loop_float();
+            if( sensorVector[ISen2fIdx].realValue < 0.25 ) {
+                StateVector.State_Next = Fault;
+            }
+            break;
+
         case RegulateVoltageInit:
 //            DCDC_VI.I_Ref_Real = 0.0;
 //            DCDC_current_boost_loop_float();
@@ -325,6 +333,7 @@ void StateMachine(void)
 
             DPMUInitializedFlag = false;
 
+
             StopAllEPWMs();
 
             ResetDpmuErrorOcurred();
@@ -357,10 +366,16 @@ void StateMachine(void)
     CheckCommandFromIOP();
 
 
-
     if( !DPMUSwitchesStatesOK ) {
-        DefineDPMUSafeState();
+        DefineDPMUSwitchesSafeState();
     }
+
+
+    if( DpmuErrorOcurred() == true ) {
+        StateVector.State_Next = Fault;
+        //DefineDPMUErrorSafeState();
+    }
+
     //TrackStatesForDEBUG();
     /* print next state then state changes */
     if(StateVector.State_Current  != StateVector.State_Next) {
@@ -368,18 +383,14 @@ void StateMachine(void)
         PRINT("StateVector.State_Current %02d -> Next state %02d\r\n",StateVector.State_Current, StateVector.State_Next);
     }
 
-    if( DpmuErrorOcurred() == true ) {
-        StateVector.State_Next = Fault;
-    }
 
     /* update current state */
     StateVector.State_Before = StateVector.State_Current;
     StateVector.State_Current = StateVector.State_Next;
 
 
-
     /* reflect state in CANopen OD */
-//    sharedVars_cpu2toCpu1.current_state = convert_current_state_to_OD(StateVector.State_Current);
+    //    sharedVars_cpu2toCpu1.current_state = convert_current_state_to_OD(StateVector.State_Current);
     sharedVars_cpu2toCpu1.current_state = StateVector.State_Current;
 
     CounterGroup.StateMachineCounter++;
@@ -407,7 +418,7 @@ void VerifyDPMUSwitchesOK(void) {
     }
 }
 
-void DefineDPMUSafeState( void ) {
+void DefineDPMUSwitchesSafeState( void ) {
 
     switch( StateVector.State_Current ) {
         case Idle:
@@ -433,6 +444,8 @@ void DefineDPMUSafeState( void ) {
             break;
     }
 }
+
+
 
 bool DPMUInitialized() {
     return DPMUInitializedFlag;

@@ -20,12 +20,18 @@
 
 bool dpmuErrorOcurredFlag = false;
 
+error_handling_type_t dpmuErrorOcurredType = NO_HANDLING_ERROR;
+
+error_handling_type_t DpmuHandlingErrorOcurred() {
+    return dpmuErrorOcurredType;
+}
 
 bool DpmuErrorOcurred() {
     return dpmuErrorOcurredFlag;
 }
 
 void ResetDpmuErrorOcurred() {
+    dpmuErrorOcurredType = NO_HANDLING_ERROR;
     dpmuErrorOcurredFlag = false;
 }
 
@@ -37,8 +43,6 @@ void HandleLoadOverCurrent(float max_allowed_load_current, uint16_t efuse_top_ha
 
     static uint32_t lastTime = 0;
     static States_t stateLOC = {0};
-
-
 
     switch( stateLOC.State_Current ) {
         case LOCInit:
@@ -67,12 +71,18 @@ void HandleLoadOverCurrent(float max_allowed_load_current, uint16_t efuse_top_ha
             PRINT("sensorVector[ISen1fIdx]:[%5.2f] max_allowed_load_current:[%5.2f] ",sensorVector[ISen1fIdx].realValue, max_allowed_load_current);
             // Sends main state_machine to Fault state
             dpmuErrorOcurredFlag = true;
+            dpmuErrorOcurredType = LOAD_OVER_CURRENT_HANDLING_ERROR;
             stateLOC.State_Next = LOCEnd;
             break;
         case LOCEnd:
-            if( dpmuErrorOcurredFlag == false ) {
+            if( dpmuErrorOcurredFlag == false) {
                 stateLOC.State_Next = LOCInit;
             }
+
+            if( dpmuErrorOcurredType == NO_HANDLING_ERROR ) {
+                stateLOC.State_Next = LOCInit;
+            }
+
             break;
 
         default:
@@ -84,35 +94,40 @@ void HandleLoadOverCurrent(float max_allowed_load_current, uint16_t efuse_top_ha
     }
     stateLOC.State_Current = stateLOC.State_Next;
 
-    // Original OLC Handler
-    //    /* check for DC bus load current */
-    //    if (sensorVector[ISen1fIdx].realValue > (float) max_allowed_load_current|| efuse_top_half_flag == true) {
-    //        PRINT("sensorVector[ISen1fIdx]:[%5.2f] max_allowed_load_current:[%5.2f] ",sensorVector[ISen1fIdx].realValue, max_allowed_load_current);
-    //        sharedVars_cpu2toCpu1.error_code |= (1UL << ERROR_LOAD_OVER_CURRENT);
-    //        dpmuErrorOcurredFlag = true;
-    //    } else {
-    //        sharedVars_cpu2toCpu1.error_code &= ~(1UL << ERROR_LOAD_OVER_CURRENT);
-    //    }
 }
 
 
 void HandleDCBusShortCircuit()
 {
-    /* check for DC bus shortage verifying all current sensors 25% above maximum DPMU current*/
+    /* check for DC bus shortage verifying all current sensors above maximum short-circuit threshold */
+
+    if (sensorVector[ISen2fIdx].realValue > DPMU_SUPERCAP_SHORT_CIRCUIT_CURRENT ) {
+        StopAllEPWMs();
+        dpmuErrorOcurredFlag = true;
+        dpmuErrorOcurredType = SUPERCAP_SHORT_CIRCUIT_HANDLING_ERROR;
+//        switches_Qlb( SW_OFF );
+//        switches_Qsb( SW_OFF );
+//        switches_Qinb( SW_OFF );
+        sharedVars_cpu2toCpu1.error_code |= (1UL << ERROR_SUPERCAP_SHORT_CIRCUIT);
+        PRINT("SUPERCAP SHORT CIRCUIT: ISen2f:[%5.2f] > DPMU_SUPERCAP_SHORT_CIRCUIT_CURRENT:[%5.2f]\r\n",
+                     sensorVector[ISen2fIdx].realValue,
+                     DPMU_SUPERCAP_SHORT_CIRCUIT_CURRENT);
+
+    } else {
+        sharedVars_cpu2toCpu1.error_code &= ~(1UL << ERROR_SUPERCAP_SHORT_CIRCUIT);
+    }
 
     if (    fabsf(sensorVector[ISen1fIdx].realValue) > DPMU_SHORT_CIRCUIT_CURRENT ||
-            sensorVector[ISen2fIdx].realValue > DPMU_SUPERCAP_SHORT_CIRCUIT_CURRENT ||
-            fabsf(sensorVector[IF_1fIdx].realValue) > DPMU_SHORT_CIRCUIT_CURRENT ||
-            efuse_top_half_flag == true) {
-        switches_Qlb( SW_OFF );
-        switches_Qsb( SW_OFF );
-        switches_Qinb( SW_OFF );
+            fabsf(sensorVector[IF_1fIdx].realValue) > DPMU_SHORT_CIRCUIT_CURRENT ) {
         StopAllEPWMs();
-        sharedVars_cpu2toCpu1.error_code |= (1UL << ERROR_BUS_SHORT_CIRCUIT);
         dpmuErrorOcurredFlag = true;
-        PRINT("ISen1f:[%5.2f]  or ISen2f:[%5.2f] or IF_1fIdx:[%5.2f] > SHORT_CIRCUIT_CURRENT:[%5.2f]\r\n",
+        dpmuErrorOcurredType = BUS_SHORT_CIRCUIT_HANDLING_ERROR;
+//        switches_Qlb( SW_OFF );
+//        switches_Qsb( SW_OFF );
+//        switches_Qinb( SW_OFF );
+        sharedVars_cpu2toCpu1.error_code |= (1UL << ERROR_BUS_SHORT_CIRCUIT);
+        PRINT("BUS SHORT CIRCUIT:ISen1f:[%5.2f]  or IF_1fIdx:[%5.2f] > SHORT_CIRCUIT_CURRENT:[%5.2f]\r\n",
                      sensorVector[ISen1fIdx].realValue,
-                     sensorVector[ISen2fIdx].realValue,
                      sensorVector[IF_1fIdx].realValue,
                      DPMU_SHORT_CIRCUIT_CURRENT);
     } else {
@@ -162,10 +177,15 @@ void HandleDCBusOverVoltage() {
                   DCDC_VI.avgVBus, sharedVars_cpu1toCpu2.max_allowed_dc_bus_voltage);
             // Sends main state_machine to Fault state
             dpmuErrorOcurredFlag = true;
+            dpmuErrorOcurredType = BUS_OVER_VOLTAGE_HANDLING_ERROR;
             stateBOV.State_Next = BOVEnd;
             break;
         case BOVEnd:
             if( dpmuErrorOcurredFlag == false ) {
+                stateBOV.State_Next = BOVInit;
+            }
+
+            if( dpmuErrorOcurredType == NO_HANDLING_ERROR ) {
                 stateBOV.State_Next = BOVInit;
             }
             break;
@@ -252,6 +272,74 @@ void HandleOverTemperature() {
             }
     }
     stateTemp.State_Current = stateTemp.State_Next;
+}
+
+
+void DefineDPMUErrorSafeState( void ) {
+
+    switch ( dpmuErrorOcurredType ) {
+
+        case SUPERCAP_SHORT_CIRCUIT_HANDLING_ERROR:
+
+            switch( StateVector.State_Current ) {
+                case TrickleChargeInit:
+                case TrickleChargeDelay:
+                case TrickleCharge:
+                case ChargeInit:
+                case ChargeRamp:
+                case Charge:
+                    StateVector.State_Next = ChargeStop;
+                break;
+
+                case RegulateInit:
+                case Regulate:
+                    StateVector.State_Next = RegulateStop;
+                    break;
+
+                case RegulateVoltageInit:
+                case RegulateVoltage:
+                    StateVector.State_Next = RegulateVoltageStop;
+                    break;
+
+                default:
+                    break;
+            }
+            break;
+
+        case  INPUT_SHORT_CIRCUIT_HANDLING_ERROR:
+            switches_Qinb(SW_OFF);
+            break;
+
+        case  LOAD_SHORT_CIRCUIT_HANDLING_ERROR:
+            switch( StateVector.State_Current ) {
+                case RegulateInit:
+                case Regulate:
+                    StateVector.State_Next = RegulateLoadShortCircuitStop;
+                    break;
+
+                case TrickleChargeInit:
+                case TrickleChargeDelay:
+                case TrickleCharge:
+                case ChargeInit:
+                case ChargeRamp:
+                case Charge:
+                    switches_Qlb(SW_OFF);
+                    break;
+
+                case RegulateVoltageInit:
+                case RegulateVoltage:
+                    HAL_StopPwmDCDC();
+                    StateVector.State_Next = Fault;
+                    break;
+                default:
+                    break;
+            }
+            break;
+
+            default:
+                break;
+        }
+    }
 }
 
 
