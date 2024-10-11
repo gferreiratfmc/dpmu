@@ -316,9 +316,9 @@ bool RetriveAppVarsFromExtFlash() {
             break;
 
         case RAVEnd:
-            if( validDataFound == true) {
+            //if( validDataFound == true) {
                 currentAppVarsValid = true;
-            }
+            //}
             retValue = true;
             RAVSM.State_Next = RAVWaitStart;
             break;
