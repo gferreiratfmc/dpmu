@@ -84,7 +84,6 @@ void main(void)
     coEventRegister_SDO_SERVER_DOMAIN_READ(log_read_domain);
 
     Serial_set_debug_level(DEBUG_ERROR);
-    Serial_set_debug_level(DEBUG_INFO);
 
     CPU1_Board_init();
 
@@ -282,8 +281,6 @@ static void check_cpu2_ind(void)
             default:
                 break;
         }
-
-
     }
 }
 
