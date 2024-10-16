@@ -19,7 +19,7 @@
 #define BUCK_NORMAL_MODE_TIME_BASE_PERIOD 714
 #define BUCK_PULSE_MODE_TIME_BASE_PERIOD 5000
 #define MAX_INDUCTOR_BUCK_CURRENT 5.0
-#define MAX_INDUCTOR_BOOST_CURRENT 19.0
+#define MAX_INDUCTOR_BOOST_CURRENT 15.0
 #define NUMBER_OF_CELLS 30
 #define MAX_VOLTAGE_ENERGY_BANK 90.0
 #define MAX_VOLTAGE_ENERGY_CELL 3.0
@@ -50,6 +50,7 @@ enum Operating_state
     RegulateVoltageInit = 140,
     RegulateVoltage = 141,
     RegulateVoltageStop = 142,
+    RegulateVoltageWait = 143,
     RegulateVoltageSyncInit= 240,
     RegulateVoltageSync,
     RegulateVoltageWaitSync,

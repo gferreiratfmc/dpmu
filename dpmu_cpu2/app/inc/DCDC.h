@@ -28,7 +28,7 @@
 #define MAXIMUM_BB_CURRENT 18.5
 #define REG_MIN_DC_BUS_VOLTAGE_RATIO 0.95
 #define REG_TARGET_DC_BUS_VOLTAGE_RATIO 0.95
-#define MIN_OUTPUT_CURRENT_TO_REGULATE_VOLTAGE  0.5
+#define MIN_OUTPUT_CURRENT_TO_REGULATE_VOLTAGE  0.1
 
 void DCDC_current_buck_loop_float( void );
 void DCDC_voltage_boost_loop_float( void );

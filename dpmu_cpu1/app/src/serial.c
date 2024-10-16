@@ -312,6 +312,7 @@ void Serial_rx_isr(struct Serial *dev)
 {
     if (SCI_getInterruptStatus(dev->_settings->sciBase) & (SCI_INT_FE | SCI_INT_OE | SCI_INT_PE | SCI_INT_RXERR)) {
         SCI_performSoftwareReset(dev->_settings->sciBase);
+        SCI_disableInterrupt( dev->_settings->sciBase, SCI_INT_RXRDY_BRKDT|SCI_INT_RXERR|SCI_INT_FE  );
     }
     if (SCI_getInterruptStatus(dev->_settings->sciBase) & SCI_INT_RXRDY_BRKDT) {
         if (dev->rx_fifo_len < FIFO_BUFSIZE) {

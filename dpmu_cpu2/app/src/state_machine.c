@@ -300,11 +300,27 @@ void StateMachine(void)
             if(  DCDC_VI.avgVBus > sharedVars_cpu1toCpu2.max_allowed_dc_bus_voltage ) {
                 StateVector.State_Next = RegulateVoltageStop;
             }
+            if( sensorVector[ISen1fIdx].realValue < MIN_OUTPUT_CURRENT_TO_REGULATE_VOLTAGE ) {
+                HAL_StopPwmDCDC();
+                StateVector.State_Next = RegulateVoltageWait;
+            }
             break;
 
         case RegulateVoltageStop:
             DPMUInitializedFlag = false;
             StateVector.State_Next = StopEPWMs;
+            break;
+
+        case RegulateVoltageWait:
+            if( DCDC_VI.avgVBus < REG_MIN_DC_BUS_VOLTAGE_RATIO * DCDC_VI.target_Voltage_At_DCBus ) {
+                if( sensorVector[ISen1fIdx].realValue >= MIN_OUTPUT_CURRENT_TO_REGULATE_VOLTAGE ) {
+                    DCDCInitializePWMForRegulateVoltage();
+                    StateVector.State_Next = RegulateVoltage;
+                }
+            }
+            if(  DCDC_VI.avgVBus > sharedVars_cpu1toCpu2.max_allowed_dc_bus_voltage ) {
+                StateVector.State_Next = RegulateVoltageStop;
+            }
             break;
 
         case RegulateVoltageSyncInit:

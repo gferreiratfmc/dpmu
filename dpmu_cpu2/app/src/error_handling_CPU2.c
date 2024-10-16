@@ -136,6 +136,7 @@ void HandleDCBusOverVoltage() {
 
             if ( DCDC_VI.avgVBus > sharedVars_cpu1toCpu2.max_allowed_dc_bus_voltage)  {
                 sharedVars_cpu2toCpu1.error_code |= (1UL << ERROR_BUS_OVER_VOLTAGE);
+                StopAllEPWMs();
                 switches_Qlb( SW_OFF );
                 stateBOV.State_Next = BOVWait;
             } else {
@@ -148,7 +149,6 @@ void HandleDCBusOverVoltage() {
                 if (DCDC_VI.avgVBus > sharedVars_cpu1toCpu2.max_allowed_dc_bus_voltage ) {
                     switches_Qinb( SW_OFF );
                     switches_Qsb( SW_OFF );
-                    StopAllEPWMs();
                     stateBOV.State_Next = BOVStopMainStateMachine;
                 } else {
                     stateBOV.State_Next = BOVInit;
