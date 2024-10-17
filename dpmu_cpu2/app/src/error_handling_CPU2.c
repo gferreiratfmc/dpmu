@@ -53,7 +53,7 @@ void HandleLoadOverCurrent(float max_allowed_load_current, uint16_t efuse_top_ha
             break;
 
         case LOCWait:
-            if( ( timer_get_ticks() - lastTime ) > 1000 ) {
+            if( ( timer_get_ticks() - lastTime ) > 100 ) {
                 if (sensorVector[ISen1fIdx].realValue > (float) max_allowed_load_current ) {
                     stateLOC.State_Next = LOCStopMainStateMachine;
                 } else {
@@ -104,10 +104,10 @@ void HandleDCBusShortCircuit()
             sensorVector[ISen2fIdx].realValue > DPMU_SUPERCAP_SHORT_CIRCUIT_CURRENT ||
             fabsf(sensorVector[IF_1fIdx].realValue) > DPMU_SHORT_CIRCUIT_CURRENT ||
             efuse_top_half_flag == true) {
+        StopAllEPWMs();
         switches_Qlb( SW_OFF );
         switches_Qsb( SW_OFF );
         switches_Qinb( SW_OFF );
-        StopAllEPWMs();
         sharedVars_cpu2toCpu1.error_code |= (1UL << ERROR_BUS_SHORT_CIRCUIT);
         dpmuErrorOcurredFlag = true;
         PRINT("ISen1f:[%5.2f]  or ISen2f:[%5.2f] or IF_1fIdx:[%5.2f] > SHORT_CIRCUIT_CURRENT:[%5.2f]\r\n",
@@ -128,8 +128,6 @@ void HandleDCBusOverVoltage() {
     static uint32_t lastTime = 0;
     static States_t stateBOV = {0};
 
-
-
     switch( stateBOV.State_Current ) {
         case BOVInit:
             lastTime = timer_get_ticks();
@@ -145,7 +143,7 @@ void HandleDCBusOverVoltage() {
             break;
 
         case BOVWait:
-            if( ( timer_get_ticks() - lastTime ) > 1000 ) {
+            if( ( timer_get_ticks() - lastTime ) > 10 ) {
                 if (DCDC_VI.avgVBus > sharedVars_cpu1toCpu2.max_allowed_dc_bus_voltage ) {
                     switches_Qinb( SW_OFF );
                     switches_Qsb( SW_OFF );

@@ -321,6 +321,10 @@ void StateMachine(void)
             if(  DCDC_VI.avgVBus > sharedVars_cpu1toCpu2.max_allowed_dc_bus_voltage ) {
                 StateVector.State_Next = RegulateVoltageStop;
             }
+            if( DCDC_VI.avgVStore < energy_bank_settings.min_voltage_applied_to_energy_bank ) {
+                StateVector.State_Next = RegulateVoltageStop;
+
+            }
             break;
 
         case RegulateVoltageSyncInit:
