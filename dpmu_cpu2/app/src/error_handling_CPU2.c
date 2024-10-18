@@ -20,6 +20,8 @@
 
 bool dpmuErrorOcurredFlag = false;
 
+dpmu_error_class_t dpmuErrorOcurredClass = DPMU_ERROR_CLASS_NO_ERROR;
+
 
 bool DpmuErrorOcurred() {
     return dpmuErrorOcurredFlag;
@@ -27,6 +29,7 @@ bool DpmuErrorOcurred() {
 
 void ResetDpmuErrorOcurred() {
     dpmuErrorOcurredFlag = false;
+    dpmuErrorOcurredClass = DPMU_ERROR_CLASS_NO_ERROR;
 }
 
 
@@ -92,15 +95,17 @@ void HandleDCBusShortCircuit()
     /* check for DC bus shortage verifying all current sensors 25% above maximum DPMU current*/
 
     if (    fabsf(sensorVector[ISen1fIdx].realValue) > DPMU_SHORT_CIRCUIT_CURRENT ||
-            sensorVector[ISen2fIdx].realValue > DPMU_SUPERCAP_SHORT_CIRCUIT_CURRENT ||
+            //sensorVector[ISen2fIdx].realValue > DPMU_SUPERCAP_SHORT_CIRCUIT_CURRENT ||
+            sensorVector[ISen2fIdx].realValue > sharedVars_cpu1toCpu2.supercap_short_circuit_current  ||
             fabsf(sensorVector[IF_1fIdx].realValue) > DPMU_SHORT_CIRCUIT_CURRENT ||
             efuse_top_half_flag == true) {
-        StopAllEPWMs();
-        switches_Qlb( SW_OFF );
-        switches_Qsb( SW_OFF );
-        switches_Qinb( SW_OFF );
-        sharedVars_cpu2toCpu1.error_code |= (1UL << ERROR_BUS_SHORT_CIRCUIT);
+
+
         dpmuErrorOcurredFlag = true;
+        dpmuErrorOcurredClass = DPMU_ERROR_CLASS_SHORT_CIRCUT;
+
+        sharedVars_cpu2toCpu1.error_code |= (1UL << ERROR_BUS_SHORT_CIRCUIT);
+
         PRINT("ISen1f:[%5.2f]  or ISen2f:[%5.2f] or IF_1fIdx:[%5.2f] > SHORT_CIRCUIT_CURRENT:[%5.2f]\r\n",
                      sensorVector[ISen1fIdx].realValue,
                      sensorVector[ISen2fIdx].realValue,

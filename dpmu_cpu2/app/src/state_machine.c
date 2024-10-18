@@ -35,11 +35,8 @@
 
 bool DPMUInitializedFlag = false;
 bool DPMUSwitchesStatesOK = false;
-extern bool updateCPU2FirmwareFlag;
 
-uint16_t trackingStates[TRACK_STATE_BUFFER_SIZE];
-uint16_t trackStatesCount = 0;
-extern uint16_t PhaseshiftCount;
+
 uint16_t TestCellNr = 1;
 
 Counters_t CounterGroup = { 0 };
@@ -54,10 +51,9 @@ bool cellVoltageOverThreshold;
 void CheckCommandFromIOP(void);
 void DefineDPMUSafeState(void);
 int DoneWithInrush(void);
-void TrackStatesForDEBUG(void);
 void EnableOrDisblePWM();
 inline void EnableEFuseBBToStopDCDC_EPWM();
-void update_debug_log(void);
+
 
 void StateMachine(void)
 {
@@ -285,6 +281,15 @@ void StateMachine(void)
             }
             break;
 
+        case RegulateEmergencyStop:
+            HAL_StopPwmDCDC();
+            if( CounterGroup.EmergencyCounter > 0) {
+                CounterGroup.EmergencyCounter--;
+            } else {
+                StateVector.State_Next = Fault;
+            }
+            break;
+
         case RegulateVoltageInit:
             switches_Qinb( SW_OFF );
             DCDCInitializePWMForRegulateVoltage();
@@ -373,20 +378,18 @@ void StateMachine(void)
     /* check if IOP request for  a change of state */
     CheckCommandFromIOP();
 
-
-
     if( !DPMUSwitchesStatesOK ) {
         DefineDPMUSafeState();
-    }
-    //TrackStatesForDEBUG();
-    /* print next state then state changes */
-    if(StateVector.State_Current  != StateVector.State_Next) {
-        ForceUpdateDebugLog();
-        PRINT("StateVector.State_Current %02d -> Next state %02d\r\n",StateVector.State_Current, StateVector.State_Next);
     }
 
     if( DpmuErrorOcurred() == true ) {
         StateVector.State_Next = Fault;
+    }
+
+    /* print next state then state changes */
+    if(StateVector.State_Current  != StateVector.State_Next) {
+        ForceUpdateDebugLog();
+        //PRINT("StateVector.State_Current %02d -> Next state %02d\r\n",StateVector.State_Current, StateVector.State_Next);
     }
 
     /* update current state */
@@ -394,9 +397,8 @@ void StateMachine(void)
     StateVector.State_Current = StateVector.State_Next;
 
 
-
     /* reflect state in CANopen OD */
-//    sharedVars_cpu2toCpu1.current_state = convert_current_state_to_OD(StateVector.State_Current);
+    // sharedVars_cpu2toCpu1.current_state = convert_current_state_to_OD(StateVector.State_Current);
     sharedVars_cpu2toCpu1.current_state = StateVector.State_Current;
 
     CounterGroup.StateMachineCounter++;
@@ -451,6 +453,23 @@ void DefineDPMUSafeState( void ) {
     }
 }
 
+void  HandleDPMUErrorClass() {
+
+    switch( DpmuErrorOcurredClass() ) {
+
+        case DPMU_ERROR_CLASS_SHORT_CIRCUT:
+            if (StateVector.State_Current != RegulateEmergencyStop) {
+                StateVector.State_Next = RegulateEmergencyStop;
+                CounterGroup.EmergencyCounter = 10;
+            }
+            break;
+
+        default:
+            break;
+
+    }
+}
+
 bool DPMUInitialized() {
     return DPMUInitializedFlag;
 }
@@ -480,22 +499,6 @@ int DoneWithInrush(void)
         CounterGroup.InrushCurrentLimiterCounter++;
     }
     return inrushComplete;
-}
-
-
-
-void TrackStatesForDEBUG(void)
-{
-    /*** For debugging purposes ***/
-    if (StateVector.State_Current != StateVector.State_Next)
-    {
-        trackingStates[trackStatesCount] = StateVector.State_Next;
-        trackStatesCount++;
-        if (trackStatesCount == TRACK_STATE_BUFFER_SIZE)
-        {
-            trackStatesCount = 0;
-        }
-    }
 }
 
 void StateMachineInit(void)

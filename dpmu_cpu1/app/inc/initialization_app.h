@@ -39,5 +39,6 @@ extern bool DPMUAppInfoInitialized[IDX_DPMU_VAR_COUNT];
 void CheckDPMUAppInfoInitializeVars(DPMU_Initialization_Vars_t DPMUappVarIdx );
 void ResetDPMUAppInfoInitializeVars();
 bool VerifyAppInfoVarInitialized( DPMU_Initialization_Vars_t DPMUappVarIdx );
+void InitializeCPU1ToCPU2SharedVariables( void );
 
 #endif /* APP_INC_INITIALIZATION_APP_H_ */

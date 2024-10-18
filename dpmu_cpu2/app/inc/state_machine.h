@@ -55,6 +55,7 @@ typedef struct Counters
     uint32_t StateMachineCounter;
     int16_t PrestateCounter;
     uint16_t InrushCurrentLimiterCounter;
+    uint16_t EmergencyCounter;
 } Counters_t;
 
 extern Counters_t CounterGroup ;

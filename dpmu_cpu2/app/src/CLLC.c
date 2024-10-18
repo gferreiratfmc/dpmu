@@ -25,7 +25,6 @@
 int16_t PhaseshiftCount = 0;
 int16_t Phaseshift[60];
 int16_t Phasepointer = 0;
-extern uint16_t PhaseShiftCount;
 uint16_t Switchthing = 0;
 
 int16_t CurrentError = 0;

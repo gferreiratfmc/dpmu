@@ -71,6 +71,7 @@ static void cli_pwm_set_phase(void);
 static void cli_test_inrush_limiter(void);
 static void cli_ext_flash(void);
 static void cli_ext_flash_chip_erase(void);
+static void cli_set_sc_shortcircuit(void);
 static void cli_test_capacitance_in_flash(void);
 static void cli_lfs_test(void);
 static void cli_debug_level(void);
@@ -148,6 +149,7 @@ static const struct CliCmd cmds[] = {
     {"",            "",                         NULL,          "  !!  PREFEREABLE WITHOUT ANY ENERGY STORAGE CONNECTED  !!" },
     {"pwm_dc",      "[chan] [duty]",            &cli_pwm_set_duty_cycle,    "set pwm channel duty cycle"                    },
     {"pwm_freq",    "[chan] [freq]",            &cli_pwm_set_frequency,     "set pwm channel frequency"                     },
+    {"scc",         "[current]",                &cli_set_sc_shortcircuit,   "set supercap short-circuit current"            },
     {NULL,          NULL,                       NULL,                       NULL                                            }
 };
 
@@ -305,6 +307,26 @@ static void cli_set_switch_state_err_msg(void)
     Serial_debug(DEBUG_INFO, &cli_serial, " 3 [0|1] turn switch SHARE on/off\r\n");
     Serial_debug(DEBUG_INFO, &cli_serial, " 4 [0|1] turn switch INBUS on/off\r\n");
 }
+
+
+static void cli_set_sc_shortcircuit(void) {
+    uint16_t nArgs;
+    float newSCShortCircuitCurrent;
+    nArgs = cli_nargs(&cli);
+    newSCShortCircuitCurrent = DPMU_SUPERCAP_SHORT_CIRCUIT_CURRENT;
+    if ( nArgs == 1 ) {
+        sscanf(cli_args(&cli), "%f", &newSCShortCircuitCurrent );
+        Serial_printf(&cli_serial, "Changing supercap short-circuit to:[%6.2f]\n\r", newSCShortCircuitCurrent);
+    } else {
+        Serial_printf(&cli_serial, "Reseting supercap short-circuit to::[%6.2f]\r\n", DPMU_SUPERCAP_SHORT_CIRCUIT_CURRENT);
+    }
+    Serial_printf(&cli_serial, "Changing supercap short-circuit from [%6.2f] to:[%6.2f]\n\r",
+                  sharedVars_cpu1toCpu2.supercap_short_circuit_current,
+                  newSCShortCircuitCurrent);
+    sharedVars_cpu1toCpu2.supercap_short_circuit_current = newSCShortCircuitCurrent;
+    Serial_set_debug_level(3);
+}
+
 
 static void cli_test_capacitance_in_flash(void)
 {

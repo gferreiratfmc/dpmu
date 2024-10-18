@@ -179,8 +179,7 @@ void main(void)
      * set CPU2, the other core, as master for source memory */
     MemCfg_setGSRAMMasterSel(MEMCFG_SECT_GS3, MEMCFG_GSRAMMASTER_CPU2);
 
-    /* Clear state vector */
-    sharedVars_cpu1toCpu2.iop_operation_request_state = 0; //TODO Set to IDLE
+    InitializeCPU1ToCPU2SharedVariables();
 
     log_debug_log_set_state(true);
 
