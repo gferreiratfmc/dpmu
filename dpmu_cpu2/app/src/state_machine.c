@@ -327,38 +327,6 @@ void StateMachine(void)
             }
             break;
 
-        case RegulateVoltageSyncInit:
-                    switches_Qinb( SW_OFF );
-                    HAL_StopPwmDCDC();
-                    HAL_DcdcRegulateVoltageSyncModePwmSetting();
-                    DCDCInitializePWMForRegulateVoltage();
-                    StateVector.State_Next = RegulateVoltageSync;
-                    break;
-
-        case RegulateVoltageSync:
-            DCDC_voltage_boost_loop_float();
-            if( DCDC_VI.avgVStore < energy_bank_settings.min_voltage_applied_to_energy_bank ) {
-                StateVector.State_Next = RegulateVoltageStopSync;
-
-            }
-            if(  DCDC_VI.avgVBus > REG_MIN_DC_BUS_VOLTAGE_RATIO * sharedVars_cpu1toCpu2.max_allowed_dc_bus_voltage ) {
-                HAL_StopPwmDCDC();
-                StateVector.State_Next = RegulateVoltageWaitSync;
-            }
-            break;
-
-        case RegulateVoltageWaitSync:
-            if( DCDC_VI.avgVBus < REG_MIN_DC_BUS_VOLTAGE_RATIO * DCDC_VI.target_Voltage_At_DCBus ) {
-                DCDCInitializePWMForRegulateVoltage();
-                StateVector.State_Next = RegulateVoltageSync;
-            }
-            break;
-
-        case RegulateVoltageStopSync:
-            DPMUInitializedFlag = false;
-            StateVector.State_Next = StopEPWMs;
-            break;
-
         case Fault:
             HAL_StopPwmDCDC();
 

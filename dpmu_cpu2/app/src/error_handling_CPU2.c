@@ -84,15 +84,6 @@ void HandleLoadOverCurrent(float max_allowed_load_current, uint16_t efuse_top_ha
     }
     stateLOC.State_Current = stateLOC.State_Next;
 
-    // Original OLC Handler
-    //    /* check for DC bus load current */
-    //    if (sensorVector[ISen1fIdx].realValue > (float) max_allowed_load_current|| efuse_top_half_flag == true) {
-    //        PRINT("sensorVector[ISen1fIdx]:[%5.2f] max_allowed_load_current:[%5.2f] ",sensorVector[ISen1fIdx].realValue, max_allowed_load_current);
-    //        sharedVars_cpu2toCpu1.error_code |= (1UL << ERROR_LOAD_OVER_CURRENT);
-    //        dpmuErrorOcurredFlag = true;
-    //    } else {
-    //        sharedVars_cpu2toCpu1.error_code &= ~(1UL << ERROR_LOAD_OVER_CURRENT);
-    //    }
 }
 
 
