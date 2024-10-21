@@ -100,7 +100,7 @@ void log_read_domain(UNSIGNED16 index, UNSIGNED8 subindex, UNSIGNED32 domainBufS
     if(I_DEBUG_LOG == index)
     {
         if( debug_log_last_read_address >= debug_log_next_free_address   ) {
-            debug_log_last_read_address = debug_log_last_read_address;
+            //debug_log_last_read_address = debug_log_last_read_address;
             return;
         }
         start_address = debug_log_last_read_address;
@@ -481,7 +481,7 @@ bool calc_next_free_addr_and_verify_erase_sector(uint32_t can_log_current_write_
                 can_log_last_read_address = CAN_LOG_ADDRESS_START;
             } else {
 
-                update_last_read_addr_sector_desc.sector = update_last_read_addr_sector;
+                update_last_read_addr_sector_desc.sector = (ext_flash_sector_t)update_last_read_addr_sector;
                 look_up_start_address_of_sector( &update_last_read_addr_sector_desc );
                 can_log_last_read_address = update_last_read_addr_sector_desc.addr;
             }
@@ -647,6 +647,8 @@ void log_can_state_machine(void) {
 
 
             canLogState.State_Next = WaitingEraseDone;
+
+            break;
 
         case WaitingEraseDone:
             if( ext_flash_ready() ) {

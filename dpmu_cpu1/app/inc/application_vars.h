@@ -12,6 +12,10 @@
 #define APP_INC_APPLICATION_VARS_H_
 
 typedef enum {
+    MANUFACTURER_PARAMETER_CRC_CPU = 0,
+}  manufacturer_parameter_idx_t;
+
+typedef enum {
     AppVarsRead,
     AppVarsWrite,
     AppVarsWait
@@ -34,5 +38,6 @@ bool RetriveSerialNumberFromFlash( uint32_t *serialNumber32bits );
 void SaveSerialNumberToFlash( uint32_t serNumberCMD );
 void AppVarsInformEntireFlashResetInitiated();
 void AppVarsInformEntireFlashResetReady();
+void RestoreManucfturerDefinedParemters( uint32_t parameterIndex, uint32_t *outputValue );
 
 #endif /* APP_INC_APPLICATION_VARS_H_ */

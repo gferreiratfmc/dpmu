@@ -61,6 +61,7 @@ static inline uint8_t indices_I_RESTORE_DEFAULT_PARAMETERS(UNSIGNED8 subIndex)
     uint8_t retVal = CO_FALSE;
     static uint32_t value;
     static uint32_t serialNumber32bits;
+    static uint32_t manufacturerParameter;
 
 
     switch (subIndex)
@@ -80,6 +81,10 @@ static inline uint8_t indices_I_RESTORE_DEFAULT_PARAMETERS(UNSIGNED8 subIndex)
     case S_RESTORE_MANUFACTURER_DEFINED_DEFAULT_PARAMETERS:
         retVal = coOdGetObj_u32(I_RESTORE_DEFAULT_PARAMETERS, S_RESTORE_MANUFACTURER_DEFINED_DEFAULT_PARAMETERS, &value);
         Serial_debug(DEBUG_INFO, &cli_serial, "S_RESTORE_MANUFACTURER_DEFINED_DEFAULT_PARAMETERS: 0x%x\r\n", value);
+        //Serial_printf(&cli_serial, "%s S_RESTORE_MANUFACTURER_DEFINED_DEFAULT_PARAMETERS: 0x%08p retVal[%d]\r\n",
+        //              __FUNCTION__, value, retVal);
+        RestoreManucfturerDefinedParemters( value, &manufacturerParameter );
+        coOdPutObj_u32( I_RESTORE_DEFAULT_PARAMETERS, S_RESTORE_MANUFACTURER_DEFINED_DEFAULT_PARAMETERS, manufacturerParameter);
         break;
     case S_RESTORE_SERIAL_NUMBER:
         retVal = coOdGetObj_u32(I_RESTORE_DEFAULT_PARAMETERS, S_RESTORE_SERIAL_NUMBER, &value);
@@ -170,7 +175,7 @@ static inline uint8_t indices_I_DC_BUS_VOLTAGE(UNSIGNED8 subIndex)
         break;
     case S_TARGET_VOLTAGE_AT_DC_BUS:
         retVal = coOdGetObj_u8(I_DC_BUS_VOLTAGE, S_TARGET_VOLTAGE_AT_DC_BUS, &value);
-//        Serial_debug(DEBUG_INFO, &cli_serial, "S_TARGET_VOLTAGE_AT_DC_BUS: 0x%x\r\n", value);
+        //Serial_debug(DEBUG_INFO, &cli_serial, "S_TARGET_VOLTAGE_AT_DC_BUS: 0x%x\r\n", value);
         break;
     case S_VDC_BUS_SHORT_CIRCUIT_LIMIT:
         retVal = coOdGetObj_u8(I_DC_BUS_VOLTAGE, S_VDC_BUS_SHORT_CIRCUIT_LIMIT, &value);
@@ -349,7 +354,7 @@ static inline uint8_t indices_I_READ_POWER(UNSIGNED8 subIndex)
         realValue = sharedVars_cpu2toCpu1.voltage_at_dc_bus;
         value8 = convert_dc_bus_voltage_to_OD( realValue );
         retVal = coOdPutObj_u8(I_READ_POWER, S_READ_VOLTAGE_AT_DC_BUS,  value8 );
-//        Serial_debug(DEBUG_INFO, &cli_serial, "S_READ_VOLTAGE_AT_DC_BUS: %d\r\n", value8 );
+        //Serial_debug(DEBUG_INFO, &cli_serial, "S_READ_VOLTAGE_AT_DC_BUS: %d\r\n", value8 );
         break;
 
     case S_POWER_FROM_DC_INPUT:

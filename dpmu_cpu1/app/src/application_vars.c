@@ -11,6 +11,7 @@
 
 #include "application_vars.h"
 #include "ext_flash.h"
+#include "fwupdate.h"
 #include "serial.h"
 
 extern struct Serial cli_serial;
@@ -74,9 +75,6 @@ void AppVarsInformEntireFlashResetInitiated(){
 void AppVarsInformEntireFlashResetReady(){
     CANLogEntireFlashResetReady = true;
 }
-
-
-
 
 void HandleAppVarsOnExternalFlashSM() {
 
@@ -454,4 +452,36 @@ void PrepareNewAppVarToSave() {
     }
     auxAppVarsToSave.MagicNumber = MAGIC_NUMBER;
     memcpy(&newAppVars, &auxAppVarsToSave, sizeof( app_vars_t) );
+}
+
+
+void RestoreManucfturerDefinedParemters( uint32_t parameterIndex, uint32_t *outputValue ){
+    uint16_t cpuFWCRC = 0x0000;
+    *outputValue = 0x00000000;
+
+    cpuFWCRC = retriveCPUChecksumFromFlash( CPU1_NUMBER  );
+    *outputValue = 0x00000000 | (uint32_t)cpuFWCRC;
+    *outputValue = *outputValue << 16;
+    //Serial_printf(&cli_serial, "CPU1 CRC:[%04X] outputValue[%08p]\r\n", cpuFWCRC, *outputValue);
+    cpuFWCRC = retriveCPUChecksumFromFlash( CPU2_NUMBER  );
+    *outputValue = *outputValue | (uint32_t)cpuFWCRC;
+    //Serial_printf(&cli_serial, "CPU2 CRC:[%04X] outputValue[%08p]\r\n", cpuFWCRC, *outputValue);
+
+
+//    Serial_printf(&cli_serial, "%s parameterIndex:[%lu]\r\n", __FUNCTION__, parameterIndex);
+//    switch ( (manufacturer_parameter_idx_t)parameterIndex ) {
+//        case MANUFACTURER_PARAMETER_CRC_CPU:
+//            cpuFWCRC = retriveCPUChecksumFromFlash( CPU1_NUMBER  );
+//            *outputValue = 0x00000000 | (uint32_t)cpuFWCRC;
+//            *outputValue = *outputValue << 16;
+//            Serial_printf(&cli_serial, "CPU1 CRC:[%04X] outputValue[%08p]\r\n", cpuFWCRC, *outputValue);
+//            cpuFWCRC = retriveCPUChecksumFromFlash( CPU2_NUMBER  );
+//            *outputValue = *outputValue | (uint32_t)cpuFWCRC;
+//            Serial_printf(&cli_serial, "CPU2 CRC:[%04X] outputValue[%08p]\r\n", cpuFWCRC, *outputValue);
+//            break;
+//
+//        default:
+//
+//            break;
+//    }
 }

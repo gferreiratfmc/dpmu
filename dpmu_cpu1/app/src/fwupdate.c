@@ -337,3 +337,24 @@ FWImageStatus fwupdate_updateExtRamWithCPU2Binary(){
     return applicationOK;
 
 }
+
+
+uint16_t retriveCPUChecksumFromFlash(uint16_t cpuNr) {
+
+        uint16_t *flashAddr;
+
+
+        Serial_printf(&cli_serial, "\r\n************* RETRIEVED CPU%d CHECKSUM\r\n", cpuNr);
+
+        if(cpuNr==0) {
+            flashAddr = (uint16_t *)FLASH_CPU1_CHECKSUM_ADDRESS;
+        } else {
+            flashAddr = (uint16_t *)FLASH_CPU2_CHECKSUM_ADDRESS;
+        }
+
+        Serial_printf(&cli_serial, "FW CPU Start Address:[0x%08p] = checksum:[0x%04X]\r\n",  flashAddr, *flashAddr );
+
+        Serial_printf(&cli_serial, "************************************* \r\n\r\n");
+
+        return *flashAddr;
+}

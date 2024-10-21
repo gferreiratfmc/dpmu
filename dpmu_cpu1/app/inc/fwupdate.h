@@ -32,6 +32,13 @@
 #define COMMAND_BOOT "BOOT"
 #define COMMAND_NONE "NNNN"
 
+#define CPU1_NUMBER 0
+#define CPU2_NUMBER 1
+
+#define FLASH_CPU1_CONFIG_BLOCK_ADDRESS         0x084000
+#define FLASH_CPU1_CHECKSUM_ADDRESS             0x084002
+#define FLASH_CPU1_CONFIG_BLOCK_SIZE_IN_WORDS   0x100
+
 #define FLASH_CPU2_CONFIG_BLOCK_ADDRESS         0x0A0000
 #define FLASH_CPU2_CHECKSUM_ADDRESS             0x0A0002
 #define FLASH_CPU2_CONFIG_BLOCK_SIZE_IN_WORDS   0x08
@@ -48,8 +55,6 @@ typedef enum{
     fw_ok
 }FWImageStatus;
 
-
-
 /* external data */
 extern UNSIGNED8 cobl_command[16];
 
@@ -58,5 +63,8 @@ extern UNSIGNED8 cobl_command[16];
 extern void jump2Bootloader(void);
 extern FWImageStatus fwupdate_updateExtRamWithCPU2Binary();
 void startCPU2FirmwareUpdate();
+
+uint16_t retriveCPUChecksumFromFlash(uint16_t cpuNr);
+
 #endif /* ANZEIGE_H */
 

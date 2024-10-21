@@ -83,6 +83,8 @@ void main(void)
     co_init();
     coEventRegister_SDO_SERVER_DOMAIN_READ(log_read_domain);
 
+
+
     Serial_set_debug_level(DEBUG_ERROR);
 
     CPU1_Board_init();
@@ -197,6 +199,8 @@ void main(void)
      * */
     ipc_sync_comm(IPC_FLAG31, true);
 
+    retriveCPUChecksumFromFlash(0);
+    retriveCPUChecksumFromFlash(1);
 
     //
     // Initialize I2C HW

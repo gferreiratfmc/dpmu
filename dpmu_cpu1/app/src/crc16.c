@@ -35,3 +35,4 @@ void crc16_update(uint16_t *crc, unsigned char *data, uint16_t len)
         crc16_update_byte(crc, *data++);
     }
 }
+
