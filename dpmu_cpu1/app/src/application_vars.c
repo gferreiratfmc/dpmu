@@ -455,33 +455,69 @@ void PrepareNewAppVarToSave() {
 }
 
 
-void RestoreManucfturerDefinedParemters( uint32_t parameterIndex, uint32_t *outputValue ){
-    uint16_t cpuFWCRC = 0x0000;
+bool RestoreManucfturerDefinedParemters( uint32_t *outputValue ){
+    enum RMDPStates { RMDPInit, RMDPRetriveParameter, RMDPIncremetIdx, RMDPEnd };
+    static States_t RMDPSM = { 0 };
+    static manufacturer_parameter_idx_t paramIdx = MANUFACTURER_PARAMETER_CRC_CPU1;
+
+    static uint16_t retrievedValue_0_15 = 0x0000;
+    static uint16_t retrievedValue_16_24 = 0x0000;
+    static uint32_t aux32Bits = 0x00000000;
+    static bool retVal = false;
+
+
     *outputValue = 0x00000000;
 
-    cpuFWCRC = retriveCPUChecksumFromFlash( CPU1_NUMBER  );
-    *outputValue = 0x00000000 | (uint32_t)cpuFWCRC;
-    *outputValue = *outputValue << 16;
-    //Serial_printf(&cli_serial, "CPU1 CRC:[%04X] outputValue[%08p]\r\n", cpuFWCRC, *outputValue);
-    cpuFWCRC = retriveCPUChecksumFromFlash( CPU2_NUMBER  );
-    *outputValue = *outputValue | (uint32_t)cpuFWCRC;
-    //Serial_printf(&cli_serial, "CPU2 CRC:[%04X] outputValue[%08p]\r\n", cpuFWCRC, *outputValue);
+    retVal = false;
+    switch ( RMDPSM.State_Current ) {
 
+        case RMDPInit:
+            paramIdx = MANUFACTURER_PARAMETER_CRC_CPU1;
+            retrievedValue_0_15 = 0x0000;
+            retrievedValue_16_24 = 0x0000;
+            RMDPSM.State_Next = RMDPRetriveParameter;
+            break;
 
-//    Serial_printf(&cli_serial, "%s parameterIndex:[%lu]\r\n", __FUNCTION__, parameterIndex);
-//    switch ( (manufacturer_parameter_idx_t)parameterIndex ) {
-//        case MANUFACTURER_PARAMETER_CRC_CPU:
-//            cpuFWCRC = retriveCPUChecksumFromFlash( CPU1_NUMBER  );
-//            *outputValue = 0x00000000 | (uint32_t)cpuFWCRC;
-//            *outputValue = *outputValue << 16;
-//            Serial_printf(&cli_serial, "CPU1 CRC:[%04X] outputValue[%08p]\r\n", cpuFWCRC, *outputValue);
-//            cpuFWCRC = retriveCPUChecksumFromFlash( CPU2_NUMBER  );
-//            *outputValue = *outputValue | (uint32_t)cpuFWCRC;
-//            Serial_printf(&cli_serial, "CPU2 CRC:[%04X] outputValue[%08p]\r\n", cpuFWCRC, *outputValue);
-//            break;
-//
-//        default:
-//
-//            break;
-//    }
+        case RMDPRetriveParameter:
+            switch( paramIdx ) {
+                case MANUFACTURER_PARAMETER_CRC_CPU1:
+                    retrievedValue_0_15 = retriveCPUChecksumFromFlash( CPU1_NUMBER  );
+                    break;
+                case MANUFACTURER_PARAMETER_CRC_CPU2:
+                    retrievedValue_0_15  = retriveCPUChecksumFromFlash( CPU2_NUMBER  );
+                    break;
+            }
+            aux32Bits = 0x00000000 | (uint32_t)paramIdx;
+            aux32Bits = 0xFF000000 & (aux32Bits << 24);
+            *outputValue = aux32Bits;
+            aux32Bits = 0x00000000 | (uint32_t)(retrievedValue_16_24);
+            aux32Bits = 0x00FF0000 & (aux32Bits << 16);
+            *outputValue = *outputValue | aux32Bits;
+            aux32Bits = 0x0000FFFF & (uint32_t)retrievedValue_0_15;
+            *outputValue = *outputValue | aux32Bits;
+            RMDPSM.State_Next = RMDPIncremetIdx;
+            retVal = true;
+            break;
+
+            case RMDPIncremetIdx:
+                paramIdx++;
+                if( paramIdx == MANUFACTURER_PARAMETER_LAST ) {
+                    RMDPSM.State_Next = RMDPEnd;
+                } else {
+                    RMDPSM.State_Next = RMDPRetriveParameter;
+                }
+                break;
+
+            case RMDPEnd:
+                RMDPSM.State_Next = RMDPInit;
+                break;
+
+            default:
+                RMDPSM.State_Next = RMDPInit;
+
+    }
+    //Serial_printf(&cli_serial, "%s %d RMDPSM.State_Current[%d] = RMDPSM.State_Next[%d] paramIdx[%d]\r\n",
+    //              __FUNCTION__, __LINE__, RMDPSM.State_Current, RMDPSM.State_Next, paramIdx);
+    RMDPSM.State_Current = RMDPSM.State_Next;
+    return retVal;
 }

@@ -62,6 +62,7 @@ static inline uint8_t indices_I_RESTORE_DEFAULT_PARAMETERS(UNSIGNED8 subIndex)
     static uint32_t value;
     static uint32_t serialNumber32bits;
     static uint32_t manufacturerParameter;
+    static uint16_t count = 0;
 
 
     switch (subIndex)
@@ -81,9 +82,10 @@ static inline uint8_t indices_I_RESTORE_DEFAULT_PARAMETERS(UNSIGNED8 subIndex)
     case S_RESTORE_MANUFACTURER_DEFINED_DEFAULT_PARAMETERS:
         retVal = coOdGetObj_u32(I_RESTORE_DEFAULT_PARAMETERS, S_RESTORE_MANUFACTURER_DEFINED_DEFAULT_PARAMETERS, &value);
         Serial_debug(DEBUG_INFO, &cli_serial, "S_RESTORE_MANUFACTURER_DEFINED_DEFAULT_PARAMETERS: 0x%x\r\n", value);
-        //Serial_printf(&cli_serial, "%s S_RESTORE_MANUFACTURER_DEFINED_DEFAULT_PARAMETERS: 0x%08p retVal[%d]\r\n",
-        //              __FUNCTION__, value, retVal);
-        RestoreManucfturerDefinedParemters( value, &manufacturerParameter );
+        count = 0;
+        while( RestoreManucfturerDefinedParemters( &manufacturerParameter ) != true ) { count++; }
+        Serial_debug(DEBUG_INFO, &cli_serial, "%s manufacturerParameter: 0x%08p count:[%u]\r\n",
+                      __FUNCTION__, manufacturerParameter, count);
         coOdPutObj_u32( I_RESTORE_DEFAULT_PARAMETERS, S_RESTORE_MANUFACTURER_DEFINED_DEFAULT_PARAMETERS, manufacturerParameter);
         break;
     case S_RESTORE_SERIAL_NUMBER:
