@@ -53,7 +53,7 @@ void DefineDPMUSafeState(void);
 int DoneWithInrush(void);
 void EnableOrDisblePWM();
 inline void EnableEFuseBBToStopDCDC_EPWM();
-
+void HandleDPMUErrorClass();
 
 void StateMachine(void)
 {
@@ -281,7 +281,7 @@ void StateMachine(void)
             }
             break;
 
-        case RegulateEmergencyStop:
+        case EmergencyStop:
             HAL_StopPwmDCDC();
             if( CounterGroup.EmergencyCounter > 0) {
                 CounterGroup.EmergencyCounter--;
@@ -383,7 +383,8 @@ void StateMachine(void)
     }
 
     if( DpmuErrorOcurred() == true ) {
-        StateVector.State_Next = Fault;
+        //StateVector.State_Next = Fault;
+        HandleDPMUErrorClass();
     }
 
     /* print next state then state changes */
@@ -458,13 +459,28 @@ void  HandleDPMUErrorClass() {
     switch( DpmuErrorOcurredClass() ) {
 
         case DPMU_ERROR_CLASS_SHORT_CIRCUT:
-            if (StateVector.State_Current != RegulateEmergencyStop) {
-                StateVector.State_Next = RegulateEmergencyStop;
+            if (StateVector.State_Current != EmergencyStop) {
+                StateVector.State_Next = EmergencyStop;
+                CounterGroup.EmergencyCounter = 10;
+            }
+            break;
+
+        case DPMU_ERROR_CLASS_OVERCURRENT:
+            if (StateVector.State_Current != EmergencyStop) {
+                StateVector.State_Next = EmergencyStop;
+                CounterGroup.EmergencyCounter = 10;
+            }
+            break;
+
+        case DPMU_ERROR_CLASS_OVERVOLTAGE:
+            if (StateVector.State_Current != EmergencyStop) {
+                StateVector.State_Next = EmergencyStop;
                 CounterGroup.EmergencyCounter = 10;
             }
             break;
 
         default:
+            StateVector.State_Next = Fault;
             break;
 
     }

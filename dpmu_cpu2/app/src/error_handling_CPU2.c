@@ -32,6 +32,10 @@ void ResetDpmuErrorOcurred() {
     dpmuErrorOcurredClass = DPMU_ERROR_CLASS_NO_ERROR;
 }
 
+dpmu_error_class_t  DpmuErrorOcurredClass() {
+    return dpmuErrorOcurredClass;
+}
+
 
 void HandleLoadOverCurrent(float max_allowed_load_current, uint16_t efuse_top_half_flag) {
 
@@ -70,6 +74,7 @@ void HandleLoadOverCurrent(float max_allowed_load_current, uint16_t efuse_top_ha
             PRINT("sensorVector[ISen1fIdx]:[%5.2f] max_allowed_load_current:[%5.2f] ",sensorVector[ISen1fIdx].realValue, max_allowed_load_current);
             // Sends main state_machine to Fault state
             dpmuErrorOcurredFlag = true;
+            dpmuErrorOcurredClass = DPMU_ERROR_CLASS_SHORT_CIRCUT;
             stateLOC.State_Next = LOCEnd;
             break;
         case LOCEnd:
@@ -130,8 +135,6 @@ void HandleDCBusOverVoltage() {
 
             if ( DCDC_VI.avgVBus > sharedVars_cpu1toCpu2.max_allowed_dc_bus_voltage)  {
                 sharedVars_cpu2toCpu1.error_code |= (1UL << ERROR_BUS_OVER_VOLTAGE);
-                StopAllEPWMs();
-                switches_Qlb( SW_OFF );
                 stateBOV.State_Next = BOVWait;
             } else {
                 sharedVars_cpu2toCpu1.error_code &= ~(1UL << ERROR_BUS_OVER_VOLTAGE);
@@ -141,8 +144,7 @@ void HandleDCBusOverVoltage() {
         case BOVWait:
             if( ( timer_get_ticks() - lastTime ) > 10 ) {
                 if (DCDC_VI.avgVBus > sharedVars_cpu1toCpu2.max_allowed_dc_bus_voltage ) {
-                    switches_Qinb( SW_OFF );
-                    switches_Qsb( SW_OFF );
+
                     stateBOV.State_Next = BOVStopMainStateMachine;
                 } else {
                     stateBOV.State_Next = BOVInit;
@@ -156,6 +158,7 @@ void HandleDCBusOverVoltage() {
                   DCDC_VI.avgVBus, sharedVars_cpu1toCpu2.max_allowed_dc_bus_voltage);
             // Sends main state_machine to Fault state
             dpmuErrorOcurredFlag = true;
+            dpmuErrorOcurredClass = DPMU_ERROR_CLASS_OVERVOLTAGE;
             stateBOV.State_Next = BOVEnd;
             break;
         case BOVEnd:
@@ -212,14 +215,14 @@ void HandleDCBusUnderVoltage() {
                   DCDC_VI.avgVBus,
                   sharedVars_cpu1toCpu2.min_allowed_dc_bus_voltage/2);
             // Sends main state_machine to Fault state
-            //dpmuErrorOcurredFlag = true;
+            dpmuErrorOcurredFlag = true;
             stateBUV.State_Next = BUVEnd;
             break;
         case BUVEnd:
             stateBUV.State_Next = BUVInit;
-            //if( dpmuErrorOcurredFlag == false ) {
-            //    stateBUV.State_Next = BUVInit;
-            //}
+            if( dpmuErrorOcurredFlag == false ) {
+                stateBUV.State_Next = BUVInit;
+            }
             break;
         default:
             stateBUV.State_Next = BUVInit;
@@ -258,4 +261,5 @@ void HandleFaultStateAckFromCPU1(){
     }
 
 }
+
 

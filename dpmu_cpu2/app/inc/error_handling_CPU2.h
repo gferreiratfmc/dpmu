@@ -10,7 +10,9 @@
 
 typedef enum dpmu_error_class {
     DPMU_ERROR_CLASS_NO_ERROR = 0,
-    DPMU_ERROR_CLASS_SHORT_CIRCUT
+    DPMU_ERROR_CLASS_SHORT_CIRCUT,
+    DPMU_ERROR_CLASS_OVERCURRENT,
+    DPMU_ERROR_CLASS_OVERVOLTAGE
 } dpmu_error_class_t;
 
 bool DpmuErrorOcurred();
