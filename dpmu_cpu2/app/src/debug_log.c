@@ -170,7 +170,7 @@ void UpdateDebugLog(void) {
 
         case UDLStartEnqueueMessage:
             if( strtEnque(&queue) == true) {
-                PRINT("strtEnque queue.current_load=[%d]\r\n",queue.current_load );
+                //PRINT("strtEnque queue.current_load=[%d]\r\n",queue.current_load );
                 UDLSM.State_Next = UDLWaitEnqueueMessage;
             } else {
                 UDLSM.State_Next = UDLStartDequeMessage;
@@ -189,7 +189,7 @@ void UpdateDebugLog(void) {
             if( sharedVars_cpu1toCpu2.log_external_flash_busy == false ) {
 
                 if( startDeque(&queue) == true) {
-                    PRINT("startDeque queue.current_load=[%d]\r\n",queue.current_load );
+                    //PRINT("startDeque queue.current_load=[%d]\r\n",queue.current_load );
                     UDLSM.State_Next = UDLWaitDequeMessage;
                 }
             }

@@ -16,7 +16,7 @@
 #define LOG_PERIOD_REGULATE 200
 #define LOG_PERIOD_IDLE 15000
 
-
+void InitDebugLogQueue();
 uint32_t SetDebugLogPeriod(void);
 void DisableDebugLog(void);
 void EnableDebugLog(void);
