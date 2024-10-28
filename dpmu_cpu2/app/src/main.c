@@ -119,6 +119,8 @@ void main(void)
 
     InitializeSensorParameters();
 
+    InitDebugLogQueue();
+
     //
     // Loop forever.
     //

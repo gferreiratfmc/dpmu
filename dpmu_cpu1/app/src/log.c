@@ -557,6 +557,7 @@ void log_can_state_machine(void) {
     switch( canLogState.State_Current ) {
 
         case Logging:
+            sharedVars_cpu1toCpu2.log_external_flash_busy = false;
             if( verify_new_can_data_to_log() == true) {
                 timeStart = timer_get_ticks();
                 can_log_write_address = can_log_next_free_address;
@@ -571,6 +572,7 @@ void log_can_state_machine(void) {
             break;
 
         case EraseNextSector:
+            sharedVars_cpu1toCpu2.log_external_flash_busy = true;
             Serial_debug(DEBUG_INFO, &cli_serial, "Erasing CAN LOG next sector\r\n");
             start_ext_flash_erase_sector(can_log_next_free_address);
             canLogState.State_Next = WaitEraseSectorDone;
@@ -610,11 +612,13 @@ void log_can_state_machine(void) {
             if( log_can_read_non_blocking_done() == true) {
                 print_log_can_to_serial(&readBack);
                 Serial_debug(DEBUG_INFO, &cli_serial, "Time to store and read log from flash:[%lu]\r\n", timer_get_ticks() - timeStart);
+                sharedVars_cpu1toCpu2.log_external_flash_busy = false;
                 canLogState.State_Next = Logging;
             }
             break;
 
         case StartEraseAllCanLogFlash:
+            sharedVars_cpu1toCpu2.log_external_flash_busy = true;
             // Call command do erase can log ext flash
             Serial_debug(DEBUG_INFO, &cli_serial, "CAN LOG Flash erase start\r\n");
             timeStart = timer_get_ticks();
@@ -656,6 +660,7 @@ void log_can_state_machine(void) {
                     log_can_init();
                     Serial_debug(DEBUG_INFO, &cli_serial, "External Flash erase stop. Time:[%lu]\r\n", timer_get_ticks() - timeStart);
                     sharedVars_cpu1toCpu2.debug_log_disable_flag = false;
+                    sharedVars_cpu1toCpu2.log_external_flash_busy = false;
                     canLogState.State_Next = Logging;
                 } else {
                     canLogState.State_Next = EraseCANLogFlashSector;
@@ -671,6 +676,7 @@ void log_can_state_machine(void) {
             sharedVars_cpu1toCpu2.debug_log_disable_flag = true;
             ext_command_flash_chip_erase();
             AppVarsInformEntireFlashResetInitiated();
+            sharedVars_cpu1toCpu2.log_external_flash_busy = true;
             canLogState.State_Next = WaitingEntireEraseDone;
 
             break;
@@ -681,11 +687,13 @@ void log_can_state_machine(void) {
                 Serial_debug(DEBUG_INFO, &cli_serial, "External Flash erase stop. Time:[%lu]\r\n", timer_get_ticks() - timeStart);
                 sharedVars_cpu1toCpu2.debug_log_disable_flag = false;
                 AppVarsInformEntireFlashResetReady();
+                sharedVars_cpu1toCpu2.log_external_flash_busy = false;
                 canLogState.State_Next = Logging;
             }
             break;
 
         default:
+            sharedVars_cpu1toCpu2.log_external_flash_busy = false;
             canLogState.State_Next = Logging;
     }
 

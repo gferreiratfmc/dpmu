@@ -68,6 +68,8 @@ typedef struct sharedVars_cpu1toCpu2_t // commonCpu1ToCpu2
 
     float supercap_short_circuit_current;
 
+    bool log_external_flash_busy;
+
 } sharedVars_cpu1toCpu2_t;
 
 extern struct sharedVars_cpu1toCpu2_t sharedVars_cpu1toCpu2;
