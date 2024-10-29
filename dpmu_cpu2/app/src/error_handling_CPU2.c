@@ -99,11 +99,14 @@ void HandleDCBusShortCircuit()
 {
     /* check for DC bus shortage verifying all current sensors 25% above maximum DPMU current*/
 
-    if (    fabsf(sensorVector[ISen1fIdx].realValue) > DPMU_SHORT_CIRCUIT_CURRENT ||
-            //sensorVector[ISen2fIdx].realValue > DPMU_SUPERCAP_SHORT_CIRCUIT_CURRENT ||
-            sensorVector[ISen2fIdx].realValue > sharedVars_cpu1toCpu2.supercap_short_circuit_current  ||
-            fabsf(sensorVector[IF_1fIdx].realValue) > DPMU_SHORT_CIRCUIT_CURRENT ||
-            efuse_top_half_flag == true) {
+//    if (    fabsf(sensorVector[ISen1fIdx].realValue) > DPMU_SHORT_CIRCUIT_CURRENT ||
+//            sensorVector[ISen2fIdx].realValue > DPMU_SUPERCAP_SHORT_CIRCUIT_CURRENT ||
+//            fabsf(sensorVector[IF_1fIdx].realValue) > DPMU_SHORT_CIRCUIT_CURRENT ||
+//            efuse_top_half_flag == true) {
+        if (    fabsf(sensorVector[ISen1fIdx].realValue) > sharedVars_cpu1toCpu2.output_short_circuit_current||
+                sensorVector[ISen2fIdx].realValue > sharedVars_cpu1toCpu2.supercap_short_circuit_current  ||
+                fabsf(sensorVector[IF_1fIdx].realValue) > sharedVars_cpu1toCpu2.input_short_circuit_current ||
+                efuse_top_half_flag == true) {
 
 
         dpmuErrorOcurredFlag = true;

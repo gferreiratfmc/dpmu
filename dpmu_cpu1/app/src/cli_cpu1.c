@@ -72,6 +72,8 @@ static void cli_test_inrush_limiter(void);
 static void cli_ext_flash(void);
 static void cli_ext_flash_chip_erase(void);
 static void cli_set_sc_shortcircuit(void);
+static void cli_set_input_shortcircuit(void);
+static void cli_set_output_shortcircuit(void);
 static void cli_test_capacitance_in_flash(void);
 static void cli_lfs_test(void);
 static void cli_debug_level(void);
@@ -150,6 +152,8 @@ static const struct CliCmd cmds[] = {
     {"pwm_dc",      "[chan] [duty]",            &cli_pwm_set_duty_cycle,    "set pwm channel duty cycle"                    },
     {"pwm_freq",    "[chan] [freq]",            &cli_pwm_set_frequency,     "set pwm channel frequency"                     },
     {"scc",         "[current]",                &cli_set_sc_shortcircuit,   "set supercap short-circuit current"            },
+    {"sci",         "[current]",                &cli_set_input_shortcircuit,   "set input short-circuit current"            },
+    {"sco",         "[current]",                &cli_set_output_shortcircuit,   "set output short-circuit current"          },
     {NULL,          NULL,                       NULL,                       NULL                                            }
 };
 
@@ -327,6 +331,41 @@ static void cli_set_sc_shortcircuit(void) {
     Serial_set_debug_level(3);
 }
 
+static void cli_set_input_shortcircuit(void) {
+    uint16_t nArgs;
+    float newInputShortCircuitCurrent;
+    nArgs = cli_nargs(&cli);
+    newInputShortCircuitCurrent = DPMU_SHORT_CIRCUIT_CURRENT;
+    if ( nArgs == 1 ) {
+        sscanf(cli_args(&cli), "%f", &newInputShortCircuitCurrent );
+        Serial_printf(&cli_serial, "Changing input short-circuit to:[%6.2f]\n\r", newInputShortCircuitCurrent);
+    } else {
+        Serial_printf(&cli_serial, "Reseting input short-circuit to::[%6.2f]\r\n", DPMU_SUPERCAP_SHORT_CIRCUIT_CURRENT);
+    }
+    Serial_printf(&cli_serial, "Changing input short-circuit from [%6.2f] to:[%6.2f]\n\r",
+                  sharedVars_cpu1toCpu2.input_short_circuit_current,
+                  newInputShortCircuitCurrent);
+    sharedVars_cpu1toCpu2.input_short_circuit_current = newInputShortCircuitCurrent;
+    Serial_set_debug_level(3);
+}
+
+static void cli_set_output_shortcircuit(void) {
+    uint16_t nArgs;
+    float newOutputShortCircuitCurrent;
+    nArgs = cli_nargs(&cli);
+    newOutputShortCircuitCurrent = DPMU_SHORT_CIRCUIT_CURRENT;
+    if ( nArgs == 1 ) {
+        sscanf(cli_args(&cli), "%f", &newOutputShortCircuitCurrent );
+        Serial_printf(&cli_serial, "Changing output short-circuit to:[%6.2f]\n\r", newOutputShortCircuitCurrent);
+    } else {
+        Serial_printf(&cli_serial, "Reseting output short-circuit to::[%6.2f]\r\n", DPMU_SHORT_CIRCUIT_CURRENT);
+    }
+    Serial_printf(&cli_serial, "Changing output short-circuit from [%6.2f] to:[%6.2f]\n\r",
+                  sharedVars_cpu1toCpu2.output_short_circuit_current,
+                  newOutputShortCircuitCurrent);
+    sharedVars_cpu1toCpu2.output_short_circuit_current = newOutputShortCircuitCurrent;
+    Serial_set_debug_level(3);
+}
 
 static void cli_test_capacitance_in_flash(void)
 {

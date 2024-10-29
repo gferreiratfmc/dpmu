@@ -67,6 +67,8 @@ typedef struct sharedVars_cpu1toCpu2_t // commonCpu1ToCpu2
     bool temperatureMaxLimitReachedFlag;
 
     float supercap_short_circuit_current;
+    float input_short_circuit_current;
+    float output_short_circuit_current;
 
 } sharedVars_cpu1toCpu2_t;
 

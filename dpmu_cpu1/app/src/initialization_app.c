@@ -50,4 +50,6 @@ bool VerifyAppInfoVarInitialized( DPMU_Initialization_Vars_t DPMUappVarIdx ) {
 void InitializeCPU1ToCPU2SharedVariables( void ) {
     sharedVars_cpu1toCpu2.iop_operation_request_state = Idle;
     sharedVars_cpu1toCpu2.supercap_short_circuit_current = DPMU_SUPERCAP_SHORT_CIRCUIT_CURRENT;
+    sharedVars_cpu1toCpu2.input_short_circuit_current = DPMU_SHORT_CIRCUIT_CURRENT;
+    sharedVars_cpu1toCpu2.output_short_circuit_current = DPMU_SHORT_CIRCUIT_CURRENT;
 }
