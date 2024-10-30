@@ -21,6 +21,7 @@ uint32_t SetDebugLogPeriod(void);
 void DisableDebugLog(void);
 void EnableDebugLog(void);
 void UpdateDebugLog(void);
+void UpdateDebugLogSM(void);
 void ForceUpdateDebugLog(void);
 void UpdateDebugLogFake(void);
 
