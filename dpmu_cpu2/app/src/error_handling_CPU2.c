@@ -98,21 +98,20 @@ void HandleLoadOverCurrent(float max_allowed_load_current, uint16_t efuse_top_ha
 void HandleDCBusShortCircuit()
 {
     /* check for DC bus shortage verifying all current sensors 25% above maximum DPMU current*/
-
-//    if (    fabsf(sensorVector[ISen1fIdx].realValue) > DPMU_SHORT_CIRCUIT_CURRENT ||
-//            sensorVector[ISen2fIdx].realValue > DPMU_SUPERCAP_SHORT_CIRCUIT_CURRENT ||
-//            fabsf(sensorVector[IF_1fIdx].realValue) > DPMU_SHORT_CIRCUIT_CURRENT ||
-//            efuse_top_half_flag == true) {
-        if (    fabsf(sensorVector[ISen1fIdx].realValue) > sharedVars_cpu1toCpu2.output_short_circuit_current||
-                sensorVector[ISen2fIdx].realValue > sharedVars_cpu1toCpu2.supercap_short_circuit_current  ||
+    if (    fabsf(sensorVector[ISen1fIdx].realValue) > sharedVars_cpu1toCpu2.output_short_circuit_current   ||
+                sensorVector[ISen2fIdx].realValue > sharedVars_cpu1toCpu2.supercap_short_circuit_current    ||
                 fabsf(sensorVector[IF_1fIdx].realValue) > sharedVars_cpu1toCpu2.input_short_circuit_current ||
-                efuse_top_half_flag == true) {
+                efuse_top_half_flag == true)
+    {
 
 
         dpmuErrorOcurredFlag = true;
         dpmuErrorOcurredClass = DPMU_ERROR_CLASS_SHORT_CIRCUT;
 
         sharedVars_cpu2toCpu1.error_code |= (1UL << ERROR_BUS_SHORT_CIRCUIT);
+        if( sensorVector[ISen2fIdx].realValue > sharedVars_cpu1toCpu2.supercap_short_circuit_current ) {
+            sharedVars_cpu2toCpu1.error_code |= (1UL << ERROR_DISCHARGING);
+        }
 
         PRINT("ISen1f:[%5.2f]  or ISen2f:[%5.2f] or IF_1fIdx:[%5.2f] > SHORT_CIRCUIT_CURRENT:[%5.2f]\r\n",
                      sensorVector[ISen1fIdx].realValue,
@@ -121,6 +120,9 @@ void HandleDCBusShortCircuit()
                      DPMU_SHORT_CIRCUIT_CURRENT);
     } else {
         sharedVars_cpu2toCpu1.error_code &= ~(1UL << ERROR_BUS_SHORT_CIRCUIT);
+        if( sensorVector[ISen2fIdx].realValue <= sharedVars_cpu1toCpu2.supercap_short_circuit_current ) {
+            sharedVars_cpu2toCpu1.error_code &= ~(1UL << ERROR_DISCHARGING);
+        }
     }
 }
 

@@ -92,41 +92,12 @@ int8_t connect_other_dpmu_to_shared_bus_answer(float *remote_bus_voltage);
 void error_check_for_errors(void);
 static void error_copy_error_codes_from_CPU1_and_CPU2(void);
 static void error_dcbus_short_circuit(void);
+static void error_boost_short_circuit(void);
 static void error_load_overcurrent(void);
 static void error_no_error(void);
 static void error_dcbus_over_voltage(void);
 static void error_dcbus_under_voltage(void);
 static void error_system_temperature(void);
 
-
-//enum short_circuit_states{
-//    no_short_circuit = 0,
-//    wait_for_answer_from_other_dpmu_disconnect,
-//    shared_bus_disconnected,
-//    shared_bus_not_disconnected,
-//    reconnect_shared_bus,
-//    wait_for_answer_from_other_dpmu_reconnect,
-//    shared_bus_reconnected,
-//    shared_bus_disconnect_after_reconnect,
-//    shared_bus_disconnect_after_reconnect_answer,
-//    shared_bus_not_reconnected,
-//    clear_error,
-//    wait_for_error_to_disappear,
-//};
-
-//enum short_circuit_status{
-//    scs_no_error,
-//    scs_not_allowed_to_connect_sb,
-//    scs_short_circuit,
-//    scs_waiting_for_disconnection,
-//    scs_waiting_for_disconnection_timeout,
-//    scs_other_dpmu_not_disconnected,
-//    scs_other_dpmu_still_connected,
-//    scs_after_disconnection,
-//    scs_waiting_for_connection,
-//    scs_waiting_for_connection_timeout,
-//    scs_other_dpmu_still_disconnected,
-//    scs_other_dpmu_after_reconnection,
-//};
 
 #endif /* COAPPL_ERROR_CODES_H_ */

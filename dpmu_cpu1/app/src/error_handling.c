@@ -59,6 +59,7 @@ void error_check_for_errors(void)
         error_copy_error_codes_from_CPU1_and_CPU2();
         error_load_overcurrent();
         error_dcbus_short_circuit();
+        error_boost_short_circuit();
         error_dcbus_over_voltage();
         error_dcbus_under_voltage();
         error_system_temperature();
@@ -222,6 +223,39 @@ static void error_dcbus_short_circuit(void)
         /* mark as unhandled - nothing need to be done  */
         global_error_code_sent    &= ~(1UL << ERROR_BUS_SHORT_CIRCUIT);
         global_error_code_handled &= ~(1UL << ERROR_BUS_SHORT_CIRCUIT);
+    }
+}
+
+
+static void error_boost_short_circuit(void)
+{
+    if(global_error_code & (1UL << ERROR_DISCHARGING))
+    {
+        if(!(global_error_code_handled & (1UL << ERROR_DISCHARGING)))
+        {
+            /* mark handled */
+            global_error_code_handled |= (1UL << ERROR_DISCHARGING);
+
+            /* send EMCY - send it once */
+            canopen_emcy_send_boost_short_circuit(1);
+
+            /* mark it sent */
+            global_error_code_sent    |= (1UL << ERROR_DISCHARGING);
+            global_error_code_handled |= (1UL << ERROR_DISCHARGING);
+
+            Serial_printf( &cli_serial, "************* BOOST short circuit detected\r\n");
+        }
+    } else
+    {
+        /* send EMCY CLEAR - send it once */
+        if(global_error_code_sent & (1 << ERROR_DISCHARGING)) {
+            canopen_emcy_send_boost_short_circuit(0);
+            Serial_printf( &cli_serial, "************* BOOST short circuit clear\r\n");
+        }
+
+        /* mark as unhandled - nothing need to be done  */
+        global_error_code_sent    &= ~(1UL << ERROR_DISCHARGING);
+        global_error_code_handled &= ~(1UL << ERROR_DISCHARGING);
     }
 }
 

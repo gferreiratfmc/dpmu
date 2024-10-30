@@ -132,12 +132,28 @@ void canopen_emcy_send_dcbus_short_curcuit(uint8_t status)
     /* set common Bytes for error codes */
     error_message[1] = EMCY_ERROR_BUS_SHORT_CIRCUIT & 0xff;
     error_message[2] = (EMCY_ERROR_BUS_SHORT_CIRCUIT >> 8) & 0xff;
-    error_message[3] = EMCY_ERROR_CODE_VOLTAGE;
+    error_message[3] = EMCY_ERROR_CODE_CURRENT;
     error_message[4] = status;
 
     /* send the error over CANopen */
     canopen_emcy_send();
 }
+
+void canopen_emcy_send_boost_short_circuit(uint8_t status)
+{
+    /* clear error message */
+    memset(error_message, 0, sizeof(error_message));
+
+    /* set common Bytes for error codes */
+    error_message[1] = EMCY_ERROR_BOOST & 0xff;
+    error_message[2] = (EMCY_ERROR_BOOST >> 8) & 0xff;
+    error_message[3] = EMCY_ERROR_CODE_CURRENT;
+    error_message[4] = status;
+
+    /* send the error over CANopen */
+    canopen_emcy_send();
+}
+
 
 void canopen_emcy_send_power_sharing_error(uint8_t status)
 {

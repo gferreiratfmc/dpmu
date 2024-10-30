@@ -36,6 +36,7 @@ void canopen_emcy_send_temperature_error(uint8_t temperature);
 void canopen_emcy_send_dcbus_over_voltage(uint8_t status);
 void canopen_emcy_send_dcbus_under_voltage(uint8_t status);
 void canopen_emcy_send_dcbus_short_curcuit(uint8_t status);
+void canopen_emcy_send_boost_short_circuit(uint8_t status);
 void canopen_emcy_send_power_sharing_error(uint8_t status);
 void canopen_emcy_send_load_overcurrent(uint8_t status);
 void canopen_emcy_send_operational_error(uint8_t status);
