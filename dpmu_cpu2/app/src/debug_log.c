@@ -94,16 +94,18 @@ void UpdateDebugLogSM(void) {
     static States_t UDLSM = { UDLInit };
     static uint16_t cellIdx = 0;
     static uint32_t last_timer = 0;
-    uint32_t current_timer, elapsed_time;
+    uint32_t current_timer;
+    static uint32_t elapsed_time;
     static uint32_t debug_period_in_ms = LOG_PERIOD_IDLE;
+    if( debug_log_enable_flag == false ) {
+        return;
+    }
     debug_period_in_ms = SetDebugLogPeriod();
     switch( UDLSM.State_Current) {
         case UDLInit:
-            if( debug_log_enable_flag == true ) {
-                UDLSM.State_Next = UDLWaitLogPeriod;
-            }
-            break;
-
+//            UDLSM.State_Next = UDLWaitLogPeriod;
+//            break;
+//
         case UDLWaitLogPeriod:
             current_timer = timer_get_ticks();
             elapsed_time = current_timer - last_timer;
@@ -112,6 +114,7 @@ void UpdateDebugLogSM(void) {
             } else if( ( elapsed_time >= debug_period_in_ms ) ) {
                 cellIdx=0;
                 debug_counter++;
+                last_timer = current_timer;
                 UDLSM.State_Next = UDLCopyVarsSection1;
             }
             break;
@@ -162,7 +165,6 @@ void UpdateDebugLogSM(void) {
             UDLSM.State_Next = UDLInit;
 
     }
-    last_timer = current_timer;
     UDLSM.State_Current = UDLSM.State_Next;
 }
 
