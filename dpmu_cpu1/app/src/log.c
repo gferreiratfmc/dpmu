@@ -713,7 +713,6 @@ bool verify_new_can_data_to_log(void)
         /* make local copy of data */
         sharedVars_cpu1toCpu2.debug_log_disable_flag = true;
         memcpy((void *)&debug_log_copy, (void *)&sharedVars_cpu2toCpu1.debug_log, sizeof(debug_log_t));
-        sharedVars_cpu1toCpu2.debug_log_disable_flag = false;
         timer_get_time(&ptime);
         debug_log_copy.MagicNumber = MAGIC_NUMBER;
         debug_log_copy.CurrentTime = ptime.can_time;
@@ -727,6 +726,7 @@ bool verify_new_can_data_to_log(void)
         last_debug_log_number = debug_log_copy.counter;
 
         newDataAvailable = true;
+        sharedVars_cpu1toCpu2.debug_log_disable_flag = false;
     }
     return newDataAvailable;
 }

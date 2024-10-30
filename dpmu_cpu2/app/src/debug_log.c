@@ -19,7 +19,7 @@
 extern sharedVars_cpu2toCpu1_t sharedVars_cpu2toCpu1;
 extern float cellVoltagesVector[30];
 
-bool debug_log_enable_flag = false;
+bool debug_log_enable_flag = true;
 bool debug_log_force_update_flag = false ;
 uint32_t debug_counter = 0;
 
@@ -97,9 +97,7 @@ void UpdateDebugLogSM(void) {
     uint32_t current_timer;
     static uint32_t elapsed_time;
     static uint32_t debug_period_in_ms = LOG_PERIOD_IDLE;
-    if( debug_log_enable_flag == false ) {
-        return;
-    }
+    if( debug_log_enable_flag == true ) {
     debug_period_in_ms = SetDebugLogPeriod();
     switch( UDLSM.State_Current) {
         case UDLInit:
@@ -164,8 +162,9 @@ void UpdateDebugLogSM(void) {
         default:
             UDLSM.State_Next = UDLInit;
 
-    }
+        }
     UDLSM.State_Current = UDLSM.State_Next;
+    }
 }
 
 void UpdateDebugLog(void) {

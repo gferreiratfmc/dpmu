@@ -52,4 +52,5 @@ void InitializeCPU1ToCPU2SharedVariables( void ) {
     sharedVars_cpu1toCpu2.supercap_short_circuit_current = DPMU_SUPERCAP_SHORT_CIRCUIT_CURRENT;
     sharedVars_cpu1toCpu2.input_short_circuit_current = DPMU_SHORT_CIRCUIT_CURRENT;
     sharedVars_cpu1toCpu2.output_short_circuit_current = DPMU_SHORT_CIRCUIT_CURRENT;
+    sharedVars_cpu1toCpu2.debug_log_disable_flag = false;
 }
