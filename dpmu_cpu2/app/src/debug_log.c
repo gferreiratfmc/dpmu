@@ -89,7 +89,7 @@ void ForceUpdateDebugLog(void) {
 
 void UpdateDebugLogSM(void) {
     enum { UDLInit, UDLWaitLogPeriod, UDLCopyVarsSection1, UDLCopyVarsSection2, UDLCopyVarsSection3,
-        UDLCopyVarsSection4, UDLCopyVarsSection5 };
+        UDLCopyVarsSection4, UDLCopyVarsSection5, UDLEnd };
 
     static States_t UDLSM = { UDLInit };
     static uint16_t cellIdx = 0;
@@ -151,9 +151,12 @@ void UpdateDebugLogSM(void) {
             sharedVars_cpu2toCpu1.debug_log.cellVoltage[cellIdx+2] = cellVoltagesVector[cellIdx+2] * 100;
             cellIdx = cellIdx + 3;
             if( cellIdx >= NUMBER_OF_CELLS){
-                sharedVars_cpu2toCpu1.debug_log.counter = debug_counter;
-                UDLSM.State_Next = UDLInit;
+                UDLSM.State_Next = UDLEnd;
             }
+            break;
+        case UDLEnd:
+            sharedVars_cpu2toCpu1.debug_log.counter = debug_counter;
+            UDLSM.State_Next = UDLInit;
             break;
         default:
             UDLSM.State_Next = UDLInit;
