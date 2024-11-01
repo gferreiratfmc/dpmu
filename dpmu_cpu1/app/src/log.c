@@ -720,7 +720,7 @@ bool verify_new_can_data_to_log(void)
         debug_log_copy.MainBoardTemperature = temperatureSensorVector[TEMPERATURE_SENSOR_MAIN];
         debug_log_copy.MezzanineBoardTemperature = temperatureSensorVector[TEMPERATURE_SENSOR_MEZZANINE];
         debug_log_copy.PowerBankBoardTemperature = temperatureSensorVector[TEMPERATURE_SENSOR_PWR_BANK];
-        debug_log_copy.address = can_log_next_free_address;
+        debug_log_copy.address = can_log_next_free_address - can_log_start_address;
 
         /* update last read counter value */
         last_debug_log_number = debug_log_copy.counter;
