@@ -27,7 +27,7 @@ static volatile uint32_t secs = 0;
 
 static volatile uint32_t can_time = 0;
 
-#define can_time_period 100 /* in milliseconds */
+#define can_time_period 1000 /* in milliseconds */
 #define secs_timer_period_retive_can_timer (1000 / can_time_period)
 
 static timer_t timerq;

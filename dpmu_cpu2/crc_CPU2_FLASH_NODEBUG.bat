@@ -49,8 +49,9 @@ python CANUpdaterEmotasOri.py 2 "C:\Users\gferreira\OneDrive - Digicorner\git_en
 
 pause
 
-cd "C:\Users\gferreira\OneDrive - Digicorner\git_dpmu_python\a055-dpmu-python-can"
+rem cd "C:\Users\gferreira\OneDrive - Digicorner\git_dpmu_python\a055-dpmu-python-can"
 REM start "python.exe" "dpmu_canopenLowVoltage2.py"
+cd "C:\Users\gferreira\OneDrive - Digicorner\dpmu_python_can"
 start "python.exe" "dpmu_canopenNormalVoltage.py"
 
 cd "%TARGET%\.."

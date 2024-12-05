@@ -22,7 +22,9 @@
 #define DELAY_50_SM_CYCLES 50
 #define DELAY_100_SM_CYCLES 100
 #define MAX_INRUSH_DUTY_CYCLE 1.0
+#define MAX_SAFE_SOFTSTART_RETRYS 10
 #define INRUSH_DUTY_CYLE_INCREMENT 5
+
 
 
 
@@ -55,6 +57,7 @@ typedef struct Counters
     uint32_t StateMachineCounter;
     int16_t PrestateCounter;
     uint16_t InrushCurrentLimiterCounter;
+    uint16_t SafeSoftStartCounter;
     uint16_t EmergencyCounter;
 } Counters_t;
 

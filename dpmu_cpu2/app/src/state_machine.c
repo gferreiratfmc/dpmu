@@ -102,6 +102,7 @@ void StateMachine(void)
             HAL_PWM_setCounterCompareValue(InrushCurrentLimit_BASE, EPWM_COUNTER_COMPARE_A, INRUSH_DUTY_CYLE_INCREMENT);
             HAL_StartPwmInrushCurrentLimit();
             CounterGroup.InrushCurrentLimiterCounter = 0;
+            CounterGroup.SafeSoftStartCounter = 0;
             StateVector.State_Next = Softstart;
             break;
 
@@ -114,6 +115,7 @@ void StateMachine(void)
             HAL_PWM_setCounterCompareValue(InrushCurrentLimit_BASE, EPWM_COUNTER_COMPARE_A, INRUSH_DUTY_CYLE_INCREMENT);
             HAL_StartPwmInrushCurrentLimit();
             CounterGroup.InrushCurrentLimiterCounter = 0;
+            CounterGroup.SafeSoftStartCounter = 0;
             StateVector.State_Next = Softstart;
             break;
 
@@ -129,6 +131,10 @@ void StateMachine(void)
                 DPMUInitializedFlag = true;
                 StateVector.State_Next = Idle;
             }
+            if( CounterGroup.SafeSoftStartCounter == MAX_SAFE_SOFTSTART_RETRYS ) {
+                StateVector.State_Next = Fault;
+            }
+
             break;
 
         case TrickleChargeInit:
@@ -499,8 +505,13 @@ int DoneWithInrush(void)
     if (CounterGroup.InrushCurrentLimiterCounter > DELAY_100_SM_CYCLES)
     {
         InrushPWMCompareAValue = HAL_PWM_getCounterCompareValue( InrushCurrentLimit_BASE, EPWM_COUNTER_COMPARE_A) + 5;
+        if( InrushPWMCompareAValue > HAL_EPWM_getTimeBasePeriod(InrushCurrentLimit_BASE) * 0.20 ) {
+            if( DCDC_VI.avgVBus < sharedVars_cpu1toCpu2.min_allowed_dc_bus_voltage ) {
+                HAL_PWM_setCounterCompareValue(InrushCurrentLimit_BASE, EPWM_COUNTER_COMPARE_A, 1);
+                CounterGroup.SafeSoftStartCounter = CounterGroup.SafeSoftStartCounter + 1;
+            }
+        }
 
-        // Limit the duty cycle of the in-rush PWM to 99%
         if ( InrushPWMCompareAValue > HAL_EPWM_getTimeBasePeriod(InrushCurrentLimit_BASE) * MAX_INRUSH_DUTY_CYCLE )
         {
             InrushPWMCompareAValue = HAL_EPWM_getTimeBasePeriod( InrushCurrentLimit_BASE) * MAX_INRUSH_DUTY_CYCLE;
