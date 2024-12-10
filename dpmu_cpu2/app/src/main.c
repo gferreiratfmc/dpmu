@@ -35,6 +35,7 @@
 #include "switches.h"
 #include "switch_matrix.h"
 #include "timer.h"
+#include "log_queue.h"
 
 #define PERIOD_1_MS  1
 #define PERIOD_10_MS (PERIOD_1_MS * 10)
@@ -46,6 +47,7 @@ volatile uint16_t efuse_top_half_flag = 0;
 static void check_incoming_commands(void);
 static void handle_top_half_interrupts(void);
 
+extern QUEUE debugLogQueue;
 
 void main(void)
 {
@@ -118,6 +120,8 @@ void main(void)
     MemCfg_setGSRAMMasterSel(MEMCFG_SECT_GS3, MEMCFG_GSRAMMASTER_CPU2);
 
     InitializeSensorParameters();
+
+    InitLogQueue(&debugLogQueue);
 
     //
     // Loop forever.

@@ -14,6 +14,7 @@
 #include "state_machine.h"
 #include "switches.h"
 #include "timer.h"
+#include "log_queue.h"
 
 
 extern sharedVars_cpu2toCpu1_t sharedVars_cpu2toCpu1;
@@ -22,7 +23,7 @@ extern float cellVoltagesVector[30];
 bool debug_log_enable_flag = true;
 bool debug_log_force_update_flag = false ;
 uint32_t debug_counter = 0;
-
+QUEUE debugLogQueue;
 
 uint32_t SetDebugLogPeriod(void) {
     uint32_t debug_period_in_ms = LOG_PERIOD_IDLE;
@@ -87,7 +88,123 @@ void ForceUpdateDebugLog(void) {
     debug_log_force_update_flag = true;
 }
 
+
 void UpdateDebugLogSM(void) {
+    enum { UDLInit, UDLWaitLogPeriod, UDLCopyVarsSection1, UDLCopyVarsSection2, UDLCopyVarsSection3,
+        UDLCopyVarsSection4, UDLCopyVarsSection5, UDLStartDequeue, UDLWaitDequeueMessageDone,
+        UDLStartEnqueueMessage, UDLWaitEnqueueMessageDone, UDLEnd };
+
+    static debug_log_t new_debug_log_message;
+    static States_t UDLSM = { UDLInit };
+    static uint16_t cellIdx = 0;
+    static uint32_t last_timer = 0;
+    uint32_t current_timer;
+    static uint32_t elapsed_time;
+    static uint32_t debug_period_in_ms = LOG_PERIOD_IDLE;
+    if( debug_log_enable_flag == true ) {
+    debug_period_in_ms = SetDebugLogPeriod();
+    switch( UDLSM.State_Current) {
+        case UDLInit:
+//            UDLSM.State_Next = UDLWaitLogPeriod;
+//            break;
+//
+        case UDLWaitLogPeriod:
+            current_timer = timer_get_ticks();
+            elapsed_time = current_timer - last_timer;
+            if( current_timer < last_timer ) {
+                UDLSM.State_Next = UDLStartDequeue;
+                current_timer = 0;
+            } else if( ( elapsed_time >= debug_period_in_ms ) ) {
+                cellIdx=0;
+                debug_counter++;
+                last_timer = current_timer;
+                UDLSM.State_Next = UDLCopyVarsSection1;
+            }
+            break;
+        case UDLCopyVarsSection1:
+            new_debug_log_message.ISen1 = sensorVector[ISen1fIdx].realValue * 10;     // Storage current sensor (supercap) x10
+            new_debug_log_message.ISen2 = sensorVector[ISen2fIdx].realValue * 10;     // Output load current sensor x10
+            new_debug_log_message.IF_1 = sensorVector[IF_1fIdx].realValue * 10;       // Input current x10
+            UDLSM.State_Next = UDLCopyVarsSection2;
+            break;
+        case UDLCopyVarsSection2:
+            new_debug_log_message.Vbus = sensorVector[VBusIdx].realValue * 10;        // VBus voltage x10
+            new_debug_log_message.VStore = sensorVector[VStoreIdx].realValue * 10;    // VStore voltage x10
+            new_debug_log_message.cpu2_error_code = sharedVars_cpu2toCpu1.error_code;
+            new_debug_log_message.CurrentState = StateVector.State_Current;    // CPU2 current state of main state machine
+            new_debug_log_message.elapsed_time = elapsed_time;
+            if(debug_period_in_ms > LOG_PERIOD_IMEDIATELY ) {
+                UDLSM.State_Next = UDLCopyVarsSection3;
+            } else {
+                UDLSM.State_Next = UDLStartEnqueueMessage;
+            }
+            break;
+        case UDLCopyVarsSection3:
+           new_debug_log_message.AvgVbus = DCDC_VI.avgVBus * 10;        // VBus voltage x10
+           new_debug_log_message.AvgVStore  = DCDC_VI.avgVStore * 10;        // VBus voltage x10
+            UDLSM.State_Next = UDLCopyVarsSection4;
+            break;
+        case UDLCopyVarsSection4:
+            new_debug_log_message.RegulateAvgInputCurrent = DCDC_VI.RegulateAvgInputCurrent * 10;
+            new_debug_log_message.RegulateAvgVStore = DCDC_VI.RegulateAvgVStore * 10;
+            new_debug_log_message.RegulateAvgVbus = DCDC_VI.RegulateAvgVbus * 10;
+            new_debug_log_message.RegulateAvgOutputCurrent = DCDC_VI.RegulateAvgOutputCurrent * 10;
+            new_debug_log_message.RegulateIRef = DCDC_VI.I_Ref_Real * 100;
+            new_debug_log_message.ILoop_PiOutput = ILoop_PiOutput.Output * 100;
+            new_debug_log_message.I_Dab2 = sensorVector[I_Dab2fIdx].realValue * 100;  // CLLC1 Current x100
+            new_debug_log_message.I_Dab3 = sensorVector[I_Dab3fIdx].realValue * 100;  // CLLC2 Current x100
+            UDLSM.State_Next = UDLCopyVarsSection5;
+            break;
+        case UDLCopyVarsSection5:
+            new_debug_log_message.cellVoltage[cellIdx] = cellVoltagesVector[cellIdx] * 100;
+            new_debug_log_message.cellVoltage[cellIdx+1] = cellVoltagesVector[cellIdx+1] * 100;
+            new_debug_log_message.cellVoltage[cellIdx+2] = cellVoltagesVector[cellIdx+2] * 100;
+            cellIdx = cellIdx + 3;
+            if( cellIdx >= NUMBER_OF_CELLS){
+                UDLSM.State_Next = UDLStartEnqueueMessage;
+            }
+            break;
+        case UDLStartEnqueueMessage:
+            if( StartEnque( &debugLogQueue, &new_debug_log_message) == true ) {
+                UDLSM.State_Next = UDLWaitEnqueueMessageDone;
+            } else {
+                UDLSM.State_Next = UDLStartDequeue;
+            }
+            break;
+
+        case UDLWaitEnqueueMessageDone:
+            if( CopyMessageToQueDone(&debugLogQueue) == true )  {
+                UDLSM.State_Next = UDLEnd;
+            }
+            break;
+
+        case UDLStartDequeue:
+            if( StartDeque(&debugLogQueue, &sharedVars_cpu2toCpu1.debug_log) == true) {
+                UDLSM.State_Next = UDLWaitDequeueMessageDone;;
+            } else {
+                UDLSM.State_Next = UDLInit;
+            }
+            break;
+
+        case UDLWaitDequeueMessageDone:
+            if( CopyMessageFromQueDone(&debugLogQueue) == true) {
+                UDLSM.State_Next = UDLEnd;
+            }
+            break;
+
+        case UDLEnd:
+            sharedVars_cpu2toCpu1.debug_log.counter = debug_counter;
+            UDLSM.State_Next = UDLInit;
+            break;
+        default:
+            UDLSM.State_Next = UDLInit;
+
+        }
+    UDLSM.State_Current = UDLSM.State_Next;
+    }
+}
+
+void UpdateDebugLogSMORI(void) {
     enum { UDLInit, UDLWaitLogPeriod, UDLCopyVarsSection1, UDLCopyVarsSection2, UDLCopyVarsSection3,
         UDLCopyVarsSection4, UDLCopyVarsSection5, UDLEnd };
 
