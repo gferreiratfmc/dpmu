@@ -27,7 +27,7 @@ uint32_t debug_counter = 0;
 uint32_t SetDebugLogPeriod(void) {
     uint32_t debug_period_in_ms = LOG_PERIOD_IDLE;
     if( debug_log_force_update_flag == true ) {
-        debug_period_in_ms = 0;
+        debug_period_in_ms = LOG_PERIOD_IMEDIATELY;
         debug_log_force_update_flag = false;
     } else {
         switch( StateVector.State_Current ) {
@@ -124,26 +124,30 @@ void UpdateDebugLogSM(void) {
             break;
         case UDLCopyVarsSection2:
             sharedVars_cpu2toCpu1.debug_log.Vbus = sensorVector[VBusIdx].realValue * 10;        // VBus voltage x10
-           sharedVars_cpu2toCpu1.debug_log.AvgVbus = DCDC_VI.avgVBus * 10;        // VBus voltage x10
-           sharedVars_cpu2toCpu1.debug_log.VStore = sensorVector[VStoreIdx].realValue * 10;    // VStore voltage x10
-           sharedVars_cpu2toCpu1.debug_log.AvgVStore  = DCDC_VI.avgVStore * 10;        // VBus voltage x10
-            UDLSM.State_Next = UDLCopyVarsSection3;
+            sharedVars_cpu2toCpu1.debug_log.VStore = sensorVector[VStoreIdx].realValue * 10;    // VStore voltage x10
+            sharedVars_cpu2toCpu1.debug_log.cpu2_error_code = sharedVars_cpu2toCpu1.error_code;
+            sharedVars_cpu2toCpu1.debug_log.CurrentState = StateVector.State_Current;    // CPU2 current state of main state machine
+            sharedVars_cpu2toCpu1.debug_log.elapsed_time = elapsed_time;
+            if(debug_period_in_ms > LOG_PERIOD_IMEDIATELY ) {
+                UDLSM.State_Next = UDLCopyVarsSection3;
+            } else {
+                UDLSM.State_Next = UDLEnd;
+            }
             break;
         case UDLCopyVarsSection3:
+           sharedVars_cpu2toCpu1.debug_log.AvgVbus = DCDC_VI.avgVBus * 10;        // VBus voltage x10
+           sharedVars_cpu2toCpu1.debug_log.AvgVStore  = DCDC_VI.avgVStore * 10;        // VBus voltage x10
+            UDLSM.State_Next = UDLCopyVarsSection4;
+            break;
+        case UDLCopyVarsSection4:
             sharedVars_cpu2toCpu1.debug_log.RegulateAvgInputCurrent = DCDC_VI.RegulateAvgInputCurrent * 10;
             sharedVars_cpu2toCpu1.debug_log.RegulateAvgVStore = DCDC_VI.RegulateAvgVStore * 10;
             sharedVars_cpu2toCpu1.debug_log.RegulateAvgVbus = DCDC_VI.RegulateAvgVbus * 10;
             sharedVars_cpu2toCpu1.debug_log.RegulateAvgOutputCurrent = DCDC_VI.RegulateAvgOutputCurrent * 10;
             sharedVars_cpu2toCpu1.debug_log.RegulateIRef = DCDC_VI.I_Ref_Real * 100;
             sharedVars_cpu2toCpu1.debug_log.ILoop_PiOutput = ILoop_PiOutput.Output * 100;
-            UDLSM.State_Next = UDLCopyVarsSection4;
-            break;
-        case UDLCopyVarsSection4:
             sharedVars_cpu2toCpu1.debug_log.I_Dab2 = sensorVector[I_Dab2fIdx].realValue * 100;  // CLLC1 Current x100
             sharedVars_cpu2toCpu1.debug_log.I_Dab3 = sensorVector[I_Dab3fIdx].realValue * 100;  // CLLC2 Current x100
-            sharedVars_cpu2toCpu1.debug_log.cpu2_error_code = sharedVars_cpu2toCpu1.error_code;
-            sharedVars_cpu2toCpu1.debug_log.CurrentState = StateVector.State_Current;    // CPU2 current state of main state machine
-            sharedVars_cpu2toCpu1.debug_log.elapsed_time = elapsed_time;
             UDLSM.State_Next = UDLCopyVarsSection5;
             break;
         case UDLCopyVarsSection5:
