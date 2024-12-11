@@ -406,7 +406,7 @@ void readAlltemperatures(){
                     }
                 } else {
                     temperature_sensor_reset(0);
-                    Serial_debug(DEBUG_ERROR, &cli_serial,"Error reading TEMPERATURE_SENSOR_BASE status:=[0x%04X]\r\n", status);
+                    //Serial_debug(DEBUG_ERROR, &cli_serial,"Error reading TEMPERATURE_SENSOR_BASE status:=[0x%04X]\r\n", status);
                     errorI2CFlag = true;
                 }
                 sensorNumber = 1;

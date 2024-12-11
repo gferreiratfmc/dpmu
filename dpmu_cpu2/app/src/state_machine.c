@@ -94,29 +94,39 @@ void StateMachine(void)
             break;
 
         case SoftstartInitDefault:
-            //Close output Switch
-            switches_Qlb(SW_ON);
-            switches_Qsb(SW_ON);
+            if( sensorVector[VBusIdx].realValue <= SOFTSTART_MAX_SAFE_VOLTAGE) {
+                //Close output Switch
+                switches_Qlb(SW_ON);
+                switches_Qsb(SW_ON);
 
-            // Initialize and start Inrush PWM
-            HAL_PWM_setCounterCompareValue(InrushCurrentLimit_BASE, EPWM_COUNTER_COMPARE_A, INRUSH_DUTY_CYLE_INCREMENT);
-            HAL_StartPwmInrushCurrentLimit();
-            CounterGroup.InrushCurrentLimiterCounter = 0;
-            CounterGroup.SafeSoftStartCounter = 0;
-            StateVector.State_Next = Softstart;
+                // Initialize and start Inrush PWM
+                HAL_PWM_setCounterCompareValue(InrushCurrentLimit_BASE, EPWM_COUNTER_COMPARE_A, INRUSH_DUTY_CYLE_INCREMENT);
+                HAL_StartPwmInrushCurrentLimit();
+                CounterGroup.InrushCurrentLimiterCounter = 0;
+                CounterGroup.SafeSoftStartCounter = 0;
+                StateVector.State_Next = Softstart;
+            } else {
+                StateVector.State_Next = Fault;
+                PRINT("VBUS VOLTAGE TOO HIGH FOR INRUSH!!!");
+            }
             break;
 
         case SoftstartInitRedundant:
-            //Opens output Switch
-            switches_Qlb(SW_OFF);
-            switches_Qsb(SW_ON);
+            if( sensorVector[VBusIdx].realValue <= SOFTSTART_MAX_SAFE_VOLTAGE) {
+                //Opens output Switch
+                switches_Qlb(SW_OFF);
+                switches_Qsb(SW_ON);
 
-            // Initialize and start Inrush PWM
-            HAL_PWM_setCounterCompareValue(InrushCurrentLimit_BASE, EPWM_COUNTER_COMPARE_A, INRUSH_DUTY_CYLE_INCREMENT);
-            HAL_StartPwmInrushCurrentLimit();
-            CounterGroup.InrushCurrentLimiterCounter = 0;
-            CounterGroup.SafeSoftStartCounter = 0;
-            StateVector.State_Next = Softstart;
+                // Initialize and start Inrush PWM
+                HAL_PWM_setCounterCompareValue(InrushCurrentLimit_BASE, EPWM_COUNTER_COMPARE_A, INRUSH_DUTY_CYLE_INCREMENT);
+                HAL_StartPwmInrushCurrentLimit();
+                CounterGroup.InrushCurrentLimiterCounter = 0;
+                CounterGroup.SafeSoftStartCounter = 0;
+                StateVector.State_Next = Softstart;
+            } else {
+                StateVector.State_Next = Fault;
+                PRINT("VBUS VOLTAGE TOO HIGH FOR INRUSH!!!");
+            }
             break;
 
         case Softstart: /* Soft start of the 200V Bus*/
@@ -131,7 +141,7 @@ void StateMachine(void)
                 DPMUInitializedFlag = true;
                 StateVector.State_Next = Idle;
             }
-            if( CounterGroup.SafeSoftStartCounter == MAX_SAFE_SOFTSTART_RETRYS ) {
+            if( CounterGroup.SafeSoftStartCounter == SOFTSTART_MAX_SAFE_RETRIES ) {
                 StateVector.State_Next = Fault;
             }
 
@@ -505,8 +515,10 @@ int DoneWithInrush(void)
     if (CounterGroup.InrushCurrentLimiterCounter > DELAY_100_SM_CYCLES)
     {
         InrushPWMCompareAValue = HAL_PWM_getCounterCompareValue( InrushCurrentLimit_BASE, EPWM_COUNTER_COMPARE_A) + 5;
-        if( InrushPWMCompareAValue > HAL_EPWM_getTimeBasePeriod(InrushCurrentLimit_BASE) * 0.20 ) {
+        if( InrushPWMCompareAValue > HAL_EPWM_getTimeBasePeriod(InrushCurrentLimit_BASE) * SOFTSTART_SAFE_LIMIT_DUTY_CYCLE_RATIO ) {
             if( DCDC_VI.avgVBus < sharedVars_cpu1toCpu2.min_allowed_dc_bus_voltage ) {
+                PRINT("Reseting soft start: InrushPWMCompareAValue = [%d] DCDC_VI.avgVBus:[%7.2f]V CounterGroup.SafeSoftStartCounter:[%d] \r\n",
+                      InrushPWMCompareAValue, DCDC_VI.avgVBus, CounterGroup.SafeSoftStartCounter );
                 HAL_PWM_setCounterCompareValue(InrushCurrentLimit_BASE, EPWM_COUNTER_COMPARE_A, 1);
                 CounterGroup.SafeSoftStartCounter = CounterGroup.SafeSoftStartCounter + 1;
             }
