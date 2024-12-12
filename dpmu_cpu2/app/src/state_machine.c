@@ -94,8 +94,8 @@ void StateMachine(void)
             break;
 
         case SoftstartInitDefault:
-            if( sensorVector[VBusIdx].realValue <= SOFTSTART_MAX_SAFE_VOLTAGE) {
-                //Close output Switch
+            if( sensorVector[VBusIdx].realValue < SOFTSTART_MAX_SAFE_VOLTAGE_TO_INRUSH ) {
+                //Close output and sharing switches
                 switches_Qlb(SW_ON);
                 switches_Qsb(SW_ON);
 
@@ -112,8 +112,8 @@ void StateMachine(void)
             break;
 
         case SoftstartInitRedundant:
-            if( sensorVector[VBusIdx].realValue <= SOFTSTART_MAX_SAFE_VOLTAGE) {
-                //Opens output Switch
+            if( sensorVector[VBusIdx].realValue < SOFTSTART_MAX_SAFE_VOLTAGE_TO_INRUSH ) {
+                //Opens output Switch and closes sharing switch
                 switches_Qlb(SW_OFF);
                 switches_Qsb(SW_ON);
 
@@ -367,8 +367,34 @@ void StateMachine(void)
 
             SignalFaultStateToCPU1();
 
-            StateVector.State_Next = PreInitialized;
+            //StateVector.State_Next = WaitDPMUSafeCondition;
+            StateVector.State_Next = DischargeVBUSToSupercap;
 
+            break;
+
+        case DischargeVBUSToSupercap:
+            if( DCDC_VI.avgVStore < energy_bank_settings.max_voltage_applied_to_energy_bank * MAX_ENERGY_BANK_VOLTAGE_RATIO ) {
+                HAL_DcdcPulseModePwmSetting();
+                HAL_StartPwmDCDC();
+                float safeChargeDutyCycle = 0.005 * EPWM_getTimeBasePeriod(BEG_1_2_BASE);
+                HAL_PWM_setCounterCompareValue(BEG_1_2_BASE, EPWM_COUNTER_COMPARE_A, safeChargeDutyCycle );
+                CounterGroup.PrestateCounter = 10 * DELAY_50_SM_CYCLES;
+            }
+            StateVector.State_Next = WaitDPMUSafeCondition;
+            break;
+
+        case WaitDPMUSafeCondition:
+            if( CounterGroup.PrestateCounter == 0 ) {
+                if( sensorVector[VBusIdx].realValue < sensorVector[VStoreIdx].realValue + SOFTSTART_DEVIATION_FROM_STORAGE_VOLTAGE_TO_INRUSH  ) {
+                    StopAllEPWMs();
+                    StateVector.State_Next = PreInitialized;
+                    CounterGroup.PrestateCounter = 0;
+                } else {
+                    CounterGroup.PrestateCounter = 10 * DELAY_50_SM_CYCLES;
+                }
+            } else {
+                CounterGroup.PrestateCounter = CounterGroup.PrestateCounter - 1;
+            }
             break;
 
         case StopEPWMs:
@@ -579,6 +605,7 @@ void CheckCommandFromIOP(void)
                         case PreInitialized:
                             StateVector.State_Next = PreInitialized;
                             break;
+                        case WaitDPMUSafeCondition:
                         case Initialize:
                               StateVector.State_Next = StateVector.State_Current;
                               break;
@@ -606,7 +633,6 @@ void CheckCommandFromIOP(void)
                         case BalancingInit:
                             StateVector.State_Next = BalancingStop;
                             break;
-
                         default:
                             StateVector.State_Next = StopEPWMs;
                             break;

@@ -60,6 +60,8 @@ enum Operating_state
     CC_Charge = 20,                  // 20
     StopEPWMs,                  // 21
     ChargeRamp,                 // 22
+    DischargeVBUSToSupercap = 240,
+    WaitDPMUSafeCondition = 250,
     PreInitialized = 255
 };
 

@@ -408,6 +408,7 @@ bool can_log_search_free_debug_address( uint32_t *nextFreeAddress ){
 
     while( addr < CAN_LOG_ADDRESS_END - sizeof(debug_log_t) ) {
         ext_flash_read_buf(addr, (uint16_t *)&current_saved_log, sizeof(debug_log_t) );
+        //Serial_printf(&cli_serial,"%s--->addr[%08p] current_saved_log.MagicNumber[%08p]\r\n",__FUNCTION__, addr, current_saved_log.MagicNumber);
         if( current_saved_log.MagicNumber != MAGIC_NUMBER) {
             if( current_saved_log.MagicNumber == 0xFFFFFFFF) {
                 freeAdrressFound = true;
@@ -437,6 +438,8 @@ void log_can_init(void)
         can_log_start_address = can_log_next_free_address;
         can_log_last_read_address = can_log_next_free_address;
     }
+    //Serial_printf(&cli_serial, "%s can_log_possible[%d] can_log_next_free_address[%08p], can_log_last_read_address[%08p], can_log_start_address[%08p]\r\n",__FUNCTION__,
+    //              can_log_possible, can_log_next_free_address, can_log_last_read_address, can_log_start_address);
 }
 
 bool calc_next_free_addr_and_verify_erase_sector(uint32_t can_log_current_write_address, uint16_t log_size_in_words ){
@@ -465,7 +468,8 @@ bool calc_next_free_addr_and_verify_erase_sector(uint32_t can_log_current_write_
     // Get pointer to info on next sector.
     next_sector_desc = ext_flash_sector_from_address(can_log_next_free_address);
 
-    //Serial_debug(DEBUG_INFO, &cli_serial, "current_sector_desc->sector[%d] == next_sector_desc->sector[%d]\r\n", current_sector_desc->sector, next_sector_desc->sector );
+    //Serial_printf(&cli_serial, "current_sector_desc->sector[%d]addr[%08p] == next_sector_desc->sector[%d]addr[%08p]\r\n", current_sector_desc->sector,can_log_current_write_address,
+    //              next_sector_desc->sector, can_log_next_free_address);
     if (current_sector_desc->sector != next_sector_desc->sector) {
         // Return true to inform state machine to erase next sector.
         needToEraseNextSector = true;
@@ -720,7 +724,7 @@ bool verify_new_can_data_to_log(void)
         debug_log_copy.MainBoardTemperature = temperatureSensorVector[TEMPERATURE_SENSOR_MAIN];
         debug_log_copy.MezzanineBoardTemperature = temperatureSensorVector[TEMPERATURE_SENSOR_MEZZANINE];
         debug_log_copy.PowerBankBoardTemperature = temperatureSensorVector[TEMPERATURE_SENSOR_PWR_BANK];
-        debug_log_copy.address = can_log_next_free_address - can_log_start_address;
+        debug_log_copy.address = can_log_next_free_address;
 
         /* update last read counter value */
         last_debug_log_number = debug_log_copy.counter;
