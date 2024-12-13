@@ -403,17 +403,23 @@ bool log_store_debug_log(unsigned char *pnt)
 
 bool can_log_search_free_debug_address( uint32_t *nextFreeAddress ){
     debug_log_t current_saved_log;
-    uint32_t addr = CAN_LOG_ADDRESS_START;
-    bool freeAdrressFound = false;
+    debug_log_t next_saved_log;
 
+    uint32_t addr = CAN_LOG_ADDRESS_START;
+    uint32_t nextAddr;
+    bool freeAdrressFound = false;
     while( addr < CAN_LOG_ADDRESS_END - sizeof(debug_log_t) ) {
         ext_flash_read_buf(addr, (uint16_t *)&current_saved_log, sizeof(debug_log_t) );
         //Serial_printf(&cli_serial,"%s--->addr[%08p] current_saved_log.MagicNumber[%08p]\r\n",__FUNCTION__, addr, current_saved_log.MagicNumber);
         if( current_saved_log.MagicNumber != MAGIC_NUMBER) {
             if( current_saved_log.MagicNumber == 0xFFFFFFFF) {
-                freeAdrressFound = true;
-                *nextFreeAddress =  addr;
-                break;
+                nextAddr = addr + sizeof(debug_log_t);
+                ext_flash_read_buf(nextAddr, (uint16_t *)&next_saved_log, sizeof(debug_log_t) );
+                if( next_saved_log.MagicNumber == 0xFFFFFFFF ) {
+                    freeAdrressFound = true;
+                    *nextFreeAddress =  addr;
+                    break;
+                }
             }
         }
         addr = addr + sizeof(debug_log_t);

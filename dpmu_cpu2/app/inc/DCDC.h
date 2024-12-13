@@ -41,7 +41,8 @@ PiOutput_t Pi_ControllerBuckFloat(PI_Parameters_t PI, PiOutput_t PIout, float Re
 
 
 void DCDCConverterInit(void);
-void IncreasePulseStateDutyToSuperCapsVoltage( void );
+void AdjustPulseBasedOnSupercapVoltage( void );
+void ResetPulseStateAdjust();
 uint16_t CalculateCurrentOffset(uint16_t Offsetinput);
 void StopAllEPWMs(void);
 void TrackSensorValueForDEBUG(float sensorValue1, float sensorValue2, float sensorValue3, float sensorValue4);
@@ -66,7 +67,6 @@ extern volatile uint16_t efuse_top_half_flag;
 extern volatile bool eFuseInputCurrentOcurred;
 extern volatile bool eFuseBuckBoostOcurred;
 
-extern uint16_t trickleChargeRangeState;
 
 extern uint32_t INT_GLOAD_4_3Counter;
 

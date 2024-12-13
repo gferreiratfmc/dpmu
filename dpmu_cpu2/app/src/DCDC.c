@@ -329,7 +329,11 @@ void StopAllEPWMs(void)
 }
 
 
-void IncreasePulseStateDutyToSuperCapsVoltage( void ) {
+void ResetPulseStateAdjust() {
+    trickleChargeRangeState = 0;
+}
+
+void AdjustPulseBasedOnSupercapVoltage( void ) {
 
     static float trickChargeDutyCycle = 0.005;
 

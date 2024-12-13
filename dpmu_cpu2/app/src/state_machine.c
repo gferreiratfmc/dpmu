@@ -4,9 +4,9 @@
  * @brief   This file provides code for the State Machine.
 
  ******************************************************************************
- *          Created on: 8 Dec 2022
- *          Author: Luyu Wang
- *
+ *          Created on: 10 Aug 2023
+ *          Authors: Gustavo L. Ferreira gustavo.ferreira2@technipfmc.com
+ *                   Mauricio DalaVechia mauricio.dallavecchia@technipfmc.com
  ******************************************************************************
  */
 
@@ -152,10 +152,11 @@ void StateMachine(void)
                 StateVector.State_Next = ChargeInit;
             } else {
                 HAL_DcdcPulseModePwmSetting();
+                ResetPulseStateAdjust();
+                AdjustPulseBasedOnSupercapVoltage();
                 HAL_StartPwmDCDC();
                 CounterGroup.PrestateCounter = DELAY_50_SM_CYCLES;
                 StateVector.State_Next = TrickleChargeDelay;
-                trickleChargeRangeState = 0;
             }
             break;
 
@@ -168,7 +169,7 @@ void StateMachine(void)
             break;
 
         case TrickleCharge: /* Pulse charge state for when the super capacitor bank voltage is low */
-            IncreasePulseStateDutyToSuperCapsVoltage();
+            AdjustPulseBasedOnSupercapVoltage();
             if ( DCDC_VI.avgVStore >= energy_bank_settings.preconditional_threshold)
             {
                 HAL_StopPwmDCDC();
@@ -256,7 +257,7 @@ void StateMachine(void)
             }
             break;
 
-        case Balancing: // Balancing state supposed to run in parallel with Charge state.
+        case Balancing:
 
             if( BalancingAllCells( &cellVoltagesVector[0] ) == true ) {
                StateVector.State_Next = ChargeInit;
@@ -268,7 +269,7 @@ void StateMachine(void)
             StateVector.State_Next = StopEPWMs;
             break;
 
-        case RegulateInit: /* Initialize the boost state */
+        case RegulateInit:
             DCDC_VI.I_Ref_Real = 0.0;
             StateVector.State_Next = Regulate;
             HAL_StopPwmDCDC();
@@ -367,7 +368,6 @@ void StateMachine(void)
 
             SignalFaultStateToCPU1();
 
-            //StateVector.State_Next = WaitDPMUSafeCondition;
             StateVector.State_Next = DischargeVBUSToSupercap;
 
             break;
@@ -375,9 +375,9 @@ void StateMachine(void)
         case DischargeVBUSToSupercap:
             if( DCDC_VI.avgVStore < energy_bank_settings.max_voltage_applied_to_energy_bank * MAX_ENERGY_BANK_VOLTAGE_RATIO ) {
                 HAL_DcdcPulseModePwmSetting();
+                ResetPulseStateAdjust();
+                AdjustPulseBasedOnSupercapVoltage();
                 HAL_StartPwmDCDC();
-                float safeChargeDutyCycle = 0.005 * EPWM_getTimeBasePeriod(BEG_1_2_BASE);
-                HAL_PWM_setCounterCompareValue(BEG_1_2_BASE, EPWM_COUNTER_COMPARE_A, safeChargeDutyCycle );
                 CounterGroup.PrestateCounter = 10 * DELAY_50_SM_CYCLES;
             }
             StateVector.State_Next = WaitDPMUSafeCondition;
@@ -385,6 +385,7 @@ void StateMachine(void)
 
         case WaitDPMUSafeCondition:
             if( CounterGroup.PrestateCounter == 0 ) {
+                AdjustPulseBasedOnSupercapVoltage();
                 if( sensorVector[VBusIdx].realValue < sensorVector[VStoreIdx].realValue + SOFTSTART_DEVIATION_FROM_STORAGE_VOLTAGE_TO_INRUSH  ) {
                     StopAllEPWMs();
                     StateVector.State_Next = PreInitialized;
